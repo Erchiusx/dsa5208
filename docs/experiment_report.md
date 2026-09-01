@@ -10,7 +10,9 @@ and network partition/heal operations.
 
 The CI experiment validates that the checker logic, trajectory runner,
 Cassandra executor adapter, Docker failure-control command generation, and CLI
-entrypoint all work on Python 3.11 and 3.12.
+entrypoint all work on Python 3.11 and 3.12. The full Cassandra experiment is
+kept as a local/lab-machine experiment because a three-node Cassandra cluster is
+too resource-heavy for the GitHub-hosted runner used by this repository.
 
 The real database experiment runs the same canonical trajectories against a
 three-node Cassandra 5.0 cluster managed by Docker Compose.
@@ -68,7 +70,11 @@ Instead, it validates the experiment harness with deterministic inputs:
 - A CLI smoke test runs `python -m project1.cli trajectories/ryw_pass.json`.
 
 This design keeps CI reliable while preserving a real execution path for local
-or lab-machine Cassandra/ScyllaDB experiments.
+or lab-machine Cassandra/ScyllaDB experiments. A trial CI job that started the
+three-node Cassandra cluster reached the experiment step but was killed with
+exit code 137, which indicates runner resource exhaustion. For that reason the
+final CI workflow runs deterministic harness tests only, while the real
+Cassandra results below come from the local Docker Compose run.
 
 The real database run starts three Cassandra containers and pins client
 operations to specific nodes using per-node contact points:
@@ -116,6 +122,10 @@ Job results:
 | --- | --- | --- | --- | --- |
 | `test (3.11)` | 3.11.16 | success | `15 passed in 0.06s` | `ryw_pass` returned `PASS` |
 | `test (3.12)` | 3.12.14 | success | `15 passed in 0.04s` | `ryw_pass` returned `PASS` |
+
+The final workflow intentionally does not start the real Cassandra cluster. The
+real cluster experiment is reproducible with the commands in the reproduction
+section and was run locally for the results below.
 
 Local verification was also run in the `default` conda environment:
 
@@ -257,8 +267,11 @@ across consistency levels.
 
 ## Conclusion
 
-The project now has a CI-validated experiment harness and a concrete path for
-real Cassandra/ScyllaDB experiments. The current automated evidence validates
-the checker, runner, executor adapter, Docker failure-control mapping, and CLI.
-The next experimental step is to run the same trajectories against a live
-three-node cluster and record the observed histories for each consistency level.
+The project now has a CI-validated experiment harness plus a completed local
+three-node Cassandra run. The automated evidence validates the checker, runner,
+executor adapter, Docker failure-control mapping, and CLI. The local database
+evidence shows that the canonical trajectories execute against Cassandra 5.0:
+the normal read-your-writes path passes at `ONE`, `QUORUM`, and `ALL`; the
+mock-only stale/reordered violation paths do not reproduce as live Cassandra
+violations; and the Docker partition path isolates `N3`, producing an
+unavailable read rather than a stale read.
