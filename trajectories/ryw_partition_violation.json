@@ -1,0 +1,39 @@
+{
+  "name": "ryw_partition_violation",
+  "property": "read_your_writes",
+  "description": "A writes v1 through N1, then after moving to isolated/stale N3 reads v0.",
+  "steps": [
+    {
+      "op": "partition",
+      "node": "N3"
+    },
+    {
+      "op": "connect",
+      "client": "A",
+      "node": "N1"
+    },
+    {
+      "op": "write",
+      "client": "A",
+      "key": "x",
+      "version": 1,
+      "mock": {
+        "status": "ok"
+      }
+    },
+    {
+      "op": "connect",
+      "client": "A",
+      "node": "N3"
+    },
+    {
+      "op": "read",
+      "client": "A",
+      "key": "x",
+      "mock": {
+        "status": "ok",
+        "version": 0
+      }
+    }
+  ]
+}

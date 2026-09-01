@@ -1,0 +1,35 @@
+{
+  "name": "monotonic_reads_violation",
+  "property": "monotonic_reads",
+  "description": "A first sees fresh v2, then switches to a stale replica and sees v1.",
+  "steps": [
+    {
+      "op": "connect",
+      "client": "A",
+      "node": "N1"
+    },
+    {
+      "op": "read",
+      "client": "A",
+      "key": "x",
+      "mock": {
+        "status": "ok",
+        "version": 2
+      }
+    },
+    {
+      "op": "connect",
+      "client": "A",
+      "node": "N3"
+    },
+    {
+      "op": "read",
+      "client": "A",
+      "key": "x",
+      "mock": {
+        "status": "ok",
+        "version": 1
+      }
+    }
+  ]
+}

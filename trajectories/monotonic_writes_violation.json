@@ -1,0 +1,39 @@
+{
+  "name": "monotonic_writes_violation",
+  "property": "monotonic_writes",
+  "description": "A issues A1 then A2, but audit observes A2 before A1.",
+  "steps": [
+    {
+      "op": "write",
+      "client": "A",
+      "key": "x",
+      "version": 1,
+      "write_id": "A1",
+      "seq": 1,
+      "mock": {
+        "status": "ok"
+      }
+    },
+    {
+      "op": "write",
+      "client": "A",
+      "key": "x",
+      "version": 2,
+      "write_id": "A2",
+      "seq": 2,
+      "mock": {
+        "status": "ok"
+      }
+    },
+    {
+      "op": "audit_order",
+      "mock": {
+        "status": "ok",
+        "order": [
+          "A2",
+          "A1"
+        ]
+      }
+    }
+  ]
+}

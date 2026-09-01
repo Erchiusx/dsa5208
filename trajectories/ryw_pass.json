@@ -1,0 +1,30 @@
+{
+  "name": "ryw_pass",
+  "property": "read_your_writes",
+  "description": "A writes v1 and later reads v1.",
+  "steps": [
+    {
+      "op": "connect",
+      "client": "A",
+      "node": "N1"
+    },
+    {
+      "op": "write",
+      "client": "A",
+      "key": "x",
+      "version": 1,
+      "mock": {
+        "status": "ok"
+      }
+    },
+    {
+      "op": "read",
+      "client": "A",
+      "key": "x",
+      "mock": {
+        "status": "ok",
+        "version": 1
+      }
+    }
+  ]
+}

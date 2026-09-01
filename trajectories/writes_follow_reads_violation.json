@@ -1,0 +1,56 @@
+{
+  "name": "writes_follow_reads_violation",
+  "property": "writes_follow_reads",
+  "description": "A sees x=v1 and writes y=v1 depending on it; C sees y=v1 but then x=v0.",
+  "steps": [
+    {
+      "op": "write",
+      "client": "B",
+      "key": "x",
+      "version": 1,
+      "mock": {
+        "status": "ok"
+      }
+    },
+    {
+      "op": "read",
+      "client": "A",
+      "key": "x",
+      "mock": {
+        "status": "ok",
+        "version": 1
+      }
+    },
+    {
+      "op": "write",
+      "client": "A",
+      "key": "y",
+      "version": 1,
+      "depends_on": {
+        "key": "x",
+        "min_version": 1
+      },
+      "mock": {
+        "status": "ok"
+      }
+    },
+    {
+      "op": "read",
+      "client": "C",
+      "key": "y",
+      "mock": {
+        "status": "ok",
+        "version": 1
+      }
+    },
+    {
+      "op": "read",
+      "client": "C",
+      "key": "x",
+      "mock": {
+        "status": "ok",
+        "version": 0
+      }
+    }
+  ]
+}
