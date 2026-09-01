@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 from .executor import Executor
+from .failure_control import FailureController, NoopFailureController
 from .model import Observation
 
 
@@ -44,9 +45,11 @@ class CassandraExecutor(Executor):
         self,
         config: CassandraConfig | None = None,
         session: SessionLike | None = None,
+        failure_controller: FailureController | None = None,
     ) -> None:
         self.config = config or CassandraConfig.from_env()
         self.client_nodes: dict[str, str] = {}
+        self.failure_controller = failure_controller or NoopFailureController()
 
         if session is None:
             session = self._connect_driver_session()
@@ -222,15 +225,13 @@ class CassandraExecutor(Executor):
         return Observation(index=index, op="audit_order", order=order, raw={"step": step})
 
     def _unsupported_control(self, index: int, step: dict[str, Any]) -> Observation:
+        result = self.failure_controller.apply(step)
         return Observation(
             index=index,
             op=step["op"],
-            status="skipped",
+            status=result["status"],
             node=step.get("node"),
-            raw={
-                "step": step,
-                "reason": "cluster failure injection is external to CassandraExecutor",
-            },
+            raw=result,
         )
 
     def _statement(self, query: str, step: dict[str, Any]) -> Any:

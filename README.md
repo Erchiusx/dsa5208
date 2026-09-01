@@ -39,7 +39,9 @@ executor can implement the same `Executor` interface later.
 │   ├── __init__.py
 │   ├── model.py
 │   ├── executor.py
+│   ├── failure_control.py
 │   ├── mock_executor.py
+│   ├── cassandra_executor.py
 │   ├── checker.py
 │   ├── runner.py
 │   └── cli.py
@@ -86,6 +88,7 @@ python -m pip install -e ".[dev,cassandra]"
 docker compose up -d
 python -m project1.cli \
   --executor cassandra \
+  --failure-controller docker \
   --contact-points 127.0.0.1 \
   --consistency ONE \
   trajectories/ryw_pass.json
@@ -98,10 +101,19 @@ creates two tables in the configured keyspace:
 - `write_audit`: per-write audit rows used by the monotonic-writes checker.
 
 Failure-injection steps such as `partition`, `heal`, `stop`, and `start` are
-recorded as skipped by `CassandraExecutor`; they require an external control
-layer such as Docker networking, `iptables`, or a Jepsen-style harness. The
-trajectory still runs, but a true failure experiment needs that control layer
-to make replicas unavailable or stale.
+delegated to a pluggable failure controller. `--failure-controller docker`
+uses Docker CLI commands against the compose containers:
+
+```text
+partition N3 -> docker network disconnect -f project1-net project1-cassandra3
+heal N3      -> docker network connect project1-net project1-cassandra3
+stop N2      -> docker stop project1-cassandra2
+start N2     -> docker start project1-cassandra2
+```
+
+The default controller is `none`, which records these steps as skipped. CI uses
+that default and validates the Docker controller with fake command runners, so
+GitHub Actions does not need a running Cassandra cluster or Docker daemon.
 
 Configuration can be passed via CLI flags or environment variables:
 

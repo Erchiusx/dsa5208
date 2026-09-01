@@ -27,3 +27,6 @@ jobs:
 
       - name: Test
         run: pytest -q
+
+      - name: CLI smoke test
+        run: python -m project1.cli trajectories/ryw_pass.json

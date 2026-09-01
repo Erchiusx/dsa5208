@@ -9,6 +9,8 @@ services:
       CASSANDRA_DC: dc1
     ports:
       - "9042:9042"
+    networks:
+      - cassandra
     healthcheck:
       test: ["CMD-SHELL", "cqlsh -e 'DESCRIBE KEYSPACES' 127.0.0.1 9042"]
       interval: 20s
@@ -26,6 +28,8 @@ services:
     depends_on:
       cassandra1:
         condition: service_healthy
+    networks:
+      - cassandra
 
   cassandra3:
     image: cassandra:5.0
@@ -38,3 +42,9 @@ services:
     depends_on:
       cassandra1:
         condition: service_healthy
+    networks:
+      - cassandra
+
+networks:
+  cassandra:
+    name: project1-net

@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from typing import Any
 
 from project1.cassandra_executor import CassandraConfig, CassandraExecutor
+from project1.failure_control import NoopFailureController
 
 
 class FakeSession:
@@ -45,10 +46,31 @@ def test_cassandra_executor_write_read_and_audit_observations() -> None:
     assert audit.order == ["A1", "A2"]
 
 
-def test_cassandra_executor_marks_external_failure_controls_as_skipped() -> None:
-    executor = CassandraExecutor(CassandraConfig(replication_factor=1), session=FakeSession())
+def test_cassandra_executor_uses_configured_failure_controller() -> None:
+    class FakeFailureController:
+        def apply(self, step: dict[str, Any]) -> dict[str, Any]:
+            return {"status": "ok", "step": step, "command": ["docker", "stop", "project1-cassandra3"]}
+
+    executor = CassandraExecutor(
+        CassandraConfig(replication_factor=1),
+        session=FakeSession(),
+        failure_controller=FakeFailureController(),
+    )
+
+    observed = executor.execute(0, {"op": "stop", "node": "N3"})
+
+    assert observed.status == "ok"
+    assert observed.raw["command"] == ["docker", "stop", "project1-cassandra3"]
+
+
+def test_noop_failure_controller_skips_external_failure_controls() -> None:
+    executor = CassandraExecutor(
+        CassandraConfig(replication_factor=1),
+        session=FakeSession(),
+        failure_controller=NoopFailureController(),
+    )
 
     observed = executor.execute(0, {"op": "partition", "node": "N3"})
 
     assert observed.status == "skipped"
-    assert observed.raw["reason"] == "cluster failure injection is external to CassandraExecutor"
+    assert observed.raw["reason"] == "no failure controller configured"
