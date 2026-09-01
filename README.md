@@ -35,7 +35,7 @@ executor can implement the same `Executor` interface later.
 .
 ├── .github/workflows/ci.yml
 ├── pyproject.toml
-├── src/consistency_lab/
+├── src/project1/
 │   ├── __init__.py
 │   ├── model.py
 │   ├── executor.py
@@ -64,15 +64,51 @@ pytest -q
 Run one trajectory:
 
 ```bash
-python -m consistency_lab.cli trajectories/ryw_partition_violation.json
+python -m project1.cli trajectories/ryw_partition_violation.json
 ```
 
 Run all trajectories:
 
 ```bash
 for f in trajectories/*.json; do
-  python -m consistency_lab.cli "$f"
+  python -m project1.cli "$f"
 done
+```
+
+## Run against Cassandra or ScyllaDB
+
+The mock executor remains the default for deterministic unit tests. To run a
+trajectory against a real Cassandra-compatible cluster, install the optional
+driver and select the Cassandra executor:
+
+```bash
+python -m pip install -e ".[dev,cassandra]"
+docker compose up -d
+python -m project1.cli \
+  --executor cassandra \
+  --contact-points 127.0.0.1 \
+  --consistency ONE \
+  trajectories/ryw_pass.json
+```
+
+Supported consistency levels are `ONE`, `QUORUM`, and `ALL`. The executor
+creates two tables in the configured keyspace:
+
+- `kv`: latest observed value per key.
+- `write_audit`: per-write audit rows used by the monotonic-writes checker.
+
+Failure-injection steps such as `partition`, `heal`, `stop`, and `start` are
+recorded as skipped by `CassandraExecutor`; they require an external control
+layer such as Docker networking, `iptables`, or a Jepsen-style harness. The
+trajectory still runs, but a true failure experiment needs that control layer
+to make replicas unavailable or stale.
+
+Configuration can be passed via CLI flags or environment variables:
+
+```bash
+PROJECT1_CASSANDRA_CONTACT_POINTS=127.0.0.1 \
+PROJECT1_CASSANDRA_CONSISTENCY=QUORUM \
+python -m project1.cli --executor cassandra trajectories/ryw_pass.json
 ```
 
 ## Trajectory format

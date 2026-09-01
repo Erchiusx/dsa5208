@@ -2,18 +2,60 @@ from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import replace
 
+from .cassandra_executor import CassandraConfig, CassandraExecutor
+from .executor import Executor
 from .mock_executor import MockExecutor
 from .runner import load_trajectory, run_trajectory
+
+
+def build_executor(args: argparse.Namespace) -> Executor:
+    if args.executor == "mock":
+        return MockExecutor()
+
+    config = CassandraConfig.from_env()
+    config = replace(
+        config,
+        contact_points=(
+            tuple(p.strip() for p in args.contact_points.split(",") if p.strip())
+            if args.contact_points
+            else config.contact_points
+        ),
+        port=args.port if args.port is not None else config.port,
+        keyspace=args.keyspace if args.keyspace is not None else config.keyspace,
+        table=args.table if args.table is not None else config.table,
+        audit_table=args.audit_table if args.audit_table is not None else config.audit_table,
+        replication_factor=(
+            args.replication_factor
+            if args.replication_factor is not None
+            else config.replication_factor
+        ),
+        default_consistency=args.consistency if args.consistency is not None else config.default_consistency,
+    )
+    return CassandraExecutor(config)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("trajectory", help="path to trajectory JSON")
+    parser.add_argument(
+        "--executor",
+        choices=("mock", "cassandra"),
+        default="mock",
+        help="executor backend to use",
+    )
+    parser.add_argument("--contact-points", help="comma-separated Cassandra/Scylla contact points")
+    parser.add_argument("--port", type=int)
+    parser.add_argument("--keyspace")
+    parser.add_argument("--table")
+    parser.add_argument("--audit-table")
+    parser.add_argument("--replication-factor", type=int)
+    parser.add_argument("--consistency", choices=("ONE", "QUORUM", "ALL"))
     args = parser.parse_args()
 
     trajectory = load_trajectory(args.trajectory)
-    history, result = run_trajectory(trajectory, MockExecutor())
+    history, result = run_trajectory(trajectory, build_executor(args))
 
     print(f"trajectory: {trajectory['name']}")
     print(f"property:   {result.property_name}")

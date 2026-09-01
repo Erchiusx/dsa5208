@@ -11,6 +11,7 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+cassandra = ["cassandra-driver>=3.29"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
