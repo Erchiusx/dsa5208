@@ -77,6 +77,14 @@ for f in trajectories/*.json; do
 done
 ```
 
+Run the real Cassandra experiment suite used by CI:
+
+```bash
+docker compose up -d
+python scripts/run_real_experiments.py
+docker compose down
+```
+
 ## Run against Cassandra or ScyllaDB
 
 The mock executor remains the default for deterministic unit tests. To run a
