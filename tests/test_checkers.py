@@ -1,9 +1,9 @@
-from consistency_lab.checker import (
+from project1.checker import (
     check_monotonic_reads,
     check_read_your_writes,
     check_writes_follow_reads,
 )
-from consistency_lab.model import Observation
+from project1.model import Observation
 
 
 def test_ryw_newer_value_is_allowed() -> None:

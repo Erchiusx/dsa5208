@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from consistency_lab.mock_executor import MockExecutor
-from consistency_lab.runner import load_trajectory, run_trajectory
+from project1.mock_executor import MockExecutor
+from project1.runner import load_trajectory, run_trajectory
 
 
 ROOT = Path(__file__).resolve().parents[1]
