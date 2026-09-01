@@ -12,6 +12,9 @@ The CI experiment validates that the checker logic, trajectory runner,
 Cassandra executor adapter, Docker failure-control command generation, and CLI
 entrypoint all work on Python 3.11 and 3.12.
 
+The real database experiment runs the same canonical trajectories against a
+three-node Cassandra 5.0 cluster managed by Docker Compose.
+
 ## Research Question
 
 Can a small trajectory runner express and check common client-centric
@@ -67,30 +70,52 @@ Instead, it validates the experiment harness with deterministic inputs:
 This design keeps CI reliable while preserving a real execution path for local
 or lab-machine Cassandra/ScyllaDB experiments.
 
+The real database run starts three Cassandra containers and pins client
+operations to specific nodes using per-node contact points:
+
+| Logical node | Container | Contact point |
+| --- | --- | --- |
+| `N1` | `project1-cassandra1` | `172.21.0.2:9042` |
+| `N2` | `project1-cassandra2` | `172.21.0.3:9042` |
+| `N3` | `project1-cassandra3` | `172.21.0.4:9042` |
+
+Cluster status before the real trajectory run:
+
+```text
+Datacenter: dc1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load        Tokens  Owns (effective)  Rack
+UN  172.21.0.4  105.63 KiB  16      100.0%            rack1
+UN  172.21.0.3  102.14 KiB  16      100.0%            rack1
+UN  172.21.0.2  129.15 KiB  16      100.0%            rack1
+```
+
 ## CI Results
 
 Results were collected with GitHub CLI/API from repository
 `Erchiusx/dsa5208`.
 
-Latest checked run:
+Validation run:
 
 - Workflow: `ci`
-- Run ID: `33514078987`
-- Commit: `066c4d694b2ccd30132e7972513bf475938a257b`
+- Run ID: `33515585123`
+- Commit: `18cc8709e469a1efc4d63cba969a78863a6f56d0`
 - Branch: `master`
 - Event: `push`
 - Status: `completed`
 - Conclusion: `success`
-- Created: `2026-09-01T13:33:16Z`
-- Completed: `2026-09-01T13:33:30Z`
-- URL: `https://github.com/Erchiusx/dsa5208/actions/runs/33514078987`
+- Created: `2026-09-01T13:48:05Z`
+- Completed: `2026-09-01T13:48:22Z`
+- URL: `https://github.com/Erchiusx/dsa5208/actions/runs/33515585123`
 
 Job results:
 
 | Job | Python | Result | Test output | CLI smoke test |
 | --- | --- | --- | --- | --- |
-| `test (3.11)` | 3.11.16 | success | `15 passed in 0.04s` | `ryw_pass` returned `PASS` |
-| `test (3.12)` | 3.12.14 | success | `15 passed in 0.06s` | `ryw_pass` returned `PASS` |
+| `test (3.11)` | 3.11.16 | success | `15 passed in 0.06s` | `ryw_pass` returned `PASS` |
+| `test (3.12)` | 3.12.14 | success | `15 passed in 0.04s` | `ryw_pass` returned `PASS` |
 
 Local verification was also run in the `default` conda environment:
 
@@ -119,7 +144,7 @@ status:     PASS
 reason:     Every successful post-write read was at least as new as the client's latest successful write.
 ```
 
-## Trajectory Results
+## Mock Trajectory Results
 
 The deterministic trajectory suite encodes expected observations for canonical
 client-centric consistency cases.
@@ -131,6 +156,45 @@ client-centric consistency cases.
 | `monotonic_reads_violation.json` | Monotonic reads | `VIOLATION` | Client observes a newer version and later reads an older version. |
 | `monotonic_writes_violation.json` | Monotonic writes | `VIOLATION` | Audit order observes a client's later write before its earlier write. |
 | `writes_follow_reads_violation.json` | Writes-follow-reads | `VIOLATION` | Observer sees an effect but later misses its required cause. |
+
+## Real Cassandra Results
+
+The following commands were run against the live Docker Compose Cassandra
+cluster using `cassandra-driver 3.30.1`.
+
+Common arguments:
+
+```bash
+python -m project1.cli \
+  --executor cassandra \
+  --contact-points 172.21.0.2 \
+  --node-contact-points N1:172.21.0.2,N2:172.21.0.3,N3:172.21.0.4 \
+  --node-ports N1:9042,N2:9042,N3:9042 \
+  --replication-factor 3
+```
+
+Observed results:
+
+| Trajectory | Consistency | Failure controller | Real result | Key observation |
+| --- | --- | --- | --- | --- |
+| `ryw_pass.json` | `ONE` | `none` | `PASS` | Write on `N1` and later read on `N1` returned version 1. |
+| `ryw_pass.json` | `QUORUM` | `none` | `PASS` | Same read-your-writes path passed at quorum. |
+| `ryw_pass.json` | `ALL` | `none` | `PASS` | Same read-your-writes path passed at all replicas. |
+| `monotonic_reads_violation.json` | `ONE` | `none` | `PASS` | Both reads returned version 0, so no backward read occurred. |
+| `monotonic_writes_violation.json` | `ONE` | `none` | `PASS` | Audit observed monotonic order instead of the mock's reversed order. |
+| `writes_follow_reads_violation.json` | `ONE` | `none` | `PASS` | Observer read both effect `y=1` and cause `x=1`. |
+| `ryw_partition_violation.json` | `ONE` | `docker` | `INCONCLUSIVE` | `partition N3` succeeded, write on `N1` succeeded, read from isolated `N3` failed instead of returning stale data. |
+
+The partition run produced this history shape:
+
+```text
+partition N3: ok
+connect A -> N1: ok
+write A x=1 on N1: ok
+connect A -> N3: ok
+read A x from N3: error
+checker result: INCONCLUSIVE
+```
 
 ## Interpretation
 
@@ -144,18 +208,24 @@ Python versions and that the installed package exposes a working CLI entrypoint.
 This reduces the risk that later real-cluster experiments are blocked by
 packaging, import, or runner regressions.
 
+For the real Cassandra run, the canonical mock violations did not automatically
+reproduce as database violations. This is expected: the mock files encode
+specific stale or reordered observations, while the live cluster produced either
+consistent reads or an unavailable isolated node. In particular, disconnecting
+`N3` from the Docker network made reads from `N3` fail rather than return a
+stale value.
+
 ## Limitations
 
 The CI results are not evidence that Cassandra or ScyllaDB violates or
 satisfies the listed properties under real failures. CI does not start a real
-cluster, does not execute Docker network partitions, and does not measure
-replica propagation timing.
+cluster or execute Docker network partitions.
 
-The real-cluster path is implemented but must be run in an environment with:
-
-- Docker and Docker Compose.
-- The optional Cassandra Python driver.
-- Enough resources for a three-node Cassandra-compatible cluster.
+The local real-cluster run is evidence that the Cassandra executor can issue
+real reads and writes and that Docker failure control can isolate a node.
+However, it does not yet search timing windows or repair/anti-entropy behavior,
+so it should not be interpreted as a complete consistency analysis of
+Cassandra.
 
 ## Reproducing Real-Cluster Experiments
 

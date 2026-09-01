@@ -33,6 +33,12 @@ def build_executor(args: argparse.Namespace) -> Executor:
             else config.replication_factor
         ),
         default_consistency=args.consistency if args.consistency is not None else config.default_consistency,
+        node_ports=_node_ports(args.node_ports) if args.node_ports else config.node_ports,
+        node_contact_points=(
+            _node_contact_points(args.node_contact_points)
+            if args.node_contact_points
+            else config.node_contact_points
+        ),
     )
     failure_controller = (
         DockerFailureController.from_env()
@@ -40,6 +46,22 @@ def build_executor(args: argparse.Namespace) -> Executor:
         else NoopFailureController()
     )
     return CassandraExecutor(config, failure_controller=failure_controller)
+
+
+def _node_ports(value: str) -> dict[str, int]:
+    ports: dict[str, int] = {}
+    for item in value.split(","):
+        node, port = item.split(":", maxsplit=1)
+        ports[node.strip()] = int(port)
+    return ports
+
+
+def _node_contact_points(value: str) -> dict[str, tuple[str, ...]]:
+    contact_points: dict[str, tuple[str, ...]] = {}
+    for item in value.split(","):
+        node, hosts = item.split(":", maxsplit=1)
+        contact_points[node.strip()] = tuple(h.strip() for h in hosts.split("+") if h.strip())
+    return contact_points
 
 
 def main() -> int:
@@ -58,6 +80,11 @@ def main() -> int:
     parser.add_argument("--audit-table")
     parser.add_argument("--replication-factor", type=int)
     parser.add_argument("--consistency", choices=("ONE", "QUORUM", "ALL"))
+    parser.add_argument("--node-ports", help="comma-separated node:port map, e.g. N1:9042,N2:9043,N3:9044")
+    parser.add_argument(
+        "--node-contact-points",
+        help="comma-separated node:host map, e.g. N1:172.20.0.2,N2:172.20.0.3,N3:172.20.0.4",
+    )
     parser.add_argument(
         "--failure-controller",
         choices=("none", "docker"),

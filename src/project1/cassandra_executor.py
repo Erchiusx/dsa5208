@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from dataclasses import field
 from typing import Any, Protocol
 
 from .executor import Executor
@@ -23,6 +24,8 @@ class CassandraConfig:
     audit_table: str = "write_audit"
     replication_factor: int = 3
     default_consistency: str = "ONE"
+    node_ports: dict[str, int] = field(default_factory=lambda: {"N1": 9042, "N2": 9043, "N3": 9044})
+    node_contact_points: dict[str, tuple[str, ...]] = field(default_factory=dict)
 
     @classmethod
     def from_env(cls) -> CassandraConfig:
@@ -35,7 +38,33 @@ class CassandraConfig:
             audit_table=os.getenv("PROJECT1_CASSANDRA_AUDIT_TABLE", "write_audit"),
             replication_factor=int(os.getenv("PROJECT1_CASSANDRA_REPLICATION_FACTOR", "3")),
             default_consistency=os.getenv("PROJECT1_CASSANDRA_CONSISTENCY", "ONE"),
+            node_ports=cls._node_ports_from_env(),
+            node_contact_points=cls._node_contact_points_from_env(),
         )
+
+    @staticmethod
+    def _node_ports_from_env() -> dict[str, int]:
+        raw = os.getenv("PROJECT1_CASSANDRA_NODE_PORTS")
+        if not raw:
+            return {"N1": 9042, "N2": 9043, "N3": 9044}
+
+        ports: dict[str, int] = {}
+        for item in raw.split(","):
+            node, port = item.split(":", maxsplit=1)
+            ports[node.strip()] = int(port)
+        return ports
+
+    @staticmethod
+    def _node_contact_points_from_env() -> dict[str, tuple[str, ...]]:
+        raw = os.getenv("PROJECT1_CASSANDRA_NODE_CONTACT_POINTS")
+        if not raw:
+            return {}
+
+        contact_points: dict[str, tuple[str, ...]] = {}
+        for item in raw.split(","):
+            node, hosts = item.split(":", maxsplit=1)
+            contact_points[node.strip()] = tuple(h.strip() for h in hosts.split("+") if h.strip())
+        return contact_points
 
 
 class CassandraExecutor(Executor):
@@ -50,9 +79,11 @@ class CassandraExecutor(Executor):
         self.config = config or CassandraConfig.from_env()
         self.client_nodes: dict[str, str] = {}
         self.failure_controller = failure_controller or NoopFailureController()
+        self._injected_session = session is not None
+        self._sessions: dict[str, SessionLike] = {}
 
         if session is None:
-            session = self._connect_driver_session()
+            session = self._connect_driver_session(self._contact_points_for_node("N1"), self.config.port)
 
         self.session = session
         self._ensure_schema()
@@ -72,16 +103,21 @@ class CassandraExecutor(Executor):
 
         return Observation(index=index, op=op, status="unsupported", raw={"step": step})
 
-    def _connect_driver_session(self) -> SessionLike:
+    def _connect_driver_session(self, contact_points: tuple[str, ...], port: int) -> SessionLike:
         try:
             from cassandra.cluster import Cluster
+            from cassandra.policies import WhiteListRoundRobinPolicy
         except ImportError as exc:
             raise RuntimeError(
                 "Cassandra executor requires the optional dependency: "
                 'python -m pip install -e ".[cassandra]"'
             ) from exc
 
-        cluster = Cluster(contact_points=list(self.config.contact_points), port=self.config.port)
+        cluster = Cluster(
+            contact_points=list(contact_points),
+            port=port,
+            load_balancing_policy=WhiteListRoundRobinPolicy(list(contact_points)),
+        )
         return cluster.connect()
 
     def _ensure_schema(self) -> None:
@@ -136,7 +172,8 @@ class CassandraExecutor(Executor):
         seq = int(step.get("seq", index))
 
         try:
-            self.session.execute(
+            session = self._session_for_step(step)
+            session.execute(
                 self._statement(
                     f"""
                     INSERT INTO {self.config.keyspace}.{self.config.table}
@@ -147,7 +184,7 @@ class CassandraExecutor(Executor):
                 ),
                 (key, version, write_id, client, seq),
             )
-            self.session.execute(
+            session.execute(
                 self._statement(
                     f"""
                     INSERT INTO {self.config.keyspace}.{self.config.audit_table}
@@ -179,7 +216,7 @@ class CassandraExecutor(Executor):
         client = step.get("client")
 
         try:
-            rows = self.session.execute(
+            rows = self._session_for_step(step).execute(
                 self._statement(
                     f"""
                     SELECT version, write_id, client, seq
@@ -207,7 +244,7 @@ class CassandraExecutor(Executor):
 
     def _audit_order(self, index: int, step: dict[str, Any]) -> Observation:
         try:
-            rows = self.session.execute(
+            rows = self._session_for_step(step).execute(
                 self._statement(
                     f"""
                     SELECT write_id
@@ -233,6 +270,33 @@ class CassandraExecutor(Executor):
             node=step.get("node"),
             raw=result,
         )
+
+    def _session_for_step(self, step: dict[str, Any]) -> SessionLike:
+        if self._injected_session:
+            return self.session
+
+        node = step.get("node")
+        client = step.get("client")
+        if node is None and client is not None:
+            node = self.client_nodes.get(str(client))
+        if node is None:
+            return self.session
+
+        node_name = str(node)
+        if node_name == "N1":
+            return self.session
+        if node_name not in self._sessions:
+            port = self.config.node_ports.get(node_name)
+            if port is None:
+                return self.session
+            self._sessions[node_name] = self._connect_driver_session(
+                self._contact_points_for_node(node_name),
+                port,
+            )
+        return self._sessions[node_name]
+
+    def _contact_points_for_node(self, node: str) -> tuple[str, ...]:
+        return self.config.node_contact_points.get(node, self.config.contact_points)
 
     def _statement(self, query: str, step: dict[str, Any]) -> Any:
         consistency = step.get("consistency", self.config.default_consistency)

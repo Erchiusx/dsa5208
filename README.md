@@ -90,6 +90,7 @@ python -m project1.cli \
   --executor cassandra \
   --failure-controller docker \
   --contact-points 127.0.0.1 \
+  --node-contact-points N1:172.20.0.2,N2:172.20.0.3,N3:172.20.0.4 \
   --consistency ONE \
   trajectories/ryw_pass.json
 ```
@@ -119,6 +120,7 @@ Configuration can be passed via CLI flags or environment variables:
 
 ```bash
 PROJECT1_CASSANDRA_CONTACT_POINTS=127.0.0.1 \
+PROJECT1_CASSANDRA_NODE_CONTACT_POINTS=N1:172.20.0.2,N2:172.20.0.3,N3:172.20.0.4 \
 PROJECT1_CASSANDRA_CONSISTENCY=QUORUM \
 python -m project1.cli --executor cassandra trajectories/ryw_pass.json
 ```
