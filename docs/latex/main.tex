@@ -1,5 +1,5 @@
 % Compile with XeLaTeX (Overleaf) or Tectonic (locally).
-% Report source for the 316 completed-case dataset; see ../experiment_report.md.
+% DSA5208 Project 1 report source.
 \documentclass[lang=en,11pt,a4paper,bibend=bibtex]{elegantpaper}
 \usepackage[english]{babel}
 \usepackage{tabularx}
@@ -33,9 +33,9 @@
 \vspace{0.3em}
 
 \section{Question and scope}
-We extended our group's trajectory-based runner \hyperref[ref:5]{[5]} to investigate how Cassandra's consistency settings change what a client sees when it moves between nodes. The four properties are read-your-writes (RYW), monotonic reads (MR), monotonic writes (MW), and writes-follow-reads (WFR). RYW concerns a client's earlier writes; MR concerns its earlier reads. MW orders a client's successive writes, while WFR relates a write to the updates previously read by its writer \hyperref[ref:1]{[1]}.
+We use a trajectory-based runner \hyperref[ref:5]{[5]} to investigate how Cassandra's consistency settings change what a client sees when it moves between nodes. The four properties are read-your-writes (RYW), monotonic reads (MR), monotonic writes (MW), and writes-follow-reads (WFR). RYW concerns a client's earlier writes; MR concerns its earlier reads. MW orders a client's successive writes, while WFR relates a write to the updates previously read by its writer \hyperref[ref:1]{[1]}.
 
-Our dataset contains \textbf{316 completed experiments}, covering all 36 combinations of four properties, three consistency settings and three scenarios. Each combination has eight or nine observations. The initial plan was larger, but execution was stopped after repeated preparation failures. We retain all completed experiments, including unexpected outcomes. This report uses only these 316 histories; earlier pilot and batch results are not pooled with them.
+Our dataset contains \textbf{316 completed experiments}, covering all 36 combinations of four properties, three consistency settings and three scenarios. Each combination has eight or nine observations. The initial plan was larger, but execution was stopped after repeated preparation failures. We retain all completed experiments, including unexpected outcomes. These histories form the dataset analysed in this report.
 
 RYW and MR are checked directly from successful client operations. MW and WFR use immutable dependency markers and a local-replica probe. These probes test predecessor visibility, not every internal application event. Their scope matters when interpreting a result labelled VIOLATION.
 
@@ -80,7 +80,7 @@ WFR & B writes x; A reads that exact write, then writes y at N1. & The same loca
 For MW/WFR, immediately after that case's successful workload, N1 is isolated for measurement. After verifying isolation, the observer reads y and then x at ONE through N1. Successful reads can then use only N1's local replica. The markers are immutable. The additional isolation is a measurement intervention, including in a case labelled normal; it is recorded separately from the workload fault.
 
 \subsection{Sample selection and interruptions}
-The planned 1,080 cases consisted of 30 shuffled blocks of the 36 combinations, using seed 5208. We report the completed prefix: eight full blocks (288 cases) and the first 28 cases of block nine. Therefore 28 combinations have nine cases and eight combinations have eight. The task specification does not prescribe a repetition count \hyperref[ref:4]{[4]}.
+The planned 1,080 cases consisted of 30 shuffled blocks of the 36 combinations, using seed 5208. We report the completed prefix: eight full blocks (288 cases) and the first 28 cases of block nine. Therefore 28 combinations have nine cases and eight combinations have eight.
 
 The first process completed cases 1--93 and stopped during case 94's preparation when an N3 read timed out. A resumed process retained those files unchanged and completed cases 94--316. It added a three-second preparation wait and allowed up to three fresh-key preparation attempts, with health checks and a ten-second wait between failures. Formal workload operations were never retried. At case 317, all three preparation attempts failed: an ALL write received two of three required responses. No formal workload ran in either interrupted attempt. Both are preserved outside the 316-case denominator.
 
@@ -128,7 +128,7 @@ Three cases disagreed with the recorded prediction:
 \item \textbf{Case 311, normal/QUORUM/MW:} both writes completed at QUORUM, but the later local N1 probe returned y=1 and x=0. Quorum acknowledgement does not require each individual replica to contain both writes. The evidence concerns a local ONE probe after measurement isolation; it is \emph{not} a counterexample obtained by two QUORUM client reads.
 \item \textbf{Case 314, normal/ONE/WFR:} A read the exact predecessor at N3 and then successfully wrote y at N1. The isolated N1 probe returned y=1 and x=0. This shows that a completed workload without an injected workload fault can still leave a local dependency gap.
 \end{itemize}
-These outcomes were retained rather than replaced by extra successful trials. They revise our initial expectation about connected workloads. The server logs near the second interruption show N2 dropping expired read/write messages even when membership checks reported all nodes up. This supports caution about using membership as a readiness check. It does not establish the underlying cause of the timeouts or of either earlier dependency gap.
+These three outcomes show that connected workloads can produce availability exceptions and local dependency gaps. The server logs near the second interruption show N2 dropping expired read/write messages even when membership checks reported all nodes up. This supports caution about using membership as a readiness check. It does not establish the underlying cause of the timeouts or of either earlier dependency gap.
 
 \subsection{Limits of the conclusions}
 The experiment covers the required properties and scenarios, but its claims are narrow. All nodes share one VM, and each workload is short and sequential. Normal means no new workload fault, not a freshly created cluster: earlier failures may affect subsequent cases. Unique keys separate the logical data, but do not remove shared queues, timing effects or recovery history. The two preparation policies and the interruption-based stopping rule also limit comparisons of frequencies.
@@ -163,7 +163,7 @@ The runner controls the three lab containers through the dedicated Docker socket
 \item\label{ref:2} Apache Cassandra 5.0 documentation. \href{https://cassandra.apache.org/doc/stable/cassandra/architecture/dynamo.html}{Dynamo: replication and tunable consistency}. Accessed 24 September 2026.
 \item\label{ref:3} Apache Cassandra 5.0 documentation. \href{https://cassandra.apache.org/doc/stable/cassandra/managing/operating/read_repair.html}{Read repair}. Accessed 24 September 2026.
 \item\label{ref:4} DSA5208 Canvas. \href{https://canvas.nus.edu.sg/courses/97072/assignments/273833}{Project 1: Consistency Models in Distributed Databases}. Assignment requirements supplied by the group; submission deadline 27 September 2026.
-\item\label{ref:5} Group repository. \href{https://github.com/jiasiqi312/dsa5208/tree/b26b383d1ed2bccbb4e15ce4d1570f984e2a227b}{jiasiqi312/dsa5208}, forked from Erchiusx/dsa5208; baseline commit \texttt{b26b383}. Checked 24 September 2026.
-\item\label{ref:6} The project idea and initial experimental approach came from our group members. OpenAI Codex assisted with subsequent implementation review and revision, experiment execution and checks, and report editing and typesetting.
+\item\label{ref:5} Project source code. \href{https://github.com/jiasiqi312/dsa5208/tree/review-316}{jiasiqi312/dsa5208}.
+\item\label{ref:6} The project idea and experimental approach came from our group members. OpenAI Codex assisted with code implementation and debugging, experiment execution and result checking, and report preparation and typesetting.
 \end{enumerate}
 \end{document}

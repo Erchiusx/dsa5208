@@ -1,33 +1,30 @@
-# DSA5208 report - ElegantPaper
+# Report source
 
-This directory is a self-contained Overleaf project. Zip the contents of this directory
-and upload the ZIP as a new project, select `main.tex`
-as the main document, and choose **XeLaTeX** as the compiler. Recompile twice
+`main.tex` contains the report by Jia Siqi and Jia Zeyue.
+
+## Overleaf
+
+Upload the contents of this directory as a new Overleaf project. Select
+`main.tex` as the main document and **XeLaTeX** as the compiler. Compile twice
 if cross-reference labels have not settled. No external images are required.
 
-Edit `main.tex` to revise the report. The title block identifies Jia Siqi and Jia Zeyue,
-the course and university. The report uses the selected 316 completed cases in `results/final-316-20260924/`.
-`main.tex` is the complete editable report; `docs/experiment_report.md` is a short index.
+## Local compilation
 
-Local compilation from the repository root:
+From the project root, with Tectonic installed:
 
-    mkdir -p tmp/pdfs/elegant-build
-    tectonic -X compile docs/latex/main.tex --outdir tmp/pdfs/elegant-build
+```bash
+mkdir -p tmp/pdfs/build
+tectonic -X compile docs/latex/main.tex --outdir tmp/pdfs/build
+```
 
-The compiled file is `tmp/pdfs/elegant-build/main.pdf`; the reviewed output is
-`output/pdf/DSA5208_Experiment_Report_316.pdf`.
+The compiled file is `tmp/pdfs/build/main.pdf`. The submission PDF is
+`output/pdf/DSA5208_Project1_Report.pdf`.
 
-## Template provenance
+## Template attribution
 
-Template: ElegantPaper, English mode; original class file retained unchanged.
-Class version: 0.12, dated 2026-02-27 in the upstream file.
+The report uses ElegantPaper, English mode, version 0.12 (2026-02-27).
+The class is distributed under the LaTeX Project Public License 1.3c or later;
+see `LICENSE-ElegantPaper`. Retrieval details are in `template-provenance.json`.
 
-- Overleaf gallery: https://www.overleaf.com/latex/templates/elegantpaper-template/yzghrqjhmmmr
-- Author repository: https://github.com/ElegantLaTeX/ElegantPaper
-- Downloaded file: https://raw.githubusercontent.com/ElegantLaTeX/ElegantPaper/master/elegantpaper.cls
-- Retrieved: 2026-09-23
-- License: LaTeX Project Public License 1.3c or later (included).
-
-Report-specific settings in main.tex adjust margins and line spacing, add
-three-line tables and shaded shell listings, and use linked reference numbers.
-They do not modify the supplied class. The author names were supplied by the group.
+- [ElegantPaper repository](https://github.com/ElegantLaTeX/ElegantPaper)
+- [Overleaf template](https://www.overleaf.com/latex/templates/elegantpaper-template/yzghrqjhmmmr)
