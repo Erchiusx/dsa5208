@@ -1,0 +1,22 @@
+{
+  "case_id": "0166_normal_quorum_read_your_writes_r05",
+  "started_at": "2026-09-23T17:45:11.080052+00:00",
+  "predicted_status": "PASS",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "PASS",
+  "reason": "No stale successful post-write read observed. This is a finite-history result, not a universal guarantee.",
+  "witness": [],
+  "workload_requests": 2,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.483180934000302,
+    "fault_injection_and_settling_seconds": 8.330002856382634e-07,
+    "workload_seconds": 0.007526417000008223,
+    "probe_including_isolation_seconds": 2.0799961930606514e-07,
+    "recovery_seconds": 1.3314296710000235
+  },
+  "total_seconds": 5.825324101000206,
+  "finished_at": "2026-09-23T17:45:16.905376+00:00"
+}

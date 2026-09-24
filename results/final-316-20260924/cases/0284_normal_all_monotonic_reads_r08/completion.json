@@ -1,0 +1,22 @@
+{
+  "case_id": "0284_normal_all_monotonic_reads_r08",
+  "started_at": "2026-09-23T18:40:09.865967+00:00",
+  "predicted_status": "PASS",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "PASS",
+  "reason": "No backward read observed. This is a finite-history result, not a universal guarantee.",
+  "witness": [],
+  "workload_requests": 3,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.410817894000502,
+    "fault_injection_and_settling_seconds": 5.000001692678779e-07,
+    "workload_seconds": 0.009452801999941585,
+    "probe_including_isolation_seconds": 1.660000634728931e-07,
+    "recovery_seconds": 1.3641103489999296
+  },
+  "total_seconds": 5.786947411000256,
+  "finished_at": "2026-09-23T18:40:15.652915+00:00"
+}

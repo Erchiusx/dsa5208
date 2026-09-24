@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0225_node_stop_one_monotonic_reads_r07:8796d1a355214535944c561ade4d4f20",
+    "started_at": "2026-09-23T18:13:06.831365+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:13:06.851659+00:00"
+  }
+]

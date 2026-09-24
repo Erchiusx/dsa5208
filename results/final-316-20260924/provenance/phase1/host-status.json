@@ -1,0 +1,14 @@
+{
+  "status": "failed",
+  "pid": 79076,
+  "started_at": "2026-09-23T14:21:39.203375+00:00",
+  "total_cases": 1080,
+  "startup_seconds": 104.66323079200001,
+  "experiment_started_at": "2026-09-23T14:23:23.867264+00:00",
+  "error": "RuntimeError('Command failed (1); see console.txt')",
+  "execution_finished_at": "2026-09-23T15:02:30.175884+00:00",
+  "cleanup_complete": true,
+  "cleanup_errors": [],
+  "finished_at": "2026-09-23T15:02:57.750387+00:00",
+  "total_host_seconds": 2478.539777792
+}

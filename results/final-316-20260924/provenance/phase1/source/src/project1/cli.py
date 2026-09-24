@@ -1,0 +1,126 @@
+from __future__ import annotations
+
+import argparse
+import json
+from dataclasses import asdict, replace
+
+from .cassandra_executor import CassandraConfig, CassandraExecutor
+from .executor import Executor
+from .failure_control import DockerFailureController, NoopFailureController
+from .mock_executor import MockExecutor
+from .runner import load_trajectory, run_trajectory
+
+
+def build_executor(args: argparse.Namespace) -> Executor:
+    if args.executor == "mock":
+        return MockExecutor()
+
+    config = CassandraConfig.from_env()
+    config = replace(
+        config,
+        contact_points=(
+            tuple(p.strip() for p in args.contact_points.split(",") if p.strip())
+            if args.contact_points
+            else config.contact_points
+        ),
+        port=args.port if args.port is not None else config.port,
+        keyspace=args.keyspace if args.keyspace is not None else config.keyspace,
+        table=args.table if args.table is not None else config.table,
+        replication_factor=(
+            args.replication_factor
+            if args.replication_factor is not None
+            else config.replication_factor
+        ),
+        default_consistency=args.consistency
+        if args.consistency is not None
+        else config.default_consistency,
+        node_ports=_node_ports(args.node_ports) if args.node_ports else config.node_ports,
+        node_contact_points=(
+            _node_contact_points(args.node_contact_points)
+            if args.node_contact_points
+            else config.node_contact_points
+        ),
+    )
+    failure_controller = (
+        DockerFailureController.from_env()
+        if args.failure_controller == "docker"
+        else NoopFailureController()
+    )
+    return CassandraExecutor(config, failure_controller=failure_controller)
+
+
+def _node_ports(value: str) -> dict[str, int]:
+    ports: dict[str, int] = {}
+    for item in value.split(","):
+        node, port = item.split(":", maxsplit=1)
+        ports[node.strip()] = int(port)
+    return ports
+
+
+def _node_contact_points(value: str) -> dict[str, tuple[str, ...]]:
+    contact_points: dict[str, tuple[str, ...]] = {}
+    for item in value.split(","):
+        node, hosts = item.split(":", maxsplit=1)
+        contact_points[node.strip()] = tuple(h.strip() for h in hosts.split("+") if h.strip())
+    return contact_points
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("trajectory", help="path to trajectory JSON")
+    parser.add_argument(
+        "--executor",
+        choices=("mock", "cassandra"),
+        default="mock",
+        help="executor backend to use",
+    )
+    parser.add_argument("--contact-points", help="comma-separated Cassandra/Scylla contact points")
+    parser.add_argument("--port", type=int)
+    parser.add_argument("--keyspace")
+    parser.add_argument("--table")
+    parser.add_argument("--replication-factor", type=int)
+    parser.add_argument("--consistency", choices=("ONE", "QUORUM", "ALL"))
+    parser.add_argument(
+        "--node-ports",
+        help="comma-separated node:port map, e.g. N1:9042,N2:9043,N3:9044",
+    )
+    parser.add_argument(
+        "--node-contact-points",
+        help="comma-separated node:host map, e.g. N1:172.20.0.2,N2:172.20.0.3,N3:172.20.0.4",
+    )
+    parser.add_argument(
+        "--failure-controller",
+        choices=("none", "docker"),
+        default="none",
+        help="external controller for partition/heal/stop/start steps",
+    )
+    args = parser.parse_args()
+
+    trajectory = load_trajectory(args.trajectory)
+    if args.executor == "cassandra" and trajectory.get("execution_scope") == "mock_fixture":
+        parser.error(
+            "This is a synthetic checker fixture. Use scripts/run_real_experiments.py for prepared database experiments."
+        )
+    executor = build_executor(args)
+    try:
+        history, result = run_trajectory(trajectory, executor)
+    finally:
+        if hasattr(executor, "close"):
+            executor.close()
+
+    print(f"trajectory: {trajectory['name']}")
+    print(f"property:   {result.property_name}")
+    print(f"status:     {result.status}")
+    print(f"reason:     {result.reason}")
+    if result.witness:
+        print(f"witness:    {result.witness}")
+
+    print("\nhistory:")
+    for ev in history:
+        print(json.dumps(asdict(ev), ensure_ascii=False))
+
+    return 1 if result.status == "VIOLATION" else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

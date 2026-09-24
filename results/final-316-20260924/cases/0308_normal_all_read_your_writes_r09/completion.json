@@ -1,0 +1,22 @@
+{
+  "case_id": "0308_normal_all_read_your_writes_r09",
+  "started_at": "2026-09-23T18:50:56.104900+00:00",
+  "predicted_status": "PASS",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "INCONCLUSIVE",
+  "reason": "Required observations or successful prerequisites are missing.",
+  "witness": [],
+  "workload_requests": 2,
+  "failed_workload_requests": 1,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.4691234349993465,
+    "fault_injection_and_settling_seconds": 6.270001904340461e-07,
+    "workload_seconds": 1.5046254789995146,
+    "probe_including_isolation_seconds": 3.3400010579498485e-07,
+    "recovery_seconds": 1.3565241419992162
+  },
+  "total_seconds": 7.333803746999365,
+  "finished_at": "2026-09-23T18:51:03.438704+00:00"
+}

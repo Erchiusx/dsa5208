@@ -1,0 +1,236 @@
+{
+  "trial_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc",
+  "scenario": "normal",
+  "consistency": "QUORUM",
+  "property": "read_your_writes",
+  "repetition": 3,
+  "setup": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+      "version": 0,
+      "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+          "version": 0,
+          "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790183957413978
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183957413983084,
+        "duration_ms": 10.255558,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:y",
+      "version": 0,
+      "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:y:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:y",
+          "version": 0,
+          "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:y:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790183957424304
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183957424305715,
+        "duration_ms": 1.994895,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+      "version": 0,
+      "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "setup",
+          "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183957426353435,
+        "duration_ms": 1.469769,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N2",
+      "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+      "version": 0,
+      "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N2",
+          "client": "setup",
+          "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.3",
+        "started_ns": 1790183957427867823,
+        "duration_ms": 1.722021,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N3",
+      "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+      "version": 0,
+      "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "setup",
+          "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790183957429636962,
+        "duration_ms": 2.196613,
+        "consistency": "ONE"
+      }
+    }
+  ],
+  "history": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "A",
+      "node": "N1",
+      "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+      "version": 1,
+      "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:new",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "A",
+          "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+          "version": 1,
+          "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:new",
+          "consistency": "QUORUM",
+          "timestamp_us": 1790183957433220
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183957433221941,
+        "duration_ms": 1.796052,
+        "consistency": "QUORUM",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 1,
+      "op": "read",
+      "status": "ok",
+      "client": "A",
+      "node": "N3",
+      "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+      "version": 1,
+      "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:new",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "A",
+          "key": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x",
+          "consistency": "QUORUM"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0110_normal_quorum_read_your_writes_r04:efee37fc55694eeeb6a94573e1d3a5fc:x:new",
+          "client": "A",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790183957435023950,
+        "duration_ms": 3.085225,
+        "consistency": "QUORUM",
+        "phase": "workload"
+      }
+    }
+  ],
+  "result": {
+    "property_name": "read_your_writes",
+    "status": "PASS",
+    "reason": "No stale successful post-write read observed. This is a finite-history result, not a universal guarantee.",
+    "witness": []
+  },
+  "workload_requests": 2,
+  "failed_workload_requests": 0
+}

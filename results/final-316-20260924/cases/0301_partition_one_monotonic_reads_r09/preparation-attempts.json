@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0301_partition_one_monotonic_reads_r09:ffacfdbd8ee64a0a9fd28387df521efa",
+    "started_at": "2026-09-23T18:47:22.797293+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:47:22.822038+00:00"
+  }
+]

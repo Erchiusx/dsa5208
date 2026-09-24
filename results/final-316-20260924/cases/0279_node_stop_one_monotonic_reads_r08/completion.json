@@ -1,0 +1,22 @@
+{
+  "case_id": "0279_node_stop_one_monotonic_reads_r08",
+  "started_at": "2026-09-23T18:38:22.566062+00:00",
+  "predicted_status": "PASS",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "PASS",
+  "reason": "No backward read observed. This is a finite-history result, not a universal guarantee.",
+  "witness": [],
+  "workload_requests": 3,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.483888179999667,
+    "fault_injection_and_settling_seconds": 5.436811839999791,
+    "workload_seconds": 0.003193522999936249,
+    "probe_including_isolation_seconds": 1.249991328222677e-07,
+    "recovery_seconds": 14.93416472700028
+  },
+  "total_seconds": 24.859968091000155,
+  "finished_at": "2026-09-23T18:38:47.426033+00:00"
+}

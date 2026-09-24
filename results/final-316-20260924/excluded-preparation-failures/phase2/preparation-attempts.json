@@ -1,0 +1,29 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0317_node_stop_all_read_your_writes_r09:fab7b840e99049e3b5b78d7d962b7216",
+    "started_at": "2026-09-23T18:55:47.579065+00:00",
+    "status": "failed",
+    "error": "RuntimeError('Initial ALL write failed: {\\'index\\': 0, \\'op\\': \\'write\\', \\'status\\': \\'error\\', \\'client\\': \\'setup\\', \\'node\\': \\'N1\\', \\'key\\': \\'0317_node_stop_all_read_your_writes_r09:fab7b840e99049e3b5b78d7d962b7216:x\\', \\'version\\': 0, \\'write_id\\': \\'0317_node_stop_all_read_your_writes_r09:fab7b840e99049e3b5b78d7d962b7216:x:initial\\', \\'seq\\': None, \\'depends_on\\': None, \\'order\\': None, \\'raw\\': {\\'step\\': {\\'op\\': \\'write\\', \\'node\\': \\'N1\\', \\'client\\': \\'setup\\', \\'key\\': \\'0317_node_stop_all_read_your_writes_r09:fab7b840e99049e3b5b78d7d962b7216:x\\', \\'version\\': 0, \\'write_id\\': \\'0317_node_stop_all_read_your_writes_r09:fab7b840e99049e3b5b78d7d962b7216:x:initial\\', \\'consistency\\': \\'ALL\\', \\'timestamp_us\\': 1790189747579114}, \\'error\\': \\'WriteTimeout(\\\\\\'Error from server: code=1100 [Coordinator node timed out waiting for replica nodes\\\\\\\\\\\\\\' responses] message=\"Operation timed out - received only 2 responses.\" info={\\\\\\\\\\\\\\'consistency\\\\\\\\\\\\\\': \\\\\\\\\\\\\\'ALL\\\\\\\\\\\\\\', \\\\\\\\\\\\\\'required_responses\\\\\\\\\\\\\\': 3, \\\\\\\\\\\\\\'received_responses\\\\\\\\\\\\\\': 2, \\\\\\\\\\\\\\'write_type\\\\\\\\\\\\\\': \\\\\\\\\\\\\\'SIMPLE\\\\\\\\\\\\\\'}\\\\\\')\\', \\'error_type\\': \\'WriteTimeout\\', \\'started_ns\\': 1790189747579129849, \\'duration_ms\\': 1506.048586, \\'consistency\\': \\'ALL\\'}}')",
+    "setup": [],
+    "finished_at": "2026-09-23T18:55:49.085397+00:00"
+  },
+  {
+    "attempt": 2,
+    "trial_id": "0317_node_stop_all_read_your_writes_r09:ea97bd92be31418bbc424d0ae12161b9",
+    "started_at": "2026-09-23T18:56:00.358490+00:00",
+    "status": "failed",
+    "error": "RuntimeError('Initial ALL write failed: {\\'index\\': 0, \\'op\\': \\'write\\', \\'status\\': \\'error\\', \\'client\\': \\'setup\\', \\'node\\': \\'N1\\', \\'key\\': \\'0317_node_stop_all_read_your_writes_r09:ea97bd92be31418bbc424d0ae12161b9:x\\', \\'version\\': 0, \\'write_id\\': \\'0317_node_stop_all_read_your_writes_r09:ea97bd92be31418bbc424d0ae12161b9:x:initial\\', \\'seq\\': None, \\'depends_on\\': None, \\'order\\': None, \\'raw\\': {\\'step\\': {\\'op\\': \\'write\\', \\'node\\': \\'N1\\', \\'client\\': \\'setup\\', \\'key\\': \\'0317_node_stop_all_read_your_writes_r09:ea97bd92be31418bbc424d0ae12161b9:x\\', \\'version\\': 0, \\'write_id\\': \\'0317_node_stop_all_read_your_writes_r09:ea97bd92be31418bbc424d0ae12161b9:x:initial\\', \\'consistency\\': \\'ALL\\', \\'timestamp_us\\': 1790189760358503}, \\'error\\': \\'WriteTimeout(\\\\\\'Error from server: code=1100 [Coordinator node timed out waiting for replica nodes\\\\\\\\\\\\\\' responses] message=\"Operation timed out - received only 2 responses.\" info={\\\\\\\\\\\\\\'consistency\\\\\\\\\\\\\\': \\\\\\\\\\\\\\'ALL\\\\\\\\\\\\\\', \\\\\\\\\\\\\\'required_responses\\\\\\\\\\\\\\': 3, \\\\\\\\\\\\\\'received_responses\\\\\\\\\\\\\\': 2, \\\\\\\\\\\\\\'write_type\\\\\\\\\\\\\\': \\\\\\\\\\\\\\'SIMPLE\\\\\\\\\\\\\\'}\\\\\\')\\', \\'error_type\\': \\'WriteTimeout\\', \\'started_ns\\': 1790189760358506353, \\'duration_ms\\': 1503.061212, \\'consistency\\': \\'ALL\\'}}')",
+    "setup": [],
+    "finished_at": "2026-09-23T18:56:01.861790+00:00"
+  },
+  {
+    "attempt": 3,
+    "trial_id": "0317_node_stop_all_read_your_writes_r09:fabd450536284edc8ad8a5dfda92ae74",
+    "started_at": "2026-09-23T18:56:13.108048+00:00",
+    "status": "failed",
+    "error": "RuntimeError('Initial ALL write failed: {\\'index\\': 0, \\'op\\': \\'write\\', \\'status\\': \\'error\\', \\'client\\': \\'setup\\', \\'node\\': \\'N1\\', \\'key\\': \\'0317_node_stop_all_read_your_writes_r09:fabd450536284edc8ad8a5dfda92ae74:x\\', \\'version\\': 0, \\'write_id\\': \\'0317_node_stop_all_read_your_writes_r09:fabd450536284edc8ad8a5dfda92ae74:x:initial\\', \\'seq\\': None, \\'depends_on\\': None, \\'order\\': None, \\'raw\\': {\\'step\\': {\\'op\\': \\'write\\', \\'node\\': \\'N1\\', \\'client\\': \\'setup\\', \\'key\\': \\'0317_node_stop_all_read_your_writes_r09:fabd450536284edc8ad8a5dfda92ae74:x\\', \\'version\\': 0, \\'write_id\\': \\'0317_node_stop_all_read_your_writes_r09:fabd450536284edc8ad8a5dfda92ae74:x:initial\\', \\'consistency\\': \\'ALL\\', \\'timestamp_us\\': 1790189773108069}, \\'error\\': \\'WriteTimeout(\\\\\\'Error from server: code=1100 [Coordinator node timed out waiting for replica nodes\\\\\\\\\\\\\\' responses] message=\"Operation timed out - received only 2 responses.\" info={\\\\\\\\\\\\\\'consistency\\\\\\\\\\\\\\': \\\\\\\\\\\\\\'ALL\\\\\\\\\\\\\\', \\\\\\\\\\\\\\'required_responses\\\\\\\\\\\\\\': 3, \\\\\\\\\\\\\\'received_responses\\\\\\\\\\\\\\': 2, \\\\\\\\\\\\\\'write_type\\\\\\\\\\\\\\': \\\\\\\\\\\\\\'SIMPLE\\\\\\\\\\\\\\'}\\\\\\')\\', \\'error_type\\': \\'WriteTimeout\\', \\'started_ns\\': 1790189773108072007, \\'duration_ms\\': 1502.531065, \\'consistency\\': \\'ALL\\'}}')",
+    "setup": [],
+    "finished_at": "2026-09-23T18:56:14.474731+00:00"
+  }
+]

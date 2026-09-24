@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0258_node_stop_quorum_read_your_writes_r08:05ce0c790cf9471dba542380942a9075",
+    "started_at": "2026-09-23T18:27:32.106546+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:27:32.116893+00:00"
+  }
+]

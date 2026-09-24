@@ -1,0 +1,57 @@
+{
+  "config": {
+    "contact_points": [
+      "172.18.0.2"
+    ],
+    "port": 9042,
+    "keyspace": "independent_1080_20260923",
+    "table": "kv",
+    "replication_factor": 3,
+    "default_consistency": "ONE",
+    "read_repair": "BLOCKING",
+    "request_timeout": 3.0,
+    "node_ports": {
+      "N1": 9042,
+      "N2": 9042,
+      "N3": 9042
+    },
+    "node_contact_points": {
+      "N1": [
+        "172.18.0.2"
+      ],
+      "N2": [
+        "172.18.0.3"
+      ],
+      "N3": [
+        "172.18.0.4"
+      ]
+    }
+  },
+  "python": "3.11.16",
+  "driver": "3.30.1",
+  "docker_py": "7.2.0",
+  "nodes": {
+    "N1": {
+      "ip": "172.18.0.2",
+      "container_id": "70a1385ef4cdc7686f1c90347846fb6b252170320f1963ac2aaee339a290f531",
+      "image_id": "sha256:0d9f8e43583d2f4f643ded3015f5253d8c49e3da96d5dd8265a30adf4cfc982b",
+      "cassandra_version": "5.0.9",
+      "host_id": "86453699-b5a4-4252-9e3a-47f1136f6d56"
+    },
+    "N2": {
+      "ip": "172.18.0.3",
+      "container_id": "cb2bcda94654a623e6f3b4d856be3ed249d11ce88dd310d31cc14e83c93b5bef",
+      "image_id": "sha256:0d9f8e43583d2f4f643ded3015f5253d8c49e3da96d5dd8265a30adf4cfc982b",
+      "cassandra_version": "5.0.9",
+      "host_id": "f0cc6fcb-b6ee-4bfe-ac5f-542f4d3a8470"
+    },
+    "N3": {
+      "ip": "172.18.0.4",
+      "container_id": "f245063c0080f8a6f9e2ed8f06d72c22dd552828d9044987ba5d6643678ab813",
+      "image_id": "sha256:0d9f8e43583d2f4f643ded3015f5253d8c49e3da96d5dd8265a30adf4cfc982b",
+      "cassandra_version": "5.0.9",
+      "host_id": "196f89ce-a9ed-4031-ba59-5b9a17b21fd4"
+    }
+  },
+  "docker_engine": "29.5.2"
+}

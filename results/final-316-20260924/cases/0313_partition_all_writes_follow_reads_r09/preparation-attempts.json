@@ -1,0 +1,273 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d",
+    "started_at": "2026-09-23T18:52:59.149937+00:00",
+    "status": "failed",
+    "error": "RuntimeError('Initial data verification failed: {\\'index\\': 0, \\'op\\': \\'read\\', \\'status\\': \\'error\\', \\'client\\': \\'setup\\', \\'node\\': \\'N3\\', \\'key\\': \\'0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x\\', \\'version\\': None, \\'write_id\\': None, \\'seq\\': None, \\'depends_on\\': None, \\'order\\': None, \\'raw\\': {\\'step\\': {\\'op\\': \\'read\\', \\'node\\': \\'N3\\', \\'client\\': \\'setup\\', \\'key\\': \\'0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x\\', \\'consistency\\': \\'ONE\\'}, \\'error\\': \\'ReadTimeout(\\\\\\'Error from server: code=1200 [Coordinator node timed out waiting for replica nodes\\\\\\\\\\\\\\' responses] message=\"Operation timed out - received only 0 responses.\" info={\\\\\\\\\\\\\\'consistency\\\\\\\\\\\\\\': \\\\\\\\\\\\\\'ONE\\\\\\\\\\\\\\', \\\\\\\\\\\\\\'required_responses\\\\\\\\\\\\\\': 1, \\\\\\\\\\\\\\'received_responses\\\\\\\\\\\\\\': 0}\\\\\\')\\', \\'error_type\\': \\'ReadTimeout\\', \\'started_ns\\': 1790189579165895575, \\'duration_ms\\': 1511.64895, \\'consistency\\': \\'ONE\\'}}')",
+    "setup": [
+      {
+        "index": 0,
+        "op": "write",
+        "status": "ok",
+        "client": "setup",
+        "node": "N1",
+        "key": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x",
+        "version": 0,
+        "write_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x:initial",
+        "seq": 0,
+        "depends_on": null,
+        "order": null,
+        "raw": {
+          "step": {
+            "op": "write",
+            "node": "N1",
+            "client": "setup",
+            "key": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x",
+            "version": 0,
+            "write_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x:initial",
+            "consistency": "ALL",
+            "timestamp_us": 1790189579149972
+          },
+          "coordinator": "172.18.0.2",
+          "started_ns": 1790189579149978384,
+          "duration_ms": 9.942126,
+          "consistency": "ALL"
+        }
+      },
+      {
+        "index": 0,
+        "op": "write",
+        "status": "ok",
+        "client": "setup",
+        "node": "N1",
+        "key": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:y",
+        "version": 0,
+        "write_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:y:initial",
+        "seq": 0,
+        "depends_on": null,
+        "order": null,
+        "raw": {
+          "step": {
+            "op": "write",
+            "node": "N1",
+            "client": "setup",
+            "key": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:y",
+            "version": 0,
+            "write_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:y:initial",
+            "consistency": "ALL",
+            "timestamp_us": 1790189579159992
+          },
+          "coordinator": "172.18.0.2",
+          "started_ns": 1790189579159994472,
+          "duration_ms": 2.043836,
+          "consistency": "ALL"
+        }
+      },
+      {
+        "index": 0,
+        "op": "read",
+        "status": "ok",
+        "client": "setup",
+        "node": "N1",
+        "key": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x",
+        "version": 0,
+        "write_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x:initial",
+        "seq": 0,
+        "depends_on": null,
+        "order": null,
+        "raw": {
+          "step": {
+            "op": "read",
+            "node": "N1",
+            "client": "setup",
+            "key": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x",
+            "consistency": "ONE"
+          },
+          "row": {
+            "version": 0,
+            "write_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x:initial",
+            "client": "setup",
+            "seq": 0
+          },
+          "coordinator": "172.18.0.2",
+          "started_ns": 1790189579162117282,
+          "duration_ms": 1.65256,
+          "consistency": "ONE"
+        }
+      },
+      {
+        "index": 0,
+        "op": "read",
+        "status": "ok",
+        "client": "setup",
+        "node": "N2",
+        "key": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x",
+        "version": 0,
+        "write_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x:initial",
+        "seq": 0,
+        "depends_on": null,
+        "order": null,
+        "raw": {
+          "step": {
+            "op": "read",
+            "node": "N2",
+            "client": "setup",
+            "key": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x",
+            "consistency": "ONE"
+          },
+          "row": {
+            "version": 0,
+            "write_id": "0313_partition_all_writes_follow_reads_r09:1a9653eea7614e96949b52cb1845eb6d:x:initial",
+            "client": "setup",
+            "seq": 0
+          },
+          "coordinator": "172.18.0.3",
+          "started_ns": 1790189579163824969,
+          "duration_ms": 2.016857,
+          "consistency": "ONE"
+        }
+      }
+    ],
+    "finished_at": "2026-09-23T18:53:00.677706+00:00"
+  },
+  {
+    "attempt": 2,
+    "trial_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd",
+    "started_at": "2026-09-23T18:53:11.968673+00:00",
+    "status": "failed",
+    "error": "RuntimeError('Initial data verification failed: {\\'index\\': 0, \\'op\\': \\'read\\', \\'status\\': \\'error\\', \\'client\\': \\'setup\\', \\'node\\': \\'N3\\', \\'key\\': \\'0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x\\', \\'version\\': None, \\'write_id\\': None, \\'seq\\': None, \\'depends_on\\': None, \\'order\\': None, \\'raw\\': {\\'step\\': {\\'op\\': \\'read\\', \\'node\\': \\'N3\\', \\'client\\': \\'setup\\', \\'key\\': \\'0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x\\', \\'consistency\\': \\'ONE\\'}, \\'error\\': \\'ReadTimeout(\\\\\\'Error from server: code=1200 [Coordinator node timed out waiting for replica nodes\\\\\\\\\\\\\\' responses] message=\"Operation timed out - received only 0 responses.\" info={\\\\\\\\\\\\\\'consistency\\\\\\\\\\\\\\': \\\\\\\\\\\\\\'ONE\\\\\\\\\\\\\\', \\\\\\\\\\\\\\'required_responses\\\\\\\\\\\\\\': 1, \\\\\\\\\\\\\\'received_responses\\\\\\\\\\\\\\': 0}\\\\\\')\\', \\'error_type\\': \\'ReadTimeout\\', \\'started_ns\\': 1790189591991843191, \\'duration_ms\\': 1535.432093, \\'consistency\\': \\'ONE\\'}}')",
+    "setup": [
+      {
+        "index": 0,
+        "op": "write",
+        "status": "ok",
+        "client": "setup",
+        "node": "N1",
+        "key": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x",
+        "version": 0,
+        "write_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x:initial",
+        "seq": 0,
+        "depends_on": null,
+        "order": null,
+        "raw": {
+          "step": {
+            "op": "write",
+            "node": "N1",
+            "client": "setup",
+            "key": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x",
+            "version": 0,
+            "write_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x:initial",
+            "consistency": "ALL",
+            "timestamp_us": 1790189591968687
+          },
+          "coordinator": "172.18.0.2",
+          "started_ns": 1790189591968693888,
+          "duration_ms": 4.496905,
+          "consistency": "ALL"
+        }
+      },
+      {
+        "index": 0,
+        "op": "write",
+        "status": "ok",
+        "client": "setup",
+        "node": "N1",
+        "key": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:y",
+        "version": 0,
+        "write_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:y:initial",
+        "seq": 0,
+        "depends_on": null,
+        "order": null,
+        "raw": {
+          "step": {
+            "op": "write",
+            "node": "N1",
+            "client": "setup",
+            "key": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:y",
+            "version": 0,
+            "write_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:y:initial",
+            "consistency": "ALL",
+            "timestamp_us": 1790189591973253
+          },
+          "coordinator": "172.18.0.2",
+          "started_ns": 1790189591973255407,
+          "duration_ms": 1.653554,
+          "consistency": "ALL"
+        }
+      },
+      {
+        "index": 0,
+        "op": "read",
+        "status": "ok",
+        "client": "setup",
+        "node": "N1",
+        "key": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x",
+        "version": 0,
+        "write_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x:initial",
+        "seq": 0,
+        "depends_on": null,
+        "order": null,
+        "raw": {
+          "step": {
+            "op": "read",
+            "node": "N1",
+            "client": "setup",
+            "key": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x",
+            "consistency": "ONE"
+          },
+          "row": {
+            "version": 0,
+            "write_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x:initial",
+            "client": "setup",
+            "seq": 0
+          },
+          "coordinator": "172.18.0.2",
+          "started_ns": 1790189591974979201,
+          "duration_ms": 1.047846,
+          "consistency": "ONE"
+        }
+      },
+      {
+        "index": 0,
+        "op": "read",
+        "status": "ok",
+        "client": "setup",
+        "node": "N2",
+        "key": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x",
+        "version": 0,
+        "write_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x:initial",
+        "seq": 0,
+        "depends_on": null,
+        "order": null,
+        "raw": {
+          "step": {
+            "op": "read",
+            "node": "N2",
+            "client": "setup",
+            "key": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x",
+            "consistency": "ONE"
+          },
+          "row": {
+            "version": 0,
+            "write_id": "0313_partition_all_writes_follow_reads_r09:6b1c9b4ba6224053a3a4a1abd62e23cd:x:initial",
+            "client": "setup",
+            "seq": 0
+          },
+          "coordinator": "172.18.0.3",
+          "started_ns": 1790189591976069955,
+          "duration_ms": 15.714835,
+          "consistency": "ONE"
+        }
+      }
+    ],
+    "finished_at": "2026-09-23T18:53:13.527536+00:00"
+  },
+  {
+    "attempt": 3,
+    "trial_id": "0313_partition_all_writes_follow_reads_r09:7dec7a04080a4781b20cf21f83ec7edc",
+    "started_at": "2026-09-23T18:53:24.723484+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:53:24.775123+00:00"
+  }
+]

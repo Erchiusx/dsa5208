@@ -1,0 +1,236 @@
+{
+  "trial_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e",
+  "scenario": "normal",
+  "consistency": "ONE",
+  "property": "read_your_writes",
+  "repetition": 1,
+  "setup": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+      "version": 0,
+      "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+          "version": 0,
+          "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790175070066815
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790175070066816931,
+        "duration_ms": 3.790385,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:y",
+      "version": 0,
+      "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:y:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:y",
+          "version": 0,
+          "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:y:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790175070070635
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790175070070636085,
+        "duration_ms": 1.148006,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+      "version": 0,
+      "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "setup",
+          "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790175070071807063,
+        "duration_ms": 0.720576,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N2",
+      "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+      "version": 0,
+      "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N2",
+          "client": "setup",
+          "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.3",
+        "started_ns": 1790175070072549723,
+        "duration_ms": 0.838528,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N3",
+      "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+      "version": 0,
+      "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "setup",
+          "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790175070073411013,
+        "duration_ms": 1.421099,
+        "consistency": "ONE"
+      }
+    }
+  ],
+  "history": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "A",
+      "node": "N1",
+      "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+      "version": 1,
+      "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:new",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "A",
+          "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+          "version": 1,
+          "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:new",
+          "consistency": "ONE",
+          "timestamp_us": 1790175070074859
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790175070074859568,
+        "duration_ms": 0.955296,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 1,
+      "op": "read",
+      "status": "ok",
+      "client": "A",
+      "node": "N3",
+      "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+      "version": 1,
+      "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:new",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "A",
+          "key": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0067_normal_one_read_your_writes_r02:b7460b1e8fe04b1291ffa6b22649d83e:x:new",
+          "client": "A",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790175070075818799,
+        "duration_ms": 1.383783,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    }
+  ],
+  "result": {
+    "property_name": "read_your_writes",
+    "status": "PASS",
+    "reason": "No stale successful post-write read observed. This is a finite-history result, not a universal guarantee.",
+    "witness": []
+  },
+  "workload_requests": 2,
+  "failed_workload_requests": 0
+}

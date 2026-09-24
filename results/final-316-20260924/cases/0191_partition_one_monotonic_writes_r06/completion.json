@@ -1,0 +1,26 @@
+{
+  "case_id": "0191_partition_one_monotonic_writes_r06",
+  "started_at": "2026-09-23T17:56:03.250943+00:00",
+  "predicted_status": "VIOLATION",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "VIOLATION",
+  "reason": "Replica N1 exposed 0191_partition_one_monotonic_writes_r06:710aef58d6114bc2baf0ab259e509946:y:effect but lacked its predecessor 0191_partition_one_monotonic_writes_r06:710aef58d6114bc2baf0ab259e509946:x:cause.",
+  "witness": [
+    0,
+    1,
+    4
+  ],
+  "workload_requests": 2,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.421001577999959,
+    "fault_injection_and_settling_seconds": 21.064451068999915,
+    "workload_seconds": 0.007547193000391417,
+    "probe_including_isolation_seconds": 21.145018216000153,
+    "recovery_seconds": 4.741621539999869
+  },
+  "total_seconds": 51.38229071800015,
+  "finished_at": "2026-09-23T17:56:54.633237+00:00"
+}

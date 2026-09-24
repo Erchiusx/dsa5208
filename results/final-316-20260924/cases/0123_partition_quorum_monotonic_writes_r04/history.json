@@ -1,0 +1,205 @@
+{
+  "trial_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3",
+  "scenario": "partition",
+  "consistency": "QUORUM",
+  "property": "monotonic_writes",
+  "repetition": 3,
+  "setup": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+      "version": 0,
+      "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+          "version": 0,
+          "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790184283627812
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790184283627817412,
+        "duration_ms": 10.378497,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:y",
+      "version": 0,
+      "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:y:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:y",
+          "version": 0,
+          "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:y:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790184283638296
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790184283638298615,
+        "duration_ms": 3.798188,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+      "version": 0,
+      "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "setup",
+          "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790184283642211343,
+        "duration_ms": 3.273863,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N2",
+      "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+      "version": 0,
+      "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N2",
+          "client": "setup",
+          "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.3",
+        "started_ns": 1790184283645545122,
+        "duration_ms": 2.25813,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N3",
+      "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+      "version": 0,
+      "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "setup",
+          "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790184283647847667,
+        "duration_ms": 3.625649,
+        "consistency": "ONE"
+      }
+    }
+  ],
+  "history": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "error",
+      "client": "A",
+      "node": "N3",
+      "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+      "version": 1,
+      "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:cause",
+      "seq": 1,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N3",
+          "client": "A",
+          "key": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x",
+          "version": 1,
+          "write_id": "0123_partition_quorum_monotonic_writes_r04:dfb547249a184e56ae3f22698f41bde3:x:cause",
+          "seq": 1,
+          "consistency": "QUORUM",
+          "timestamp_us": 1790184304523796
+        },
+        "error": "Unavailable('Error from server: code=1000 [Unavailable exception] message=\"Cannot achieve consistency level QUORUM\" info={\\'consistency\\': \\'QUORUM\\', \\'required_replicas\\': 2, \\'alive_replicas\\': 1}')",
+        "error_type": "Unavailable",
+        "started_ns": 1790184304523797533,
+        "duration_ms": 1.36699,
+        "consistency": "QUORUM",
+        "phase": "workload"
+      }
+    }
+  ],
+  "result": {
+    "property_name": "monotonic_writes",
+    "status": "INCONCLUSIVE",
+    "reason": "Required observations or successful prerequisites are missing.",
+    "witness": []
+  },
+  "workload_requests": 1,
+  "failed_workload_requests": 1
+}

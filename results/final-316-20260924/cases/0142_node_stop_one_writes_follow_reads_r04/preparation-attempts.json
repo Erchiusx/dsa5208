@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0142_node_stop_one_writes_follow_reads_r04:bbef87447f2c45e59bbaba8902fd868c",
+    "started_at": "2026-09-23T17:33:46.289005+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T17:33:46.308671+00:00"
+  }
+]

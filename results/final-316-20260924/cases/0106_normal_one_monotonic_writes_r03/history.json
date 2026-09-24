@@ -1,0 +1,333 @@
+{
+  "trial_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3",
+  "scenario": "normal",
+  "consistency": "ONE",
+  "property": "monotonic_writes",
+  "repetition": 2,
+  "setup": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+      "version": 0,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+          "version": 0,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790183845120184
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183845120191873,
+        "duration_ms": 6.82698,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y",
+      "version": 0,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y",
+          "version": 0,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790183845127101
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183845127103200,
+        "duration_ms": 2.557928,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+      "version": 0,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "setup",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183845129744391,
+        "duration_ms": 2.307723,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N2",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+      "version": 0,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N2",
+          "client": "setup",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.3",
+        "started_ns": 1790183845132106441,
+        "duration_ms": 2.770318,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N3",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+      "version": 0,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "setup",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790183845134931253,
+        "duration_ms": 4.413646,
+        "consistency": "ONE"
+      }
+    }
+  ],
+  "history": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "A",
+      "node": "N3",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+      "version": 1,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:cause",
+      "seq": 1,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N3",
+          "client": "A",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+          "version": 1,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:cause",
+          "seq": 1,
+          "consistency": "ONE",
+          "timestamp_us": 1790183845141083
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790183845141085375,
+        "duration_ms": 5.436192,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 1,
+      "op": "write",
+      "status": "ok",
+      "client": "A",
+      "node": "N1",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y",
+      "version": 1,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y:effect",
+      "seq": 2,
+      "depends_on": {
+        "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+        "min_version": 1,
+        "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:cause"
+      },
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "A",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y",
+          "version": 1,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y:effect",
+          "seq": 2,
+          "depends_on": {
+            "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+            "min_version": 1,
+            "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:cause"
+          },
+          "consistency": "ONE",
+          "timestamp_us": 1790183845146544
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183845146545583,
+        "duration_ms": 2.735003,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 2,
+      "op": "read",
+      "status": "ok",
+      "client": "observer",
+      "node": "N1",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y",
+      "version": 1,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y:effect",
+      "seq": 2,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "observer",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y:effect",
+          "client": "A",
+          "seq": 2
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183866279173561,
+        "duration_ms": 1.588867,
+        "consistency": "ONE",
+        "phase": "probe"
+      }
+    },
+    {
+      "index": 3,
+      "op": "read",
+      "status": "ok",
+      "client": "observer",
+      "node": "N1",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+      "version": 1,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:cause",
+      "seq": 1,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "observer",
+          "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:cause",
+          "client": "A",
+          "seq": 1
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790183866280767342,
+        "duration_ms": 0.837622,
+        "consistency": "ONE",
+        "phase": "probe"
+      }
+    },
+    {
+      "index": 4,
+      "op": "dependency_probe",
+      "status": "ok",
+      "client": null,
+      "node": "N1",
+      "key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y",
+      "version": 1,
+      "write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:y:effect",
+      "seq": null,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "phase": "probe",
+        "local_observation": true,
+        "control_id": 8,
+        "cause_key": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x",
+        "cause_version": 1,
+        "cause_write_id": "0106_normal_one_monotonic_writes_r03:7d146f8c1e25456d905cf844064ce4e3:x:cause",
+        "effect_read_index": 2,
+        "cause_read_index": 3
+      }
+    }
+  ],
+  "result": {
+    "property_name": "monotonic_writes",
+    "status": "PASS",
+    "reason": "All observed immutable effects had their required predecessors in the local probes. This is a finite-history result, not a universal guarantee.",
+    "witness": []
+  },
+  "workload_requests": 2,
+  "failed_workload_requests": 0
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0290_normal_all_writes_follow_reads_r09:813d4f51e41a4ff9b40a1b8a589e45ba",
+    "started_at": "2026-09-23T18:41:59.101667+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:41:59.115955+00:00"
+  }
+]

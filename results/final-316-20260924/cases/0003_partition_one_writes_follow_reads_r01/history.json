@@ -1,0 +1,370 @@
+{
+  "trial_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab",
+  "scenario": "partition",
+  "consistency": "ONE",
+  "property": "writes_follow_reads",
+  "repetition": 0,
+  "setup": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+      "version": 0,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+          "version": 0,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790173462408075
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790173462408077736,
+        "duration_ms": 5.142159,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y",
+      "version": 0,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y",
+          "version": 0,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790173462413256
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790173462413257430,
+        "duration_ms": 1.651087,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+      "version": 0,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "setup",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790173462414931139,
+        "duration_ms": 0.933073,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N2",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+      "version": 0,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N2",
+          "client": "setup",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.3",
+        "started_ns": 1790173462415885107,
+        "duration_ms": 2.125438,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N3",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+      "version": 0,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "setup",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790173462418031988,
+        "duration_ms": 1.277883,
+        "consistency": "ONE"
+      }
+    }
+  ],
+  "history": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "B",
+      "node": "N3",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+      "version": 1,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:cause",
+      "seq": 1,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N3",
+          "client": "B",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+          "version": 1,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:cause",
+          "seq": 1,
+          "consistency": "ONE",
+          "timestamp_us": 1790173483403260
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790173483403261077,
+        "duration_ms": 3.876118,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 1,
+      "op": "read",
+      "status": "ok",
+      "client": "A",
+      "node": "N3",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+      "version": 1,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:cause",
+      "seq": 1,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "A",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:cause",
+          "client": "B",
+          "seq": 1
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790173483407143911,
+        "duration_ms": 1.269111,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 2,
+      "op": "write",
+      "status": "ok",
+      "client": "A",
+      "node": "N1",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y",
+      "version": 1,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y:effect",
+      "seq": 2,
+      "depends_on": {
+        "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+        "min_version": 1,
+        "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:cause"
+      },
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "A",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y",
+          "version": 1,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y:effect",
+          "seq": 2,
+          "depends_on": {
+            "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+            "min_version": 1,
+            "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:cause"
+          },
+          "consistency": "ONE",
+          "timestamp_us": 1790173483408417
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790173483408418110,
+        "duration_ms": 1.415777,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 3,
+      "op": "read",
+      "status": "ok",
+      "client": "observer",
+      "node": "N1",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y",
+      "version": 1,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y:effect",
+      "seq": 2,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "observer",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y:effect",
+          "client": "A",
+          "seq": 2
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790173504446278169,
+        "duration_ms": 1.448117,
+        "consistency": "ONE",
+        "phase": "probe"
+      }
+    },
+    {
+      "index": 4,
+      "op": "read",
+      "status": "ok",
+      "client": "observer",
+      "node": "N1",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+      "version": 0,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "observer",
+          "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790173504447730828,
+        "duration_ms": 1.242415,
+        "consistency": "ONE",
+        "phase": "probe"
+      }
+    },
+    {
+      "index": 5,
+      "op": "dependency_probe",
+      "status": "ok",
+      "client": null,
+      "node": "N1",
+      "key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y",
+      "version": 1,
+      "write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y:effect",
+      "seq": null,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "phase": "probe",
+        "local_observation": true,
+        "control_id": 11,
+        "cause_key": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x",
+        "cause_version": 0,
+        "cause_write_id": "0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:initial",
+        "effect_read_index": 3,
+        "cause_read_index": 4
+      }
+    }
+  ],
+  "result": {
+    "property_name": "writes_follow_reads",
+    "status": "VIOLATION",
+    "reason": "Replica N1 exposed 0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:y:effect but lacked its predecessor 0003_partition_one_writes_follow_reads_r01:8c008529ff92470b915dd59654b392ab:x:cause.",
+    "witness": [
+      1,
+      2,
+      5
+    ]
+  },
+  "workload_requests": 3,
+  "failed_workload_requests": 0
+}

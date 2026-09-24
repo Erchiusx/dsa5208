@@ -1,0 +1,60 @@
+x-node: &node
+  build:
+    context: .
+    dockerfile: docker/Cassandra.Dockerfile
+  image: dsa5208-cassandra-lab:5.0
+  cap_add: [NET_ADMIN]
+  mem_limit: 2g
+  environment: &env
+    CASSANDRA_CLUSTER_NAME: project1
+    CASSANDRA_SEEDS: cassandra1
+    CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+    CASSANDRA_DC: dc1
+    CASSANDRA_NUM_TOKENS: 16
+    MAX_HEAP_SIZE: 768M
+    HEAP_NEWSIZE: 192M
+    JVM_EXTRA_OPTS: -XX:ActiveProcessorCount=2
+  networks: [cassandra]
+  healthcheck:
+    test: [CMD-SHELL, "cqlsh -e 'SELECT release_version FROM system.local' 127.0.0.1 9042"]
+    interval: 15s
+    timeout: 10s
+    retries: 30
+
+services:
+  cassandra1:
+    <<: *node
+    container_name: project1-cassandra1
+    ports: ["127.0.0.1:9042:9042"]
+  cassandra2:
+    <<: *node
+    container_name: project1-cassandra2
+    ports: ["127.0.0.1:9043:9042"]
+    depends_on:
+      cassandra1:
+        condition: service_healthy
+  cassandra3:
+    <<: *node
+    container_name: project1-cassandra3
+    ports: ["127.0.0.1:9044:9042"]
+    depends_on:
+      cassandra2:
+        condition: service_healthy
+  runner:
+    profiles: [experiment]
+    build:
+      context: .
+      dockerfile: docker/Runner.Dockerfile
+    image: dsa5208-runner:1
+    container_name: project1-runner
+    working_dir: /work
+    volumes:
+      - .:/work
+      # Only use this runner with a disposable, dedicated Docker daemon.
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks: [cassandra]
+    command: [python, scripts/run_real_experiments.py]
+
+networks:
+  cassandra:
+    name: project1-net

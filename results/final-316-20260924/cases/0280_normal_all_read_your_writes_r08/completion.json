@@ -1,0 +1,22 @@
+{
+  "case_id": "0280_normal_all_read_your_writes_r08",
+  "started_at": "2026-09-23T18:38:47.437685+00:00",
+  "predicted_status": "PASS",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "PASS",
+  "reason": "No stale successful post-write read observed. This is a finite-history result, not a universal guarantee.",
+  "witness": [],
+  "workload_requests": 2,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.434461843999998,
+    "fault_injection_and_settling_seconds": 3.7500012695090845e-07,
+    "workload_seconds": 0.00515147199985222,
+    "probe_including_isolation_seconds": 1.660000634728931e-07,
+    "recovery_seconds": 1.3324489570004516
+  },
+  "total_seconds": 5.77471055100068,
+  "finished_at": "2026-09-23T18:38:53.212396+00:00"
+}
