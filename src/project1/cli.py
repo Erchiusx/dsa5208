@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import replace
+from dataclasses import asdict, replace
 
 from .cassandra_executor import CassandraConfig, CassandraExecutor
 from .executor import Executor
@@ -26,13 +26,14 @@ def build_executor(args: argparse.Namespace) -> Executor:
         port=args.port if args.port is not None else config.port,
         keyspace=args.keyspace if args.keyspace is not None else config.keyspace,
         table=args.table if args.table is not None else config.table,
-        audit_table=args.audit_table if args.audit_table is not None else config.audit_table,
         replication_factor=(
             args.replication_factor
             if args.replication_factor is not None
             else config.replication_factor
         ),
-        default_consistency=args.consistency if args.consistency is not None else config.default_consistency,
+        default_consistency=args.consistency
+        if args.consistency is not None
+        else config.default_consistency,
         node_ports=_node_ports(args.node_ports) if args.node_ports else config.node_ports,
         node_contact_points=(
             _node_contact_points(args.node_contact_points)
@@ -77,10 +78,12 @@ def main() -> int:
     parser.add_argument("--port", type=int)
     parser.add_argument("--keyspace")
     parser.add_argument("--table")
-    parser.add_argument("--audit-table")
     parser.add_argument("--replication-factor", type=int)
     parser.add_argument("--consistency", choices=("ONE", "QUORUM", "ALL"))
-    parser.add_argument("--node-ports", help="comma-separated node:port map, e.g. N1:9042,N2:9043,N3:9044")
+    parser.add_argument(
+        "--node-ports",
+        help="comma-separated node:port map, e.g. N1:9042,N2:9043,N3:9044",
+    )
     parser.add_argument(
         "--node-contact-points",
         help="comma-separated node:host map, e.g. N1:172.20.0.2,N2:172.20.0.3,N3:172.20.0.4",
@@ -94,7 +97,16 @@ def main() -> int:
     args = parser.parse_args()
 
     trajectory = load_trajectory(args.trajectory)
-    history, result = run_trajectory(trajectory, build_executor(args))
+    if args.executor == "cassandra" and trajectory.get("execution_scope") == "mock_fixture":
+        parser.error(
+            "This is a synthetic checker fixture. Use scripts/run_real_experiments.py for prepared database experiments."
+        )
+    executor = build_executor(args)
+    try:
+        history, result = run_trajectory(trajectory, executor)
+    finally:
+        if hasattr(executor, "close"):
+            executor.close()
 
     print(f"trajectory: {trajectory['name']}")
     print(f"property:   {result.property_name}")
@@ -105,19 +117,7 @@ def main() -> int:
 
     print("\nhistory:")
     for ev in history:
-        print(json.dumps({
-            "index": ev.index,
-            "op": ev.op,
-            "status": ev.status,
-            "client": ev.client,
-            "node": ev.node,
-            "key": ev.key,
-            "version": ev.version,
-            "write_id": ev.write_id,
-            "seq": ev.seq,
-            "depends_on": ev.depends_on,
-            "order": ev.order,
-        }, ensure_ascii=False))
+        print(json.dumps(asdict(ev), ensure_ascii=False))
 
     return 1 if result.status == "VIOLATION" else 0
 

@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
-from dataclasses import field
+import re
+import time
+from dataclasses import dataclass, field
 from typing import Any, Protocol
 
 from .executor import Executor
-from .failure_control import FailureController, NoopFailureController
+from .failure_control import NoopFailureController
 from .model import Observation
 
 
 class SessionLike(Protocol):
-    def execute(self, query: Any, parameters: tuple[Any, ...] | None = None) -> Any:
-        ...
+    def execute(self, query: Any, parameters: tuple[Any, ...] | None = None) -> Any: ...
 
 
 @dataclass(frozen=True)
@@ -21,9 +21,10 @@ class CassandraConfig:
     port: int = 9042
     keyspace: str = "project1"
     table: str = "kv"
-    audit_table: str = "write_audit"
     replication_factor: int = 3
     default_consistency: str = "ONE"
+    read_repair: str = "BLOCKING"
+    request_timeout: float = 3.0
     node_ports: dict[str, int] = field(default_factory=lambda: {"N1": 9042, "N2": 9043, "N3": 9044})
     node_contact_points: dict[str, tuple[str, ...]] = field(default_factory=dict)
 
@@ -35,7 +36,6 @@ class CassandraConfig:
             port=int(os.getenv("PROJECT1_CASSANDRA_PORT", "9042")),
             keyspace=os.getenv("PROJECT1_CASSANDRA_KEYSPACE", "project1"),
             table=os.getenv("PROJECT1_CASSANDRA_TABLE", "kv"),
-            audit_table=os.getenv("PROJECT1_CASSANDRA_AUDIT_TABLE", "write_audit"),
             replication_factor=int(os.getenv("PROJECT1_CASSANDRA_REPLICATION_FACTOR", "3")),
             default_consistency=os.getenv("PROJECT1_CASSANDRA_CONSISTENCY", "ONE"),
             node_ports=cls._node_ports_from_env(),
@@ -68,265 +68,211 @@ class CassandraConfig:
 
 
 class CassandraExecutor(Executor):
-    """Executor backed by Cassandra or ScyllaDB using the DataStax Python driver."""
+    """One acknowledged data mutation per write; no synthetic order audit."""
 
-    def __init__(
-        self,
-        config: CassandraConfig | None = None,
-        session: SessionLike | None = None,
-        failure_controller: FailureController | None = None,
-    ) -> None:
+    def __init__(self, config=None, session=None, failure_controller=None):
         self.config = config or CassandraConfig.from_env()
-        self.client_nodes: dict[str, str] = {}
+        for name in (self.config.keyspace, self.config.table):
+            if not re.fullmatch(r"[a-z][a-z0-9_]*", name):
+                raise ValueError(f"Invalid CQL identifier: {name}")
+        if self.config.read_repair not in {"BLOCKING", "NONE"}:
+            raise ValueError("read_repair must be BLOCKING or NONE")
+        self.client_nodes = {}
         self.failure_controller = failure_controller or NoopFailureController()
         self._injected_session = session is not None
-        self._sessions: dict[str, SessionLike] = {}
-
-        if session is None:
-            session = self._connect_driver_session(self._contact_points_for_node("N1"), self.config.port)
-
-        self.session = session
+        self._sessions = {}
+        self._clusters = []
+        self.session = session or self._connect_driver_session(
+            self._contact_points_for_node("N1"),
+            self.config.node_ports.get("N1", self.config.port),
+        )
         self._ensure_schema()
 
-    def execute(self, index: int, step: dict[str, Any]) -> Observation:
+    def close(self):
+        for cluster in self._clusters:
+            cluster.shutdown()
+        self._clusters.clear()
+        self._sessions.clear()
+
+    def execute(self, index, step):
+        started = time.time_ns()
+        timer = time.perf_counter_ns()
         op = step["op"]
-        if op == "connect":
-            return self._connect_client(index, step)
-        if op == "write":
-            return self._write(index, step)
-        if op == "read":
-            return self._read(index, step)
-        if op == "audit_order":
-            return self._audit_order(index, step)
-        if op in {"partition", "heal", "stop", "start"}:
-            return self._unsupported_control(index, step)
-
-        return Observation(index=index, op=op, status="unsupported", raw={"step": step})
-
-    def _connect_driver_session(self, contact_points: tuple[str, ...], port: int) -> SessionLike:
         try:
-            from cassandra.cluster import Cluster
-            from cassandra.policies import WhiteListRoundRobinPolicy
-        except ImportError as exc:
-            raise RuntimeError(
-                "Cassandra executor requires the optional dependency: "
-                'python -m pip install -e ".[cassandra]"'
-            ) from exc
+            if op == "connect":
+                client, node = step["client"], step["node"]
+                self.client_nodes[client] = node
+                result = Observation(index, op, client=client, node=node, raw={"step": step})
+            elif op == "write":
+                result = self._write(index, step)
+            elif op == "read":
+                result = self._read(index, step)
+            elif op == "audit_order":
+                result = Observation(
+                    index,
+                    op,
+                    status="unsupported",
+                    raw={
+                        "step": step,
+                        "reason": "A seq-sorted Cassandra table is not an application-order audit. Use verified dependency probes.",
+                    },
+                )
+            elif op in {"partition", "heal", "stop", "start"}:
+                control = self.failure_controller.apply(step)
+                result = Observation(
+                    index,
+                    op,
+                    status=control["status"],
+                    node=step.get("node"),
+                    raw=control,
+                )
+            else:
+                result = Observation(index, op, status="unsupported", raw={"step": step})
+        except Exception as exc:
+            result = self._error_observation(index, step, exc)
+        result.raw.update(
+            started_ns=started,
+            duration_ms=(time.perf_counter_ns() - timer) / 1e6,
+            consistency=step.get("consistency", self.config.default_consistency)
+            if op in {"write", "read"}
+            else None,
+        )
+        return result
 
+    def _connect_driver_session(self, contact_points, port):
+        from cassandra.cluster import EXEC_PROFILE_DEFAULT, Cluster, ExecutionProfile
+        from cassandra.policies import FallthroughRetryPolicy, WhiteListRoundRobinPolicy
+
+        profile = ExecutionProfile(
+            load_balancing_policy=WhiteListRoundRobinPolicy(list(contact_points)),
+            retry_policy=FallthroughRetryPolicy(),
+            request_timeout=self.config.request_timeout,
+        )
         cluster = Cluster(
             contact_points=list(contact_points),
             port=port,
-            load_balancing_policy=WhiteListRoundRobinPolicy(list(contact_points)),
+            execution_profiles={EXEC_PROFILE_DEFAULT: profile},
+            connect_timeout=5,
         )
+        self._clusters.append(cluster)
         return cluster.connect()
 
-    def _ensure_schema(self) -> None:
-        keyspace = self.config.keyspace
-        table = self.config.table
-        audit_table = self.config.audit_table
-        rf = self.config.replication_factor
+    def _ensure_schema(self):
+        c = self.config
+        self.session.execute(
+            f"CREATE KEYSPACE IF NOT EXISTS {c.keyspace} WITH replication = {{'class':'SimpleStrategy','replication_factor':{c.replication_factor}}}"
+        )
+        self.session.execute(f"""CREATE TABLE IF NOT EXISTS {c.keyspace}.{c.table} (
+            item_key text PRIMARY KEY, version int, write_id text, client text, seq int)
+            WITH read_repair='{c.read_repair}' AND speculative_retry='NONE'""")
 
-        self.session.execute(
-            f"""
-            CREATE KEYSPACE IF NOT EXISTS {keyspace}
-            WITH replication = {{'class': 'SimpleStrategy', 'replication_factor': {rf}}}
-            """
-        )
-        self.session.execute(
-            f"""
-            CREATE TABLE IF NOT EXISTS {keyspace}.{table} (
-                item_key text PRIMARY KEY,
-                version int,
-                write_id text,
-                client text,
-                seq int
-            )
-            """
-        )
-        self.session.execute(
-            f"""
-            CREATE TABLE IF NOT EXISTS {keyspace}.{audit_table} (
-                bucket text,
-                seq int,
-                write_id text,
-                client text,
-                item_key text,
-                version int,
-                PRIMARY KEY (bucket, seq)
-            ) WITH CLUSTERING ORDER BY (seq ASC)
-            """
-        )
+    def _node(self, step):
+        return step.get("node") or self.client_nodes.get(str(step.get("client")), "N1")
 
-    def _connect_client(self, index: int, step: dict[str, Any]) -> Observation:
+    def _write(self, index, step):
+        c = self.config
         client = step.get("client")
-        node = step.get("node")
-        if client is not None and node is not None:
-            self.client_nodes[str(client)] = str(node)
-        return Observation(index=index, op="connect", client=client, node=node, raw={"step": step})
-
-    def _write(self, index: int, step: dict[str, Any]) -> Observation:
-        key = str(step["key"])
-        version = int(step["version"])
-        client = step.get("client")
-        write_id = step.get("write_id") or f"{client}:{key}:{version}:{index}"
+        wid = step.get("write_id") or f"{client}:{step['key']}:{step['version']}:{index}"
         seq = int(step.get("seq", index))
-
-        try:
-            session = self._session_for_step(step)
-            session.execute(
-                self._statement(
-                    f"""
-                    INSERT INTO {self.config.keyspace}.{self.config.table}
-                    (item_key, version, write_id, client, seq)
-                    VALUES (%s, %s, %s, %s, %s)
-                    """,
-                    step,
-                ),
-                (key, version, write_id, client, seq),
-            )
-            session.execute(
-                self._statement(
-                    f"""
-                    INSERT INTO {self.config.keyspace}.{self.config.audit_table}
-                    (bucket, seq, write_id, client, item_key, version)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                    """,
-                    step,
-                ),
-                ("default", seq, write_id, client, key, version),
-            )
-        except Exception as exc:  # pragma: no cover - driver/runtime specific
-            return self._error_observation(index, step, exc)
-
+        query = f"INSERT INTO {c.keyspace}.{c.table} (item_key,version,write_id,client,seq) VALUES (%s,%s,%s,%s,%s)"
+        params = (str(step["key"]), int(step["version"]), wid, client, seq)
+        if "timestamp_us" in step:
+            query += " USING TIMESTAMP %s"
+            params += (int(step["timestamp_us"]),)
+        rows = self._session_for_step(step).execute(self._statement(query, step), params)
         return Observation(
-            index=index,
-            op="write",
+            index,
+            "write",
             client=client,
-            node=self.client_nodes.get(str(client)),
-            key=key,
-            version=version,
-            write_id=str(write_id),
+            node=self._node(step),
+            key=str(step["key"]),
+            version=int(step["version"]),
+            write_id=str(wid),
             seq=seq,
             depends_on=step.get("depends_on"),
-            raw={"step": step},
+            raw={"step": step, "coordinator": self._coordinator(rows)},
         )
 
-    def _read(self, index: int, step: dict[str, Any]) -> Observation:
-        key = str(step["key"])
-        client = step.get("client")
-
-        try:
-            rows = self._session_for_step(step).execute(
-                self._statement(
-                    f"""
-                    SELECT version, write_id, client, seq
-                    FROM {self.config.keyspace}.{self.config.table}
-                    WHERE item_key = %s
-                    """,
-                    step,
-                ),
-                (key,),
-            )
-            row = next(iter(rows), None)
-        except Exception as exc:  # pragma: no cover - driver/runtime specific
-            return self._error_observation(index, step, exc)
-
-        version = getattr(row, "version", None) if row is not None else 0
+    def _read(self, index, step):
+        c = self.config
+        rows = self._session_for_step(step).execute(
+            self._statement(
+                f"SELECT version, write_id, client, seq FROM {c.keyspace}.{c.table} WHERE item_key = %s",
+                step,
+            ),
+            (str(step["key"]),),
+        )
+        row = next(iter(rows), None)
         return Observation(
-            index=index,
-            op="read",
-            client=client,
-            node=self.client_nodes.get(str(client)),
-            key=key,
-            version=version,
-            raw={"step": step, "row": self._row_dict(row)},
+            index,
+            "read",
+            client=step.get("client"),
+            node=self._node(step),
+            key=str(step["key"]),
+            version=getattr(row, "version", None) if row is not None else 0,
+            write_id=getattr(row, "write_id", None),
+            seq=getattr(row, "seq", None),
+            raw={
+                "step": step,
+                "row": self._row_dict(row),
+                "coordinator": self._coordinator(rows),
+            },
         )
 
-    def _audit_order(self, index: int, step: dict[str, Any]) -> Observation:
-        try:
-            rows = self._session_for_step(step).execute(
-                self._statement(
-                    f"""
-                    SELECT write_id
-                    FROM {self.config.keyspace}.{self.config.audit_table}
-                    WHERE bucket = %s
-                    """,
-                    step,
-                ),
-                ("default",),
-            )
-        except Exception as exc:  # pragma: no cover - driver/runtime specific
-            return self._error_observation(index, step, exc)
-
-        order = [row.write_id for row in rows if getattr(row, "write_id", None) is not None]
-        return Observation(index=index, op="audit_order", order=order, raw={"step": step})
-
-    def _unsupported_control(self, index: int, step: dict[str, Any]) -> Observation:
-        result = self.failure_controller.apply(step)
-        return Observation(
-            index=index,
-            op=step["op"],
-            status=result["status"],
-            node=step.get("node"),
-            raw=result,
-        )
-
-    def _session_for_step(self, step: dict[str, Any]) -> SessionLike:
+    def _session_for_step(self, step):
         if self._injected_session:
             return self.session
-
-        node = step.get("node")
-        client = step.get("client")
-        if node is None and client is not None:
-            node = self.client_nodes.get(str(client))
-        if node is None:
+        node = self._node(step)
+        if node == "N1":
             return self.session
-
-        node_name = str(node)
-        if node_name == "N1":
-            return self.session
-        if node_name not in self._sessions:
-            port = self.config.node_ports.get(node_name)
-            if port is None:
-                return self.session
-            self._sessions[node_name] = self._connect_driver_session(
-                self._contact_points_for_node(node_name),
-                port,
+        if node not in self.config.node_ports:
+            raise ValueError(f"Unknown node {node}; refusing to silently reroute")
+        if node not in self._sessions:
+            self._sessions[node] = self._connect_driver_session(
+                self._contact_points_for_node(node), self.config.node_ports[node]
             )
-        return self._sessions[node_name]
+        return self._sessions[node]
 
-    def _contact_points_for_node(self, node: str) -> tuple[str, ...]:
+    def _contact_points_for_node(self, node):
         return self.config.node_contact_points.get(node, self.config.contact_points)
 
-    def _statement(self, query: str, step: dict[str, Any]) -> Any:
-        consistency = step.get("consistency", self.config.default_consistency)
+    def _statement(self, query, step):
+        level = str(step.get("consistency", self.config.default_consistency)).upper()
+        if level not in {"ONE", "QUORUM", "ALL"}:
+            raise ValueError(f"Unsupported consistency {level}")
         try:
             from cassandra import ConsistencyLevel
             from cassandra.query import SimpleStatement
         except ImportError:
-            return query
+            if self._injected_session:
+                return query
+            raise
+        return SimpleStatement(query, consistency_level=getattr(ConsistencyLevel, level))
 
-        level = getattr(ConsistencyLevel, str(consistency).upper())
-        return SimpleStatement(query, consistency_level=level)
-
-    def _error_observation(self, index: int, step: dict[str, Any], exc: Exception) -> Observation:
+    def _error_observation(self, index, step, exc):
         return Observation(
-            index=index,
-            op=step["op"],
+            index,
+            step["op"],
             status="error",
             client=step.get("client"),
-            node=step.get("node"),
+            node=self._node(step),
             key=step.get("key"),
             version=step.get("version"),
             write_id=step.get("write_id"),
             seq=step.get("seq"),
             depends_on=step.get("depends_on"),
-            raw={"step": step, "error": repr(exc)},
+            raw={"step": step, "error": repr(exc), "error_type": type(exc).__name__},
         )
 
     @staticmethod
-    def _row_dict(row: Any) -> dict[str, Any] | None:
-        if row is None:
-            return None
-        fields = ("version", "write_id", "client", "seq")
-        return {name: getattr(row, name, None) for name in fields}
+    def _coordinator(rows):
+        host = getattr(getattr(rows, "response_future", None), "coordinator_host", None)
+        return str(host.address) if host is not None else None
+
+    @staticmethod
+    def _row_dict(row):
+        return (
+            {name: getattr(row, name, None) for name in ("version", "write_id", "client", "seq")}
+            if row is not None
+            else None
+        )
