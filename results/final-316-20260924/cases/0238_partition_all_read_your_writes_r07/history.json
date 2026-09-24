@@ -1,0 +1,204 @@
+{
+  "trial_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4",
+  "scenario": "partition",
+  "consistency": "ALL",
+  "property": "read_your_writes",
+  "repetition": 6,
+  "setup": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+      "version": 0,
+      "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+          "version": 0,
+          "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790187521588264
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790187521588272809,
+        "duration_ms": 11.544233,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:y",
+      "version": 0,
+      "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:y:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:y",
+          "version": 0,
+          "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:y:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790187521599901
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790187521599903501,
+        "duration_ms": 2.878163,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+      "version": 0,
+      "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "setup",
+          "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790187521602844831,
+        "duration_ms": 1.67973,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N2",
+      "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+      "version": 0,
+      "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N2",
+          "client": "setup",
+          "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.3",
+        "started_ns": 1790187521604602646,
+        "duration_ms": 3.093957,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N3",
+      "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+      "version": 0,
+      "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "setup",
+          "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790187521607748603,
+        "duration_ms": 5.488613,
+        "consistency": "ONE"
+      }
+    }
+  ],
+  "history": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "error",
+      "client": "A",
+      "node": "N1",
+      "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+      "version": 1,
+      "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:new",
+      "seq": null,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "A",
+          "key": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x",
+          "version": 1,
+          "write_id": "0238_partition_all_read_your_writes_r07:addc27de9dbf42cfb6badf8c5605abf4:x:new",
+          "consistency": "ALL",
+          "timestamp_us": 1790187542428585
+        },
+        "error": "Unavailable('Error from server: code=1000 [Unavailable exception] message=\"Cannot achieve consistency level ALL\" info={\\'consistency\\': \\'ALL\\', \\'required_replicas\\': 3, \\'alive_replicas\\': 2}')",
+        "error_type": "Unavailable",
+        "started_ns": 1790187542428588079,
+        "duration_ms": 0.916804,
+        "consistency": "ALL",
+        "phase": "workload"
+      }
+    }
+  ],
+  "result": {
+    "property_name": "read_your_writes",
+    "status": "INCONCLUSIVE",
+    "reason": "Required observations or successful prerequisites are missing.",
+    "witness": []
+  },
+  "workload_requests": 1,
+  "failed_workload_requests": 1
+}

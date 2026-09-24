@@ -1,0 +1,199 @@
+2026-09-23T14:23:23.868305+00:00 /opt/homebrew/bin/docker --host unix:///Users/miaaa/.colima/dsa5208/docker.sock run --name dsa5208-independent-1080 --stop-timeout 300 --network project1-net -v /Users/miaaa/code/dsa5208:/work -v /var/run/docker.sock:/var/run/docker.sock -e PYTHONPATH=/work/results/independent-1080-20260923/source/src -e PYTHONUNBUFFERED=1 -w /work dsa5208-runner:1 python /work/results/independent-1080-20260923/source/scripts/run_independent_1080.py
+2026-09-23T14:23:24.189816+00:00 START 0001_normal_all_writes_follow_reads_r01
+2026-09-23T14:23:53.486365+00:00 END 0001_normal_all_writes_follow_reads_r01: PASS, 29.29s, recovery=True
+2026-09-23T14:23:53.492557+00:00 START 0002_partition_quorum_monotonic_reads_r01
+2026-09-23T14:24:21.017866+00:00 END 0002_partition_quorum_monotonic_reads_r01: INCONCLUSIVE, 27.52s, recovery=True
+2026-09-23T14:24:21.025542+00:00 START 0003_partition_one_writes_follow_reads_r01
+2026-09-23T14:25:09.214468+00:00 END 0003_partition_one_writes_follow_reads_r01: VIOLATION, 48.41s, recovery=True
+2026-09-23T14:25:09.220186+00:00 START 0004_normal_one_monotonic_writes_r01
+2026-09-23T14:25:36.864959+00:00 END 0004_normal_one_monotonic_writes_r01: PASS, 27.75s, recovery=True
+2026-09-23T14:25:36.871296+00:00 START 0005_partition_quorum_monotonic_writes_r01
+2026-09-23T14:26:04.001373+00:00 END 0005_partition_quorum_monotonic_writes_r01: INCONCLUSIVE, 27.24s, recovery=True
+2026-09-23T14:26:04.007699+00:00 START 0006_normal_one_monotonic_reads_r01
+2026-09-23T14:26:06.872125+00:00 END 0006_normal_one_monotonic_reads_r01: PASS, 2.86s, recovery=True
+2026-09-23T14:26:06.877592+00:00 START 0007_partition_all_monotonic_reads_r01
+2026-09-23T14:26:33.991310+00:00 END 0007_partition_all_monotonic_reads_r01: INCONCLUSIVE, 27.11s, recovery=True
+2026-09-23T14:26:33.997504+00:00 START 0008_node_stop_one_monotonic_writes_r01
+2026-09-23T14:27:17.114028+00:00 END 0008_node_stop_one_monotonic_writes_r01: PASS, 43.11s, recovery=True
+2026-09-23T14:27:17.121538+00:00 START 0009_normal_all_read_your_writes_r01
+2026-09-23T14:27:19.895243+00:00 END 0009_normal_all_read_your_writes_r01: PASS, 2.77s, recovery=True
+2026-09-23T14:27:19.900578+00:00 START 0010_normal_all_monotonic_reads_r01
+2026-09-23T14:27:22.661709+00:00 END 0010_normal_all_monotonic_reads_r01: PASS, 2.76s, recovery=True
+2026-09-23T14:27:22.667003+00:00 START 0011_node_stop_quorum_read_your_writes_r01
+2026-09-23T14:27:44.314245+00:00 END 0011_node_stop_quorum_read_your_writes_r01: PASS, 21.75s, recovery=True
+2026-09-23T14:27:44.320708+00:00 START 0012_normal_quorum_monotonic_reads_r01
+2026-09-23T14:27:47.166432+00:00 END 0012_normal_quorum_monotonic_reads_r01: PASS, 2.84s, recovery=True
+2026-09-23T14:27:47.172141+00:00 START 0013_partition_quorum_read_your_writes_r01
+2026-09-23T14:28:18.149968+00:00 END 0013_partition_quorum_read_your_writes_r01: INCONCLUSIVE, 31.08s, recovery=True
+2026-09-23T14:28:18.155550+00:00 START 0014_node_stop_all_writes_follow_reads_r01
+2026-09-23T14:28:39.838155+00:00 END 0014_node_stop_all_writes_follow_reads_r01: INCONCLUSIVE, 21.78s, recovery=True
+2026-09-23T14:28:39.844438+00:00 START 0015_node_stop_all_read_your_writes_r01
+2026-09-23T14:29:01.540236+00:00 END 0015_node_stop_all_read_your_writes_r01: INCONCLUSIVE, 21.69s, recovery=True
+2026-09-23T14:29:01.545423+00:00 START 0016_partition_all_monotonic_writes_r01
+2026-09-23T14:29:32.509146+00:00 END 0016_partition_all_monotonic_writes_r01: INCONCLUSIVE, 31.08s, recovery=True
+2026-09-23T14:29:32.514980+00:00 START 0017_normal_one_writes_follow_reads_r01
+2026-09-23T14:29:59.807002+00:00 END 0017_normal_one_writes_follow_reads_r01: PASS, 27.40s, recovery=True
+2026-09-23T14:29:59.812756+00:00 START 0018_node_stop_quorum_monotonic_reads_r01
+2026-09-23T14:30:21.546267+00:00 END 0018_node_stop_quorum_monotonic_reads_r01: PASS, 21.84s, recovery=True
+2026-09-23T14:30:21.552576+00:00 START 0019_partition_all_read_your_writes_r01
+2026-09-23T14:30:48.921815+00:00 END 0019_partition_all_read_your_writes_r01: INCONCLUSIVE, 27.37s, recovery=True
+2026-09-23T14:30:48.927866+00:00 START 0020_partition_one_monotonic_writes_r01
+2026-09-23T14:31:36.993205+00:00 END 0020_partition_one_monotonic_writes_r01: VIOLATION, 48.28s, recovery=True
+2026-09-23T14:31:36.998961+00:00 START 0021_normal_quorum_writes_follow_reads_r01
+2026-09-23T14:32:04.243502+00:00 END 0021_normal_quorum_writes_follow_reads_r01: PASS, 27.24s, recovery=True
+2026-09-23T14:32:04.249317+00:00 START 0022_node_stop_one_monotonic_reads_r01
+2026-09-23T14:32:26.042344+00:00 END 0022_node_stop_one_monotonic_reads_r01: PASS, 21.90s, recovery=True
+2026-09-23T14:32:26.048485+00:00 START 0023_node_stop_quorum_monotonic_writes_r01
+2026-09-23T14:33:08.710035+00:00 END 0023_node_stop_quorum_monotonic_writes_r01: PASS, 42.88s, recovery=True
+2026-09-23T14:33:08.715700+00:00 START 0024_node_stop_all_monotonic_writes_r01
+2026-09-23T14:33:30.790267+00:00 END 0024_node_stop_all_monotonic_writes_r01: INCONCLUSIVE, 22.07s, recovery=True
+2026-09-23T14:33:30.797641+00:00 START 0025_normal_all_monotonic_writes_r01
+2026-09-23T14:33:58.215214+00:00 END 0025_normal_all_monotonic_writes_r01: PASS, 27.53s, recovery=True
+2026-09-23T14:33:58.220679+00:00 START 0026_node_stop_one_writes_follow_reads_r01
+2026-09-23T14:34:41.663169+00:00 END 0026_node_stop_one_writes_follow_reads_r01: PASS, 43.66s, recovery=True
+2026-09-23T14:34:41.674824+00:00 START 0027_node_stop_quorum_writes_follow_reads_r01
+2026-09-23T14:35:25.122110+00:00 END 0027_node_stop_quorum_writes_follow_reads_r01: PASS, 43.58s, recovery=True
+2026-09-23T14:35:25.129828+00:00 START 0028_partition_one_monotonic_reads_r01
+2026-09-23T14:35:48.960010+00:00 END 0028_partition_one_monotonic_reads_r01: VIOLATION, 23.94s, recovery=True
+2026-09-23T14:35:48.967312+00:00 START 0029_normal_quorum_read_your_writes_r01
+2026-09-23T14:35:51.719900+00:00 END 0029_normal_quorum_read_your_writes_r01: PASS, 2.86s, recovery=True
+2026-09-23T14:35:51.725839+00:00 START 0030_partition_all_writes_follow_reads_r01
+2026-09-23T14:36:18.700293+00:00 END 0030_partition_all_writes_follow_reads_r01: INCONCLUSIVE, 27.08s, recovery=True
+2026-09-23T14:36:18.706588+00:00 START 0031_normal_one_read_your_writes_r01
+2026-09-23T14:36:21.547480+00:00 END 0031_normal_one_read_your_writes_r01: PASS, 2.84s, recovery=True
+2026-09-23T14:36:21.553308+00:00 START 0032_partition_one_read_your_writes_r01
+2026-09-23T14:36:49.037935+00:00 END 0032_partition_one_read_your_writes_r01: VIOLATION, 27.59s, recovery=True
+2026-09-23T14:36:49.045216+00:00 START 0033_partition_quorum_writes_follow_reads_r01
+2026-09-23T14:37:16.480802+00:00 END 0033_partition_quorum_writes_follow_reads_r01: INCONCLUSIVE, 27.54s, recovery=True
+2026-09-23T14:37:16.487534+00:00 START 0034_node_stop_all_monotonic_reads_r01
+2026-09-23T14:37:38.343584+00:00 END 0034_node_stop_all_monotonic_reads_r01: INCONCLUSIVE, 21.97s, recovery=True
+2026-09-23T14:37:38.351260+00:00 START 0035_node_stop_one_read_your_writes_r01
+2026-09-23T14:38:00.217981+00:00 END 0035_node_stop_one_read_your_writes_r01: PASS, 21.86s, recovery=True
+2026-09-23T14:38:00.225210+00:00 START 0036_normal_quorum_monotonic_writes_r01
+2026-09-23T14:38:27.388107+00:00 END 0036_normal_quorum_monotonic_writes_r01: PASS, 27.49s, recovery=True
+2026-09-23T14:38:27.397463+00:00 START 0037_normal_one_monotonic_reads_r02
+2026-09-23T14:38:30.273170+00:00 END 0037_normal_one_monotonic_reads_r02: PASS, 2.87s, recovery=True
+2026-09-23T14:38:30.280256+00:00 START 0038_partition_quorum_monotonic_writes_r02
+2026-09-23T14:38:57.287821+00:00 END 0038_partition_quorum_monotonic_writes_r02: INCONCLUSIVE, 27.23s, recovery=True
+2026-09-23T14:38:57.293530+00:00 START 0039_normal_all_read_your_writes_r02
+2026-09-23T14:39:00.096337+00:00 END 0039_normal_all_read_your_writes_r02: PASS, 2.80s, recovery=True
+2026-09-23T14:39:00.102303+00:00 START 0040_node_stop_quorum_writes_follow_reads_r02
+2026-09-23T14:39:43.089270+00:00 END 0040_node_stop_quorum_writes_follow_reads_r02: PASS, 43.20s, recovery=True
+2026-09-23T14:39:43.098848+00:00 START 0041_node_stop_one_writes_follow_reads_r02
+2026-09-23T14:40:26.036103+00:00 END 0041_node_stop_one_writes_follow_reads_r02: PASS, 43.04s, recovery=True
+2026-09-23T14:40:26.042103+00:00 START 0042_node_stop_all_monotonic_reads_r02
+2026-09-23T14:40:47.913685+00:00 END 0042_node_stop_all_monotonic_reads_r02: INCONCLUSIVE, 21.87s, recovery=True
+2026-09-23T14:40:47.919901+00:00 START 0043_normal_one_writes_follow_reads_r02
+2026-09-23T14:41:15.209934+00:00 END 0043_normal_one_writes_follow_reads_r02: PASS, 27.39s, recovery=True
+2026-09-23T14:41:15.216321+00:00 START 0044_partition_one_writes_follow_reads_r02
+2026-09-23T14:42:03.490613+00:00 END 0044_partition_one_writes_follow_reads_r02: VIOLATION, 48.40s, recovery=True
+2026-09-23T14:42:03.496079+00:00 START 0045_normal_quorum_monotonic_reads_r02
+2026-09-23T14:42:06.339868+00:00 END 0045_normal_quorum_monotonic_reads_r02: PASS, 2.84s, recovery=True
+2026-09-23T14:42:06.345494+00:00 START 0046_normal_quorum_read_your_writes_r02
+2026-09-23T14:42:09.224510+00:00 END 0046_normal_quorum_read_your_writes_r02: PASS, 2.88s, recovery=True
+2026-09-23T14:42:09.229992+00:00 START 0047_node_stop_one_monotonic_writes_r02
+2026-09-23T14:42:52.286633+00:00 END 0047_node_stop_one_monotonic_writes_r02: PASS, 43.27s, recovery=True
+2026-09-23T14:42:52.293265+00:00 START 0048_normal_all_monotonic_reads_r02
+2026-09-23T14:42:55.219562+00:00 END 0048_normal_all_monotonic_reads_r02: PASS, 2.92s, recovery=True
+2026-09-23T14:42:55.225082+00:00 START 0049_partition_one_monotonic_reads_r02
+2026-09-23T14:43:22.438980+00:00 END 0049_partition_one_monotonic_reads_r02: VIOLATION, 27.31s, recovery=True
+2026-09-23T14:43:22.446316+00:00 START 0050_node_stop_one_read_your_writes_r02
+2026-09-23T14:43:44.210839+00:00 END 0050_node_stop_one_read_your_writes_r02: PASS, 21.99s, recovery=True
+2026-09-23T14:43:44.216680+00:00 START 0051_normal_quorum_writes_follow_reads_r02
+2026-09-23T14:44:11.645204+00:00 END 0051_normal_quorum_writes_follow_reads_r02: PASS, 27.43s, recovery=True
+2026-09-23T14:44:11.650955+00:00 START 0052_node_stop_all_read_your_writes_r02
+2026-09-23T14:44:33.525299+00:00 END 0052_node_stop_all_read_your_writes_r02: INCONCLUSIVE, 21.87s, recovery=True
+2026-09-23T14:44:33.531982+00:00 START 0053_node_stop_all_writes_follow_reads_r02
+2026-09-23T14:44:55.210080+00:00 END 0053_node_stop_all_writes_follow_reads_r02: INCONCLUSIVE, 21.79s, recovery=True
+2026-09-23T14:44:55.215596+00:00 START 0054_node_stop_all_monotonic_writes_r02
+2026-09-23T14:45:16.999838+00:00 END 0054_node_stop_all_monotonic_writes_r02: INCONCLUSIVE, 21.90s, recovery=True
+2026-09-23T14:45:17.006036+00:00 START 0055_normal_quorum_monotonic_writes_r02
+2026-09-23T14:45:44.378256+00:00 END 0055_normal_quorum_monotonic_writes_r02: PASS, 27.37s, recovery=True
+2026-09-23T14:45:44.384140+00:00 START 0056_partition_one_read_your_writes_r02
+2026-09-23T14:46:08.147418+00:00 END 0056_partition_one_read_your_writes_r02: VIOLATION, 23.86s, recovery=True
+2026-09-23T14:46:08.154049+00:00 START 0057_partition_quorum_read_your_writes_r02
+2026-09-23T14:46:35.297085+00:00 END 0057_partition_quorum_read_your_writes_r02: INCONCLUSIVE, 27.24s, recovery=True
+2026-09-23T14:46:35.303075+00:00 START 0058_partition_all_monotonic_reads_r02
+2026-09-23T14:46:59.060901+00:00 END 0058_partition_all_monotonic_reads_r02: INCONCLUSIVE, 23.75s, recovery=True
+2026-09-23T14:46:59.067254+00:00 START 0059_node_stop_quorum_monotonic_writes_r02
+2026-09-23T14:47:42.116291+00:00 END 0059_node_stop_quorum_monotonic_writes_r02: PASS, 43.15s, recovery=True
+2026-09-23T14:47:42.125834+00:00 START 0060_partition_quorum_monotonic_reads_r02
+2026-09-23T14:48:09.344890+00:00 END 0060_partition_quorum_monotonic_reads_r02: INCONCLUSIVE, 27.32s, recovery=True
+2026-09-23T14:48:09.350961+00:00 START 0061_partition_quorum_writes_follow_reads_r02
+2026-09-23T14:48:36.410164+00:00 END 0061_partition_quorum_writes_follow_reads_r02: INCONCLUSIVE, 27.32s, recovery=True
+2026-09-23T14:48:36.417228+00:00 START 0062_normal_all_monotonic_writes_r02
+2026-09-23T14:49:03.949770+00:00 END 0062_normal_all_monotonic_writes_r02: PASS, 27.63s, recovery=True
+2026-09-23T14:49:03.956263+00:00 START 0063_partition_all_read_your_writes_r02
+2026-09-23T14:49:31.251828+00:00 END 0063_partition_all_read_your_writes_r02: INCONCLUSIVE, 27.40s, recovery=True
+2026-09-23T14:49:31.258021+00:00 START 0064_node_stop_quorum_read_your_writes_r02
+2026-09-23T14:49:53.112431+00:00 END 0064_node_stop_quorum_read_your_writes_r02: PASS, 21.96s, recovery=True
+2026-09-23T14:49:53.118540+00:00 START 0065_partition_one_monotonic_writes_r02
+2026-09-23T14:50:41.481731+00:00 END 0065_partition_one_monotonic_writes_r02: VIOLATION, 48.48s, recovery=True
+2026-09-23T14:50:41.488478+00:00 START 0066_partition_all_monotonic_writes_r02
+2026-09-23T14:51:08.586019+00:00 END 0066_partition_all_monotonic_writes_r02: INCONCLUSIVE, 27.09s, recovery=True
+2026-09-23T14:51:08.591785+00:00 START 0067_normal_one_read_your_writes_r02
+2026-09-23T14:51:11.450219+00:00 END 0067_normal_one_read_your_writes_r02: PASS, 2.86s, recovery=True
+2026-09-23T14:51:11.459060+00:00 START 0068_normal_all_writes_follow_reads_r02
+2026-09-23T14:51:38.712304+00:00 END 0068_normal_all_writes_follow_reads_r02: PASS, 27.36s, recovery=True
+2026-09-23T14:51:38.718856+00:00 START 0069_node_stop_quorum_monotonic_reads_r02
+2026-09-23T14:52:00.641459+00:00 END 0069_node_stop_quorum_monotonic_reads_r02: PASS, 22.02s, recovery=True
+2026-09-23T14:52:00.647773+00:00 START 0070_partition_all_writes_follow_reads_r02
+2026-09-23T14:52:27.970153+00:00 END 0070_partition_all_writes_follow_reads_r02: INCONCLUSIVE, 27.32s, recovery=True
+2026-09-23T14:52:27.976428+00:00 START 0071_normal_one_monotonic_writes_r02
+2026-09-23T14:52:55.040920+00:00 END 0071_normal_one_monotonic_writes_r02: PASS, 27.37s, recovery=True
+2026-09-23T14:52:55.046721+00:00 START 0072_node_stop_one_monotonic_reads_r02
+2026-09-23T14:53:17.461172+00:00 END 0072_node_stop_one_monotonic_reads_r02: PASS, 22.51s, recovery=True
+2026-09-23T14:53:17.472765+00:00 START 0073_node_stop_all_monotonic_writes_r03
+2026-09-23T14:53:39.450449+00:00 END 0073_node_stop_all_monotonic_writes_r03: INCONCLUSIVE, 22.09s, recovery=True
+2026-09-23T14:53:39.457757+00:00 START 0074_node_stop_one_read_your_writes_r03
+2026-09-23T14:54:01.696729+00:00 END 0074_node_stop_one_read_your_writes_r03: PASS, 22.35s, recovery=True
+2026-09-23T14:54:01.703210+00:00 START 0075_partition_all_read_your_writes_r03
+2026-09-23T14:54:29.001189+00:00 END 0075_partition_all_read_your_writes_r03: INCONCLUSIVE, 27.40s, recovery=True
+2026-09-23T14:54:29.007804+00:00 START 0076_partition_all_monotonic_reads_r03
+2026-09-23T14:54:55.705295+00:00 END 0076_partition_all_monotonic_reads_r03: INCONCLUSIVE, 26.93s, recovery=True
+2026-09-23T14:54:55.710981+00:00 START 0077_partition_quorum_writes_follow_reads_r03
+2026-09-23T14:55:22.745886+00:00 END 0077_partition_quorum_writes_follow_reads_r03: INCONCLUSIVE, 27.15s, recovery=True
+2026-09-23T14:55:22.751792+00:00 START 0078_node_stop_all_read_your_writes_r03
+2026-09-23T14:55:44.437099+00:00 END 0078_node_stop_all_read_your_writes_r03: INCONCLUSIVE, 21.79s, recovery=True
+2026-09-23T14:55:44.442505+00:00 START 0079_partition_one_read_your_writes_r03
+2026-09-23T14:56:11.540287+00:00 END 0079_partition_one_read_your_writes_r03: VIOLATION, 27.09s, recovery=True
+2026-09-23T14:56:11.546333+00:00 START 0080_partition_one_monotonic_reads_r03
+2026-09-23T14:56:38.457502+00:00 END 0080_partition_one_monotonic_reads_r03: VIOLATION, 27.06s, recovery=True
+2026-09-23T14:56:38.463181+00:00 START 0081_partition_quorum_monotonic_reads_r03
+2026-09-23T14:57:05.369497+00:00 END 0081_partition_quorum_monotonic_reads_r03: INCONCLUSIVE, 27.01s, recovery=True
+2026-09-23T14:57:05.377089+00:00 START 0082_node_stop_one_monotonic_writes_r03
+2026-09-23T14:57:48.477225+00:00 END 0082_node_stop_one_monotonic_writes_r03: PASS, 43.36s, recovery=True
+2026-09-23T14:57:48.483334+00:00 START 0083_normal_all_monotonic_writes_r03
+2026-09-23T14:58:15.714430+00:00 END 0083_normal_all_monotonic_writes_r03: PASS, 27.33s, recovery=True
+2026-09-23T14:58:15.719966+00:00 START 0084_normal_quorum_monotonic_writes_r03
+2026-09-23T14:58:43.062247+00:00 END 0084_normal_quorum_monotonic_writes_r03: PASS, 27.34s, recovery=True
+2026-09-23T14:58:43.068361+00:00 START 0085_partition_all_monotonic_writes_r03
+2026-09-23T14:59:10.009191+00:00 END 0085_partition_all_monotonic_writes_r03: INCONCLUSIVE, 27.05s, recovery=True
+2026-09-23T14:59:10.014710+00:00 START 0086_node_stop_quorum_monotonic_writes_r03
+2026-09-23T14:59:53.106795+00:00 END 0086_node_stop_quorum_monotonic_writes_r03: PASS, 43.30s, recovery=True
+2026-09-23T14:59:53.116850+00:00 START 0087_normal_all_writes_follow_reads_r03
+2026-09-23T15:00:20.510746+00:00 END 0087_normal_all_writes_follow_reads_r03: PASS, 27.50s, recovery=True
+2026-09-23T15:00:20.516600+00:00 START 0088_normal_all_read_your_writes_r03
+2026-09-23T15:00:23.404266+00:00 END 0088_normal_all_read_your_writes_r03: PASS, 2.88s, recovery=True
+2026-09-23T15:00:23.410514+00:00 START 0089_normal_one_writes_follow_reads_r03
+2026-09-23T15:00:50.507382+00:00 END 0089_normal_one_writes_follow_reads_r03: PASS, 27.28s, recovery=True
+2026-09-23T15:00:50.512823+00:00 START 0090_node_stop_all_writes_follow_reads_r03
+2026-09-23T15:01:12.325002+00:00 END 0090_node_stop_all_writes_follow_reads_r03: INCONCLUSIVE, 22.03s, recovery=True
+2026-09-23T15:01:12.331085+00:00 START 0091_normal_one_monotonic_reads_r03
+2026-09-23T15:01:15.271235+00:00 END 0091_normal_one_monotonic_reads_r03: PASS, 2.94s, recovery=True
+2026-09-23T15:01:15.276603+00:00 START 0092_node_stop_quorum_read_your_writes_r03
+2026-09-23T15:01:37.337465+00:00 END 0092_node_stop_quorum_read_your_writes_r03: PASS, 22.16s, recovery=True
+2026-09-23T15:01:37.344026+00:00 START 0093_partition_one_writes_follow_reads_r03
+2026-09-23T15:02:25.811105+00:00 END 0093_partition_one_writes_follow_reads_r03: VIOLATION, 48.59s, recovery=True
+2026-09-23T15:02:25.817354+00:00 START 0094_normal_quorum_writes_follow_reads_r03
+2026-09-23T15:02:30.147687+00:00 END 0094_normal_quorum_writes_follow_reads_r03: RUN_FAILED, 4.33s, recovery=True
+Traceback (most recent call last):
+  File "/work/results/independent-1080-20260923/source/scripts/run_independent_1080.py", line 203, in <module>
+    run()
+  File "/work/results/independent-1080-20260923/source/scripts/run_independent_1080.py", line 194, in run
+    raise failure
+  File "/work/results/independent-1080-20260923/source/scripts/run_independent_1080.py", line 130, in run
+    trial.prepare()
+  File "/work/results/independent-1080-20260923/source/scripts/run_real_experiments.py", line 261, in prepare
+    raise RuntimeError(f"Initial data verification failed: {asdict(e)}")
+RuntimeError: Initial data verification failed: {'index': 0, 'op': 'read', 'status': 'error', 'client': 'setup', 'node': 'N3', 'key': '0094_normal_quorum_writes_follow_reads_r03:9084326ae1f14d57b2d0a8e1f7ea4f81:x', 'version': None, 'write_id': None, 'seq': None, 'depends_on': None, 'order': None, 'raw': {'step': {'op': 'read', 'node': 'N3', 'client': 'setup', 'key': '0094_normal_quorum_writes_follow_reads_r03:9084326ae1f14d57b2d0a8e1f7ea4f81:x', 'consistency': 'ONE'}, 'error': 'ReadTimeout(\'Error from server: code=1200 [Coordinator node timed out waiting for replica nodes\\\' responses] message="Operation timed out - received only 0 responses." info={\\\'consistency\\\': \\\'ONE\\\', \\\'required_responses\\\': 1, \\\'received_responses\\\': 0}\')', 'error_type': 'ReadTimeout', 'started_ns': 1790175747267733515, 'duration_ms': 1504.014246, 'consistency': 'ONE'}}

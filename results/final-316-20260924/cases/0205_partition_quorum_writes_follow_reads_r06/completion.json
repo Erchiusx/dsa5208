@@ -1,0 +1,22 @@
+{
+  "case_id": "0205_partition_quorum_writes_follow_reads_r06",
+  "started_at": "2026-09-23T18:02:15.764489+00:00",
+  "predicted_status": "INCONCLUSIVE",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "INCONCLUSIVE",
+  "reason": "Required observations or successful prerequisites are missing.",
+  "witness": [],
+  "workload_requests": 1,
+  "failed_workload_requests": 1,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.5327982669996345,
+    "fault_injection_and_settling_seconds": 20.80628941399982,
+    "workload_seconds": 0.005275729999993928,
+    "probe_including_isolation_seconds": 8.400002116104588e-08,
+    "recovery_seconds": 4.707101511000019
+  },
+  "total_seconds": 30.05360095800006,
+  "finished_at": "2026-09-23T18:02:45.818090+00:00"
+}

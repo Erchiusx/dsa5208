@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0255_normal_quorum_writes_follow_reads_r08:b3cb496be8d6478ab72d9ec5769a32df",
+    "started_at": "2026-09-23T18:26:01.170463+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:26:01.204329+00:00"
+  }
+]

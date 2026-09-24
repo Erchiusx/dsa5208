@@ -1,0 +1,21 @@
+{
+  "case_id": "0060_partition_quorum_monotonic_reads_r02",
+  "started_at": "2026-09-23T14:47:42.125006+00:00",
+  "predicted_status": "INCONCLUSIVE",
+  "evidence_verified": true,
+  "status": "INCONCLUSIVE",
+  "reason": "Required observations or successful prerequisites are missing.",
+  "witness": [],
+  "workload_requests": 3,
+  "failed_workload_requests": 1,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 1.6237983380001424,
+    "fault_injection_and_settling_seconds": 20.95103344800009,
+    "workload_seconds": 0.005467968999937511,
+    "probe_including_isolation_seconds": 8.300003173644654e-08,
+    "recovery_seconds": 4.734890347000146
+  },
+  "total_seconds": 27.31767230300011,
+  "finished_at": "2026-09-23T14:48:09.340318+00:00"
+}

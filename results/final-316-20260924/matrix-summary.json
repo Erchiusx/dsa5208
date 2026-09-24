@@ -1,0 +1,326 @@
+[
+  {
+    "scenario": "node_stop",
+    "consistency": "ALL",
+    "property": "monotonic_reads",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "ALL",
+    "property": "monotonic_writes",
+    "trials": 8,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 8
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "ALL",
+    "property": "read_your_writes",
+    "trials": 8,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 8
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "ALL",
+    "property": "writes_follow_reads",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "ONE",
+    "property": "monotonic_reads",
+    "trials": 8,
+    "PASS": 8,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "ONE",
+    "property": "monotonic_writes",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "ONE",
+    "property": "read_your_writes",
+    "trials": 8,
+    "PASS": 8,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "ONE",
+    "property": "writes_follow_reads",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "QUORUM",
+    "property": "monotonic_reads",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "QUORUM",
+    "property": "monotonic_writes",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "QUORUM",
+    "property": "read_your_writes",
+    "trials": 8,
+    "PASS": 8,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "node_stop",
+    "consistency": "QUORUM",
+    "property": "writes_follow_reads",
+    "trials": 8,
+    "PASS": 8,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "ALL",
+    "property": "monotonic_reads",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "ALL",
+    "property": "monotonic_writes",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "ALL",
+    "property": "read_your_writes",
+    "trials": 9,
+    "PASS": 8,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 1
+  },
+  {
+    "scenario": "normal",
+    "consistency": "ALL",
+    "property": "writes_follow_reads",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "ONE",
+    "property": "monotonic_reads",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "ONE",
+    "property": "monotonic_writes",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "ONE",
+    "property": "read_your_writes",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "ONE",
+    "property": "writes_follow_reads",
+    "trials": 9,
+    "PASS": 8,
+    "VIOLATION": 1,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "QUORUM",
+    "property": "monotonic_reads",
+    "trials": 8,
+    "PASS": 8,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "QUORUM",
+    "property": "monotonic_writes",
+    "trials": 9,
+    "PASS": 8,
+    "VIOLATION": 1,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "QUORUM",
+    "property": "read_your_writes",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "normal",
+    "consistency": "QUORUM",
+    "property": "writes_follow_reads",
+    "trials": 9,
+    "PASS": 9,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "partition",
+    "consistency": "ALL",
+    "property": "monotonic_reads",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  },
+  {
+    "scenario": "partition",
+    "consistency": "ALL",
+    "property": "monotonic_writes",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  },
+  {
+    "scenario": "partition",
+    "consistency": "ALL",
+    "property": "read_your_writes",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  },
+  {
+    "scenario": "partition",
+    "consistency": "ALL",
+    "property": "writes_follow_reads",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  },
+  {
+    "scenario": "partition",
+    "consistency": "ONE",
+    "property": "monotonic_reads",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 9,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "partition",
+    "consistency": "ONE",
+    "property": "monotonic_writes",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 9,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "partition",
+    "consistency": "ONE",
+    "property": "read_your_writes",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 9,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "partition",
+    "consistency": "ONE",
+    "property": "writes_follow_reads",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 9,
+    "INCONCLUSIVE": 0
+  },
+  {
+    "scenario": "partition",
+    "consistency": "QUORUM",
+    "property": "monotonic_reads",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  },
+  {
+    "scenario": "partition",
+    "consistency": "QUORUM",
+    "property": "monotonic_writes",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  },
+  {
+    "scenario": "partition",
+    "consistency": "QUORUM",
+    "property": "read_your_writes",
+    "trials": 8,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 8
+  },
+  {
+    "scenario": "partition",
+    "consistency": "QUORUM",
+    "property": "writes_follow_reads",
+    "trials": 9,
+    "PASS": 0,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 9
+  }
+]

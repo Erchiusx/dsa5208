@@ -1,0 +1,22 @@
+{
+  "case_id": "0254_node_stop_quorum_monotonic_reads_r08",
+  "started_at": "2026-09-23T18:25:31.908434+00:00",
+  "predicted_status": "PASS",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "PASS",
+  "reason": "No backward read observed. This is a finite-history result, not a universal guarantee.",
+  "witness": [],
+  "workload_requests": 3,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.5503105779998805,
+    "fault_injection_and_settling_seconds": 5.350496693999958,
+    "workload_seconds": 0.003763959000025352,
+    "probe_including_isolation_seconds": 1.2500004231696948e-07,
+    "recovery_seconds": 14.894094506000329
+  },
+  "total_seconds": 24.800709165000626,
+  "finished_at": "2026-09-23T18:25:56.709143+00:00"
+}

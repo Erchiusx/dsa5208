@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0276_partition_all_writes_follow_reads_r08:79b6daf32fbc4e0394971ebe89f69072",
+    "started_at": "2026-09-23T18:36:40.303554+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:36:40.333459+00:00"
+  }
+]

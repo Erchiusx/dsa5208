@@ -1,0 +1,22 @@
+{
+  "case_id": "0212_node_stop_one_writes_follow_reads_r06",
+  "started_at": "2026-09-23T18:06:08.373804+00:00",
+  "predicted_status": "PASS",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "PASS",
+  "reason": "All observed immutable effects had their required predecessors in the local probes. This is a finite-history result, not a universal guarantee.",
+  "witness": [],
+  "workload_requests": 3,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.481518481999956,
+    "fault_injection_and_settling_seconds": 5.380710351999824,
+    "workload_seconds": 0.0033677159999569994,
+    "probe_including_isolation_seconds": 21.222414793000098,
+    "recovery_seconds": 15.063321715000257
+  },
+  "total_seconds": 46.15375074599979,
+  "finished_at": "2026-09-23T18:06:54.527560+00:00"
+}

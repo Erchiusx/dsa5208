@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0260_partition_quorum_monotonic_writes_r08:8e24e10f374b4b5f8b12fafa12d432b9",
+    "started_at": "2026-09-23T18:28:02.992134+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:28:03.011028+00:00"
+  }
+]

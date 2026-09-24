@@ -1,0 +1,25 @@
+{
+  "case_id": "0119_partition_one_read_your_writes_r04",
+  "started_at": "2026-09-23T17:22:38.782750+00:00",
+  "predicted_status": "VIOLATION",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "VIOLATION",
+  "reason": "A wrote 0119_partition_one_read_your_writes_r04:aaa65be3a86d490cbe9968ad5f8979cb:x=v1, then read v0.",
+  "witness": [
+    0,
+    1
+  ],
+  "workload_requests": 2,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.402386025999931,
+    "fault_injection_and_settling_seconds": 20.947516123000014,
+    "workload_seconds": 0.0024982639999961975,
+    "probe_including_isolation_seconds": 1.2500004231696948e-07,
+    "recovery_seconds": 4.662106311000002
+  },
+  "total_seconds": 30.016288822999968,
+  "finished_at": "2026-09-23T17:23:08.799039+00:00"
+}

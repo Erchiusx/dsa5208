@@ -1,0 +1,22 @@
+{
+  "case_id": "0247_node_stop_quorum_read_your_writes_r07",
+  "started_at": "2026-09-23T18:22:37.981891+00:00",
+  "predicted_status": "PASS",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "PASS",
+  "reason": "No stale successful post-write read observed. This is a finite-history result, not a universal guarantee.",
+  "witness": [],
+  "workload_requests": 2,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.568180043000211,
+    "fault_injection_and_settling_seconds": 5.418415214000561,
+    "workload_seconds": 0.003153091000058339,
+    "probe_including_isolation_seconds": 8.300048648379743e-08,
+    "recovery_seconds": 15.008258391999334
+  },
+  "total_seconds": 24.999753516000055,
+  "finished_at": "2026-09-23T18:23:02.981645+00:00"
+}

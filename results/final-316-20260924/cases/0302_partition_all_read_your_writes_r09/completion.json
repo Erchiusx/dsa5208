@@ -1,0 +1,22 @@
+{
+  "case_id": "0302_partition_all_read_your_writes_r09",
+  "started_at": "2026-09-23T18:47:48.477507+00:00",
+  "predicted_status": "INCONCLUSIVE",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "INCONCLUSIVE",
+  "reason": "Required observations or successful prerequisites are missing.",
+  "witness": [],
+  "workload_requests": 1,
+  "failed_workload_requests": 1,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.449265622999519,
+    "fault_injection_and_settling_seconds": 20.97121252100078,
+    "workload_seconds": 0.0012105870000596042,
+    "probe_including_isolation_seconds": 8.300048648379743e-08,
+    "recovery_seconds": 4.685162532000504
+  },
+  "total_seconds": 30.10866002000057,
+  "finished_at": "2026-09-23T18:48:18.586167+00:00"
+}

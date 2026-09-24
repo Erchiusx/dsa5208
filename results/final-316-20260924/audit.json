@@ -1,0 +1,61 @@
+{
+  "valid": true,
+  "histories": 316,
+  "cells": 36,
+  "trials_per_cell": {
+    "9": 28,
+    "8": 8
+  },
+  "statuses": {
+    "PASS": 172,
+    "INCONCLUSIVE": 106,
+    "VIOLATION": 38
+  },
+  "scenarios": {
+    "normal": 107,
+    "partition": 107,
+    "node_stop": 102
+  },
+  "phases": {
+    "phase1": {
+      "PASS": 50,
+      "INCONCLUSIVE": 32,
+      "VIOLATION": 11
+    },
+    "phase2": {
+      "PASS": 122,
+      "VIOLATION": 27,
+      "INCONCLUSIVE": 74
+    }
+  },
+  "requests": {
+    "workload:ok": 552,
+    "probe:ok": 214,
+    "workload:error": 106
+  },
+  "request_errors": {
+    "workload:Unavailable": 105,
+    "workload:ReadTimeout": 1
+  },
+  "successful_setup_requests": 1580,
+  "verified_local_probes": 107,
+  "prediction_deviations": [
+    {
+      "case_id": "0308_normal_all_read_your_writes_r09",
+      "predicted": "PASS",
+      "observed": "INCONCLUSIVE"
+    },
+    {
+      "case_id": "0311_normal_quorum_monotonic_writes_r09",
+      "predicted": "PASS",
+      "observed": "VIOLATION"
+    },
+    {
+      "case_id": "0314_normal_one_writes_follow_reads_r09",
+      "predicted": "PASS",
+      "observed": "VIOLATION"
+    }
+  ],
+  "source_and_data_hashes_verified": true,
+  "scope": "Selected completed subset; original 1080-case target was not completed."
+}

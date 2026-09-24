@@ -1,0 +1,21 @@
+{
+  "case_id": "0012_normal_quorum_monotonic_reads_r01",
+  "started_at": "2026-09-23T14:27:44.320245+00:00",
+  "predicted_status": "PASS",
+  "evidence_verified": true,
+  "status": "PASS",
+  "reason": "No backward read observed. This is a finite-history result, not a universal guarantee.",
+  "witness": [],
+  "workload_requests": 3,
+  "failed_workload_requests": 0,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 1.4589586539999573,
+    "fault_injection_and_settling_seconds": 2.0999999605919584e-07,
+    "workload_seconds": 0.00579259699998147,
+    "probe_including_isolation_seconds": 8.399996431762702e-08,
+    "recovery_seconds": 1.3770712450000246
+  },
+  "total_seconds": 2.8436646259999634,
+  "finished_at": "2026-09-23T14:27:47.163911+00:00"
+}

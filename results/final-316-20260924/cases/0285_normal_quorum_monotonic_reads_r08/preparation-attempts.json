@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0285_normal_quorum_monotonic_reads_r08:faf6405d9a6c453a9c1b987e8ae5790e",
+    "started_at": "2026-09-23T18:40:20.175171+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T18:40:20.190216+00:00"
+  }
+]

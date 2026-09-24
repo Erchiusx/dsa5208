@@ -1,0 +1,22 @@
+{
+  "case_id": "0159_node_stop_all_writes_follow_reads_r05",
+  "started_at": "2026-09-23T17:41:54.917797+00:00",
+  "predicted_status": "INCONCLUSIVE",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "INCONCLUSIVE",
+  "reason": "Required observations or successful prerequisites are missing.",
+  "witness": [],
+  "workload_requests": 1,
+  "failed_workload_requests": 1,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.493364625999902,
+    "fault_injection_and_settling_seconds": 5.512720492999961,
+    "workload_seconds": 0.0011797859999660432,
+    "probe_including_isolation_seconds": 8.400002116104588e-08,
+    "recovery_seconds": 14.978983817999733
+  },
+  "total_seconds": 24.98809845400001,
+  "finished_at": "2026-09-23T17:42:19.905898+00:00"
+}

@@ -1,239 +1,101 @@
-# Consistency Path Lab — v0.1
+# DSA5208 Project 1: Cassandra consistency experiments
 
-A small prototype for the distributed-database project.
+The final submission uses **316 completed cases**, covering all 36 combinations
+of four properties, three consistency levels and three scenarios. Each cell has
+eight or nine cases: **172 PASS, 38 VIOLATION, 106 INCONCLUSIVE**.
+The original 1,080-case target was interrupted and was not completed.
+All completed outcomes, including three prediction exceptions, are retained.
 
-The first version deliberately **does not do automatic path exploration**.
-Instead, it hand-writes a few canonical client trajectories for:
+- Report: `output/pdf/DSA5208_Experiment_Report_316.pdf` (or `report.pdf` in the ZIP).
+- Editable Overleaf source: `docs/latex/main.tex`.
+- Evidence: `results/final-316-20260924/`.
+- Chinese explanation: `docs/assignment_review_zh.md`.
+- Teammate update: `docs/change_review_zh.md`.
 
-- Read-your-writes (RYW)
-- Monotonic reads (MR)
-- Monotonic writes (MW)
-- Writes-follow-reads (WFR)
+## Inspect the saved evidence (no database needed)
 
-The architecture is:
-
-```text
-trajectory JSON
-    ↓
-runner
-    ↓
-executor
-    ↓
-observed history
-    ↓
-property checker
-    ↓
-PASS / VIOLATION / INCONCLUSIVE
-```
-
-The included `MockExecutor` makes CI deterministic. A real Cassandra/ScyllaDB
-executor can implement the same `Executor` interface later.
-
-## Repository layout
-
-```text
-.
-├── .github/workflows/ci.yml
-├── pyproject.toml
-├── src/project1/
-│   ├── __init__.py
-│   ├── model.py
-│   ├── executor.py
-│   ├── failure_control.py
-│   ├── mock_executor.py
-│   ├── cassandra_executor.py
-│   ├── checker.py
-│   ├── runner.py
-│   └── cli.py
-├── trajectories/
-│   ├── ryw_partition_violation.json
-│   ├── ryw_pass.json
-│   ├── monotonic_reads_violation.json
-│   ├── monotonic_writes_violation.json
-│   └── writes_follow_reads_violation.json
-└── tests/
-    ├── test_trajectories.py
-    └── test_checkers.py
-```
-
-## Run locally
+From the project root, with Python 3.11+:
 
 ```bash
-python -m pip install -e ".[dev]"
+python3 scripts/summarize_completed.py
+```
+
+This uses only the standard library and supplied checker. It verifies archived
+hashes, replays all classifications and checks fault, probe and recovery evidence.
+It regenerates audit.json and matrix-summary.json in the evidence directory.
+
+Each case has its original history, environment, controls and completion record.
+dataset-selection.json records the cutoff and file hashes. provenance/ preserves
+both executed source snapshots and their original plans. The historical plans
+still contain 1,080 cases; these are provenance, not a completion claim.
+excluded-preparation-failures/ preserves interruptions at cases 94 and 317.
+Case 94 later completed in phase 2. Neither failed execution ran a workload.
+
+## Run new measurements (optional)
+
+Use a dedicated Docker daemon with four CPU cores and about 8 GB RAM.
+On macOS, the recorded environment used a dedicated Colima profile:
+
+```bash
+colima start dsa5208 --cpu 4 --memory 8 --disk 25 \
+  --vm-type vz --mount "$(pwd):w" --activate=false --ssh-config=false
+export DOCKER_CONTEXT=colima-dsa5208
+```
+
+From the project root:
+
+```bash
+docker compose build cassandra1 runner
+docker compose up -d --wait cassandra1 cassandra2 cassandra3
+docker compose run --rm --no-deps runner \
+  python scripts/reproduce_independent.py --cases 316
+```
+
+Use docker-compose if Compose is installed as a standalone command.
+--cases 36 runs one full block; 316 reproduces the selected seeded prefix.
+New runs use unique keys, keyspaces and output directories. The portable runner
+uses the same workload, fault and probe logic, applying phase 2's preparation
+policy (up to three attempts) throughout. Phase 1 had no preparation retries.
+Exact outcomes and interruptions need not repeat. No new measurements were run
+while assembling this submission.
+
+The runner mounts the dedicated Docker socket to control the three lab containers.
+Do not run concurrent suites. Unexpected preparation/control failures stop the
+suite and preserve records. The original run_real_experiments.py supplies shared
+helpers; its standalone batch mode is an earlier design. Use
+reproduce_independent.py for the per-case fault cycles described in this report.
+
+## Interpretation
+
+Setup uses ALL; workloads use the recorded ONE, QUORUM or ALL. RYW/MR compare
+successful client observations. MW/WFR check a necessary local predecessor-
+visibility condition using a separate verified N1 isolation and ONE probe.
+These probes do not reconstruct every internal write order or demonstrate a
+stale QUORUM client read. PASS is not a general guarantee; INCONCLUSIVE means
+required successful evidence is missing.
+
+Cases have separate fault/recovery cycles but share the VM, cluster and recovery
+history. Preparation policy changed between phases. The interruption-based
+cutoff was chosen afterwards. Do not interpret raw frequencies as independent
+estimates of production failure probability.
+
+## Tests and editing
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e '.[dev,cassandra]'
 pytest -q
 ```
 
-Run one trajectory:
+All 28 tests pass. Synthetic trajectories are checker fixtures, not real results.
+Upload the contents of docs/latex/ to Overleaf and compile main.tex with XeLaTeX.
+
+## Stop the dedicated lab
 
 ```bash
-python -m project1.cli trajectories/ryw_partition_violation.json
+docker compose stop
+colima stop dsa5208  # only for the optional dedicated profile
 ```
 
-Run all trajectories:
-
-```bash
-for f in trajectories/*.json; do
-  python -m project1.cli "$f"
-done
-```
-
-Run the real Cassandra experiment suite used by CI:
-
-```bash
-docker compose up -d
-python scripts/run_real_experiments.py
-docker compose down
-```
-
-## Run against Cassandra or ScyllaDB
-
-The mock executor remains the default for deterministic unit tests. To run a
-trajectory against a real Cassandra-compatible cluster, install the optional
-driver and select the Cassandra executor:
-
-```bash
-python -m pip install -e ".[dev,cassandra]"
-docker compose up -d
-python -m project1.cli \
-  --executor cassandra \
-  --failure-controller docker \
-  --contact-points 127.0.0.1 \
-  --node-contact-points N1:172.20.0.2,N2:172.20.0.3,N3:172.20.0.4 \
-  --consistency ONE \
-  trajectories/ryw_pass.json
-```
-
-Supported consistency levels are `ONE`, `QUORUM`, and `ALL`. The executor
-creates two tables in the configured keyspace:
-
-- `kv`: latest observed value per key.
-- `write_audit`: per-write audit rows used by the monotonic-writes checker.
-
-Failure-injection steps such as `partition`, `heal`, `stop`, and `start` are
-delegated to a pluggable failure controller. `--failure-controller docker`
-uses Docker CLI commands against the compose containers:
-
-```text
-partition N3 -> docker network disconnect -f project1-net project1-cassandra3
-heal N3      -> docker network connect project1-net project1-cassandra3
-stop N2      -> docker stop project1-cassandra2
-start N2     -> docker start project1-cassandra2
-```
-
-The default controller is `none`, which records these steps as skipped. CI uses
-that default and validates the Docker controller with fake command runners, so
-GitHub Actions does not need a running Cassandra cluster or Docker daemon.
-
-Configuration can be passed via CLI flags or environment variables:
-
-```bash
-PROJECT1_CASSANDRA_CONTACT_POINTS=127.0.0.1 \
-PROJECT1_CASSANDRA_NODE_CONTACT_POINTS=N1:172.20.0.2,N2:172.20.0.3,N3:172.20.0.4 \
-PROJECT1_CASSANDRA_CONSISTENCY=QUORUM \
-python -m project1.cli --executor cassandra trajectories/ryw_pass.json
-```
-
-## Trajectory format
-
-Example:
-
-```json
-{
-  "name": "ryw_partition_violation",
-  "property": "read_your_writes",
-  "steps": [
-    {"op": "partition", "node": "N3"},
-    {"op": "connect", "client": "A", "node": "N1"},
-    {
-      "op": "write",
-      "client": "A",
-      "key": "x",
-      "version": 1,
-      "mock": {"status": "ok"}
-    },
-    {"op": "connect", "client": "A", "node": "N3"},
-    {
-      "op": "read",
-      "client": "A",
-      "key": "x",
-      "mock": {"status": "ok", "version": 0}
-    }
-  ]
-}
-```
-
-The `mock` section exists only for the deterministic mock executor.
-A real database executor would ignore it and return observations from
-the actual database.
-
-## Property contracts in this prototype
-
-### RYW
-
-For each client/key:
-
-```text
-successful write(version = v)
-...
-later read(version = r)
-
-require r >= v
-```
-
-### Monotonic reads
-
-For each client/key:
-
-```text
-read(v1)
-...
-read(v2)
-
-require v2 >= v1
-```
-
-### Monotonic writes
-
-This prototype uses an explicit `audit_order` operation. The executor is
-expected to return the backend-observed application order of write IDs.
-
-If a client issued:
-
-```text
-A1(seq=1)
-A2(seq=2)
-```
-
-then the audited order must not contain:
-
-```text
-A2, A1
-```
-
-For a real database, this needs instrumentation (for example, an append-only
-audit table or another observation mechanism).
-
-### Writes-follow-reads
-
-A write may carry a dependency on a value previously read:
-
-```text
-A reads x=v1
-A writes y=v1 depends_on x>=v1
-```
-
-If observer C later sees `y=v1`, then C must not subsequently observe
-`x<v1`.
-
-## Next step
-
-Implement a real `CassandraExecutor` / `ScyllaExecutor` supporting:
-
-- connect(client, node)
-- read(client, key, CL)
-- write(client, key, version, CL)
-- partition/heal
-- stop/start node
-- structured event logging
-
-Then replay the exact same hand-written trajectories against the real cluster.
+Stopping retains data. The recorded lab was shut down when collection ended.

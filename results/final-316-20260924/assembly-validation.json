@@ -1,0 +1,16 @@
+{
+  "pdf_pages": 6,
+  "all_pages_visually_reviewed": true,
+  "layout": "ElegantPaper",
+  "authors": [
+    "Jia Siqi",
+    "Jia Zeyue"
+  ],
+  "core_unit_tests": "28 passed",
+  "history_replay": "316 passed",
+  "new_database_runs_during_assembly": 0,
+  "portable_runner_validation": "36/316 seeded plan prefixes match; no workload launched in validation",
+  "core_and_helper_sources_match_executed_snapshots": true,
+  "pdf_sha256": "20953f4bf8654aea3d9f3263b4721897b8d9d1cc05a2525792c5705f14a7dad3",
+  "assembled_at": "2026-09-24T08:03:32.194202+00:00"
+}

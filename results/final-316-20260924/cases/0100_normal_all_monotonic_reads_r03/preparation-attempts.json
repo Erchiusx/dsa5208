@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0100_normal_all_monotonic_reads_r03:a8c24aef12d1475c9265b10033e81950",
+    "started_at": "2026-09-23T17:15:18.734768+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T17:15:18.764127+00:00"
+  }
+]

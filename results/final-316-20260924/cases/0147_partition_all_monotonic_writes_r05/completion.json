@@ -1,0 +1,22 @@
+{
+  "case_id": "0147_partition_all_monotonic_writes_r05",
+  "started_at": "2026-09-23T17:35:55.679564+00:00",
+  "predicted_status": "INCONCLUSIVE",
+  "preparation_attempts": 1,
+  "evidence_verified": true,
+  "status": "INCONCLUSIVE",
+  "reason": "Required observations or successful prerequisites are missing.",
+  "witness": [],
+  "workload_requests": 1,
+  "failed_workload_requests": 1,
+  "recovery_verified": true,
+  "timings": {
+    "preflight_and_data_seconds": 4.396583574000033,
+    "fault_injection_and_settling_seconds": 20.81298317599999,
+    "workload_seconds": 0.005428899999969872,
+    "probe_including_isolation_seconds": 2.0900006347801536e-07,
+    "recovery_seconds": 4.72061214900009
+  },
+  "total_seconds": 29.939247159999923,
+  "finished_at": "2026-09-23T17:36:25.618811+00:00"
+}

@@ -1,0 +1,272 @@
+{
+  "trial_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20",
+  "scenario": "partition",
+  "consistency": "ONE",
+  "property": "monotonic_reads",
+  "repetition": 6,
+  "setup": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+      "version": 0,
+      "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+          "version": 0,
+          "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790187641391565
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790187641391574007,
+        "duration_ms": 10.328775,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:y",
+      "version": 0,
+      "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:y:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:y",
+          "version": 0,
+          "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:y:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790187641401998
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790187641402000742,
+        "duration_ms": 1.803027,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+      "version": 0,
+      "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "setup",
+          "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790187641403880519,
+        "duration_ms": 1.82986,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N2",
+      "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+      "version": 0,
+      "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N2",
+          "client": "setup",
+          "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.3",
+        "started_ns": 1790187641405765505,
+        "duration_ms": 1.84311,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N3",
+      "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+      "version": 0,
+      "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "setup",
+          "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790187641407677366,
+        "duration_ms": 2.929543,
+        "consistency": "ONE"
+      }
+    }
+  ],
+  "history": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "B",
+      "node": "N1",
+      "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+      "version": 1,
+      "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:new",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "B",
+          "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+          "version": 1,
+          "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:new",
+          "consistency": "ONE",
+          "timestamp_us": 1790187662321558
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790187662321561196,
+        "duration_ms": 1.468564,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 1,
+      "op": "read",
+      "status": "ok",
+      "client": "A",
+      "node": "N1",
+      "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+      "version": 1,
+      "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:new",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "A",
+          "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:new",
+          "client": "B",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790187662323036217,
+        "duration_ms": 1.021891,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 2,
+      "op": "read",
+      "status": "ok",
+      "client": "A",
+      "node": "N3",
+      "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+      "version": 0,
+      "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "A",
+          "key": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790187662324063358,
+        "duration_ms": 1.886737,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    }
+  ],
+  "result": {
+    "property_name": "monotonic_reads",
+    "status": "VIOLATION",
+    "reason": "A read 0242_partition_one_monotonic_reads_r07:7d54bad0a1dd4cceaa0ec3c7781f4e20:x=v1, then v0.",
+    "witness": [
+      1,
+      2
+    ]
+  },
+  "workload_requests": 3,
+  "failed_workload_requests": 0
+}

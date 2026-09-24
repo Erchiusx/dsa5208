@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "trial_id": "0136_node_stop_quorum_monotonic_writes_r04:9f7069b3ab5c4c7da815506f93b93fe2",
+    "started_at": "2026-09-23T17:30:58.681685+00:00",
+    "status": "ready",
+    "finished_at": "2026-09-23T17:30:58.700631+00:00"
+  }
+]

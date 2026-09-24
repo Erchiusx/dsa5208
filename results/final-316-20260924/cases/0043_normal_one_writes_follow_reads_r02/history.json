@@ -1,0 +1,366 @@
+{
+  "trial_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968",
+  "scenario": "normal",
+  "consistency": "ONE",
+  "property": "writes_follow_reads",
+  "repetition": 1,
+  "setup": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+      "version": 0,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+          "version": 0,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790174449399162
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790174449399163998,
+        "duration_ms": 2.383337,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y",
+      "version": 0,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "setup",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y",
+          "version": 0,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y:initial",
+          "consistency": "ALL",
+          "timestamp_us": 1790174449401578
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790174449401579059,
+        "duration_ms": 1.315896,
+        "consistency": "ALL"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N1",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+      "version": 0,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "setup",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790174449402918050,
+        "duration_ms": 0.873096,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N2",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+      "version": 0,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N2",
+          "client": "setup",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.3",
+        "started_ns": 1790174449403811322,
+        "duration_ms": 0.916992,
+        "consistency": "ONE"
+      }
+    },
+    {
+      "index": 0,
+      "op": "read",
+      "status": "ok",
+      "client": "setup",
+      "node": "N3",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+      "version": 0,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:initial",
+      "seq": 0,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "setup",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 0,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:initial",
+          "client": "setup",
+          "seq": 0
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790174449404752409,
+        "duration_ms": 3.072843,
+        "consistency": "ONE"
+      }
+    }
+  ],
+  "history": [
+    {
+      "index": 0,
+      "op": "write",
+      "status": "ok",
+      "client": "B",
+      "node": "N3",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+      "version": 1,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause",
+      "seq": 1,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N3",
+          "client": "B",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+          "version": 1,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause",
+          "seq": 1,
+          "consistency": "ONE",
+          "timestamp_us": 1790174449407852
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790174449407852682,
+        "duration_ms": 3.090393,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 1,
+      "op": "read",
+      "status": "ok",
+      "client": "A",
+      "node": "N3",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+      "version": 1,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause",
+      "seq": 1,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N3",
+          "client": "A",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause",
+          "client": "B",
+          "seq": 1
+        },
+        "coordinator": "172.18.0.4",
+        "started_ns": 1790174449410947993,
+        "duration_ms": 1.92753,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 2,
+      "op": "write",
+      "status": "ok",
+      "client": "A",
+      "node": "N1",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y",
+      "version": 1,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y:effect",
+      "seq": 2,
+      "depends_on": {
+        "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+        "min_version": 1,
+        "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause"
+      },
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "write",
+          "node": "N1",
+          "client": "A",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y",
+          "version": 1,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y:effect",
+          "seq": 2,
+          "depends_on": {
+            "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+            "min_version": 1,
+            "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause"
+          },
+          "consistency": "ONE",
+          "timestamp_us": 1790174449412880
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790174449412880609,
+        "duration_ms": 0.821528,
+        "consistency": "ONE",
+        "phase": "workload"
+      }
+    },
+    {
+      "index": 3,
+      "op": "read",
+      "status": "ok",
+      "client": "observer",
+      "node": "N1",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y",
+      "version": 1,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y:effect",
+      "seq": 2,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "observer",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y:effect",
+          "client": "A",
+          "seq": 2
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790174470530260774,
+        "duration_ms": 1.070447,
+        "consistency": "ONE",
+        "phase": "probe"
+      }
+    },
+    {
+      "index": 4,
+      "op": "read",
+      "status": "ok",
+      "client": "observer",
+      "node": "N1",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+      "version": 1,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause",
+      "seq": 1,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "step": {
+          "op": "read",
+          "node": "N1",
+          "client": "observer",
+          "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+          "consistency": "ONE"
+        },
+        "row": {
+          "version": 1,
+          "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause",
+          "client": "B",
+          "seq": 1
+        },
+        "coordinator": "172.18.0.2",
+        "started_ns": 1790174470531336098,
+        "duration_ms": 0.729153,
+        "consistency": "ONE",
+        "phase": "probe"
+      }
+    },
+    {
+      "index": 5,
+      "op": "dependency_probe",
+      "status": "ok",
+      "client": null,
+      "node": "N1",
+      "key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y",
+      "version": 1,
+      "write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:y:effect",
+      "seq": null,
+      "depends_on": null,
+      "order": null,
+      "raw": {
+        "phase": "probe",
+        "local_observation": true,
+        "control_id": 8,
+        "cause_key": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x",
+        "cause_version": 1,
+        "cause_write_id": "0043_normal_one_writes_follow_reads_r02:e0b7b3e12be7461e80a8d4058b941968:x:cause",
+        "effect_read_index": 3,
+        "cause_read_index": 4
+      }
+    }
+  ],
+  "result": {
+    "property_name": "writes_follow_reads",
+    "status": "PASS",
+    "reason": "All observed immutable effects had their required predecessors in the local probes. This is a finite-history result, not a universal guarantee.",
+    "witness": []
+  },
+  "workload_requests": 3,
+  "failed_workload_requests": 0
+}
