@@ -31,5 +31,9 @@ class MockExecutor(Executor):
             seq=step.get("seq"),
             depends_on=step.get("depends_on"),
             order=mock.get("order", step.get("order")),
-            raw={"step": step, "mock": mock},
+            raw={
+                "step": step,
+                "mock": mock,
+                "evidence_source": "synthetic_application_order",
+            },
         )

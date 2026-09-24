@@ -35,5 +35,6 @@
         ]
       }
     }
-  ]
+  ],
+  "execution_scope": "mock_fixture"
 }

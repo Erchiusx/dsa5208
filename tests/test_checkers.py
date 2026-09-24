@@ -32,6 +32,7 @@ def test_monotonic_reads_detects_backward_read() -> None:
 
 def test_wfr_passes_when_cause_is_visible() -> None:
     history = [
+        Observation(-1, "read", client="A", key="x", version=1),
         Observation(
             0,
             "write",
@@ -40,7 +41,7 @@ def test_wfr_passes_when_cause_is_visible() -> None:
             version=1,
             depends_on={"key": "x", "min_version": 1},
         ),
-        Observation(1, "read", client="C", key="y", version=1),
-        Observation(2, "read", client="C", key="x", version=1),
+        Observation(1, "read", client="C", key="y", version=1, raw={"mock": {}}),
+        Observation(2, "read", client="C", key="x", version=1, raw={"mock": {}}),
     ]
     assert check_writes_follow_reads(history).status == "PASS"

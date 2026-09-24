@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import subprocess
 
-from project1.failure_control import DockerFailureController
+from project1.failure_control import DockerFailureController, firewall_script
 
 
 class RecordingRunner:
@@ -25,8 +25,26 @@ def test_docker_failure_controller_partitions_and_heals_node() -> None:
     assert partitioned["status"] == "ok"
     assert healed["status"] == "ok"
     assert runner.calls == [
-        ["docker", "network", "disconnect", "-f", "net", "project1-cassandra3"],
-        ["docker", "network", "connect", "net", "project1-cassandra3"],
+        [
+            "docker",
+            "exec",
+            "-u",
+            "0",
+            "project1-cassandra3",
+            "sh",
+            "-ec",
+            firewall_script(True),
+        ],
+        [
+            "docker",
+            "exec",
+            "-u",
+            "0",
+            "project1-cassandra3",
+            "sh",
+            "-ec",
+            firewall_script(False),
+        ],
     ]
 
 
