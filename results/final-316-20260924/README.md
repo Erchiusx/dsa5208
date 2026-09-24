@@ -1,9 +1,8 @@
-# Selected final evidence: 316 completed cases
+# Experiment records
 
 All completed cases in original planned positions 1–316 are retained.
 Totals: 172 PASS, 38 VIOLATION, 106 INCONCLUSIVE.
 All 36 cells are covered: 28 cells have nine cases, eight have eight.
-No pilot/batch histories are added and no unexpected completed outcome is removed.
 
 - cases/: original history, controls, environment and completion for each case.
 - dataset-selection.json: selection rule, cutoff, provenance and original file hashes.
