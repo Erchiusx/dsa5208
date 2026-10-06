@@ -1,0 +1,22 @@
+{
+  "rainfall_threshold_mm": 1.0,
+  "decision_threshold": 0.931,
+  "decision_threshold_selected_on": "2023 validation only",
+  "splits": {
+    "test": {
+      "rows": 6334889,
+      "positive_prevalence": 0.025708106329882022,
+      "brier_score": 0.0763423779612443,
+      "brier_score_climatology": 0.0250471995988135,
+      "brier_skill_score": -2.0479406554040747,
+      "precision_at_frozen_threshold": 0.6156132016419691,
+      "recall_at_frozen_threshold": 0.573696103353842,
+      "f1_at_frozen_threshold": 0.5939159703394814,
+      "true_positives": 93431,
+      "false_positives": 58338,
+      "false_negatives": 69427,
+      "roc_auc": 0.9348873833689924,
+      "pr_auc": 0.6052006336853639
+    }
+  }
+}

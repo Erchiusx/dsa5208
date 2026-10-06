@@ -1,0 +1,70 @@
+{
+  "model": "mlp",
+  "threshold_mm": 1.0,
+  "feature_prefix": "spatial_features",
+  "train_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_year": 2023,
+  "features": [
+    "station_id",
+    "longitude",
+    "latitude",
+    "rainfall_last_5m_mm",
+    "rainfall_last_15m_mm",
+    "rainfall_last_30m_mm",
+    "rainfall_last_60m_mm",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "day_of_week_sgt",
+    "neighbor_count_available",
+    "neighbor_weight_available",
+    "neighbor_min_distance_km_available",
+    "neighbor_rainfall_last_5m_mm_idw_mean",
+    "neighbor_rainfall_last_15m_mm_idw_mean",
+    "neighbor_rainfall_last_30m_mm_idw_mean",
+    "neighbor_rainfall_last_60m_mm_idw_mean",
+    "neighbor_rainfall_last_30m_mm_max",
+    "neighbor_raining_fraction_5m"
+  ],
+  "layers": [
+    110,
+    32,
+    16,
+    2
+  ],
+  "sampling": {
+    "source_counts": {
+      "1.0": 791875,
+      "0.0": 33183679
+    },
+    "sample_counts": {
+      "1.0": 791875,
+      "0.0": 790472
+    },
+    "negative_sampling_fraction": 0.023863387781686292,
+    "negative_to_positive_target": 1.0,
+    "seed": 5208,
+    "class_weighting": "not supported by Spark MLP; class balance is controlled by seeded negative sampling"
+  },
+  "validation_at_default_probability_threshold": {
+    "rows": 6683128,
+    "roc_auc": 0.46240862609773314,
+    "pr_auc": 0.023537129345503203,
+    "precision_at_0_5": 0.02629382528660232,
+    "recall_at_0_5": 1.0,
+    "f1_at_0_5": 0.051240345871241155,
+    "true_positives": 175725,
+    "false_positives": 6507403,
+    "false_negatives": 0
+  },
+  "model_dir": "/home/erchius/development/dsa5208/project1/project2/models/mlp_spatial_threshold_1mm",
+  "test_set_status": "not evaluated; select candidate and probability threshold using validation first"
+}
