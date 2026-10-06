@@ -1,0 +1,43 @@
+{
+  "method": "Platt scaling on logit of the base model probability",
+  "base_model_dir": "/home/erchius/development/dsa5208/project1/project2/models/gbt_spatial_threshold_1mm",
+  "calibrator_dir": "/home/erchius/development/dsa5208/project1/project2/models/gbt_spatial_threshold_1mm_platt_calibrator_2023",
+  "calibration_year": 2023,
+  "raw_decision_threshold": 0.931,
+  "equivalent_calibrated_decision_threshold": 0.41128161896775006,
+  "calibration_year_metrics": {
+    "raw": {
+      "rows": 6683128,
+      "positive_prevalence": 0.02629382528660232,
+      "brier_score": 0.07617738574679432,
+      "brier_score_climatology": 0.025602460038399954,
+      "brier_skill_score": -1.9753932095798357
+    },
+    "calibrated": {
+      "rows": 6683128,
+      "positive_prevalence": 0.02629382528660232,
+      "brier_score": 0.015461610600162072,
+      "brier_score_climatology": 0.025602460038399954,
+      "brier_skill_score": 0.3960888689222867
+    },
+    "warning": "in-sample calibration metrics; use an independent year for generalization"
+  },
+  "evaluation_year": 2024,
+  "evaluation_metrics": {
+    "raw": {
+      "rows": 6334889,
+      "positive_prevalence": 0.025708106329882022,
+      "brier_score": 0.0763423779612443,
+      "brier_score_climatology": 0.0250471995988135,
+      "brier_skill_score": -2.0479406554040747
+    },
+    "calibrated": {
+      "rows": 6334889,
+      "positive_prevalence": 0.025708106329882022,
+      "brier_score": 0.015398389345429897,
+      "brier_score_climatology": 0.0250471995988135,
+      "brier_skill_score": 0.3852251113070809
+    },
+    "warning": "post-hoc evaluation when the requested year was previously inspected"
+  }
+}
