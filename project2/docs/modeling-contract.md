@@ -25,3 +25,23 @@ To fit local resources, all positives and a seeded sample of training negatives
 are used; validation and final test sets are never sampled. Choose the candidate
 and its probability operating point on 2023 before evaluating its 2024 test
 performance.
+
+## Multi-station candidate family
+
+The main candidate family uses `spatial_features_<year>`, rather than the
+single-station table used for the original baselines. All four models receive
+the same target-station history, calendar, identity/location, and lagged
+nearest-neighbour aggregates: Logistic Regression, Random Forest, Gradient
+Boosted Trees, and a Spark `MultilayerPerceptronClassifier`.
+
+For RF and GBT, seeded negative sampling at a 3:1 target ratio and inverse
+frequency weights are retained. Spark's MLP classifier has no `weightCol`, so
+its small first run uses a seeded 1:1 negative/positive training sample instead.
+Validation and test data retain their natural prevalence in all cases. MLP
+numeric inputs are standardized after station one-hot encoding; its initial
+architecture is `[input_dimension, 32, 16, 2]`.
+
+The 2024 test set remains unread while comparing these four candidates and
+choosing a probability threshold on 2023. Since sampling changes class priors,
+raw scores must not be described as calibrated probabilities without a later
+calibration step.

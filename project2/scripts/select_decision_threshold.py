@@ -18,8 +18,8 @@ sys.path.insert(0, str(PROJECT_DIR / "src"))
 from rainfall_project.clean import build_spark  # noqa: E402
 
 
-def read_years(spark, processed_dir: Path, years: list[int]) -> DataFrame:
-    frames = [spark.read.parquet(str(processed_dir / f"rainfall_features_{year}")) for year in years]
+def read_years(spark, processed_dir: Path, prefix: str, years: list[int]) -> DataFrame:
+    frames = [spark.read.parquet(str(processed_dir / f"{prefix}_{year}")) for year in years]
     return reduce(lambda left, right: left.unionByName(right), frames)
 
 
@@ -77,6 +77,7 @@ def main() -> None:
     parser.add_argument("--rainfall-threshold-mm", type=float, default=1.0)
     parser.add_argument("--model-dir", type=Path, default=PROJECT_DIR / "models" / "logistic_threshold_1mm")
     parser.add_argument("--processed-dir", type=Path, default=PROJECT_DIR / "data" / "processed")
+    parser.add_argument("--feature-prefix", default="rainfall_features")
     parser.add_argument("--report", type=Path, default=PROJECT_DIR / "reports" / "decision_threshold_1mm.json")
     parser.add_argument(
         "--evaluate-test",
@@ -90,7 +91,7 @@ def main() -> None:
     spark = build_spark("dsa5208-decision-threshold-selection")
     try:
         model = PipelineModel.load(str(args.model_dir))
-        validation = score(model, read_years(spark, args.processed_dir, [2023]), args.rainfall_threshold_mm)
+        validation = score(model, read_years(spark, args.processed_dir, args.feature_prefix, [2023]), args.rainfall_threshold_mm)
         selection = select_f1_threshold(validation)
         report = {
             "rainfall_threshold_mm": args.rainfall_threshold_mm,
@@ -100,7 +101,7 @@ def main() -> None:
             "validation_at_selected_threshold": confusion(validation, selection["decision_threshold"]),
         }
         if args.evaluate_test:
-            test = score(model, read_years(spark, args.processed_dir, [2024]), args.rainfall_threshold_mm)
+            test = score(model, read_years(spark, args.processed_dir, args.feature_prefix, [2024]), args.rainfall_threshold_mm)
             report["test_at_selected_threshold"] = confusion(test, selection["decision_threshold"])
         else:
             report["test_set_status"] = "not evaluated; pass --evaluate-test only after selecting a candidate on validation"

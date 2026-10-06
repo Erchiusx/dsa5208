@@ -4,7 +4,7 @@ from __future__ import annotations
 from math import asin, cos, radians, sin, sqrt
 from typing import Iterable
 
-from pyspark.sql import DataFrame, SparkSession, functions as F
+from pyspark.sql import DataFrame, SparkSession, Window, functions as F
 
 
 SPATIAL_NUMERIC_FEATURES = [
@@ -101,7 +101,22 @@ def add_lagged_neighbor_features(base: DataFrame, neighbors: DataFrame) -> DataF
         F.col("_spatial_slot_epoch").alias("source_slot_epoch"),
         *[F.col(column).alias(f"neighbor_{column}") for column in _NEIGHBOR_VALUE_COLUMNS],
     ]
-    sources = slotted.select(*source_columns).alias("source")
+    # A station can have two exports that round to the same nominal slot (for
+    # example a :59 and a :00 record). Keep the latest state once per station
+    # and slot so every target has at most K contributing neighbours.
+    source_window = Window.partitionBy("neighbor_station_id", "source_slot_epoch").orderBy(
+        F.col("source_observation_ts").desc()
+    )
+    sources = (
+        slotted.select(
+            *source_columns,
+            F.col("prediction_ts").alias("source_observation_ts"),
+        )
+        .withColumn("_source_slot_rank", F.row_number().over(source_window))
+        .filter(F.col("_source_slot_rank") == 1)
+        .drop("_source_slot_rank")
+        .alias("source")
+    )
     expanded = (
         targets.join(F.broadcast(neighbors).alias("map"), F.col("target.station_id") == F.col("map.target_station_id"), "left")
         .join(

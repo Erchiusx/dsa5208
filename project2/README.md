@@ -94,6 +94,40 @@ python project2/scripts/train_tree_candidate.py --model rf --threshold-mm 1
 python project2/scripts/train_tree_candidate.py --model gbt --threshold-mm 1
 ```
 
+## Multi-station candidate models
+
+The original models are single-station baselines. Build leakage-safe spatial
+features before comparing the four multi-station candidates. Each target row
+uses its eight nearest stations only from the *previous* nominal five-minute
+slot, so a source export at `:00` or `:59` cannot leak a later observation.
+
+```bash
+PYSPARK_SUBMIT_ARGS='--master local[4] --driver-memory 6g --conf spark.sql.shuffle.partitions=32 pyspark-shell' \
+python3 project2/scripts/build_spatial_features.py --years 2017
+
+# Once the 2017 smoke test is verified, build 2017--2024 one year at a time.
+for year in {2017..2024}; do
+  PYSPARK_SUBMIT_ARGS='--master local[4] --driver-memory 6g --conf spark.sql.shuffle.partitions=32 pyspark-shell' \
+  python3 project2/scripts/build_spatial_features.py --years "$year"
+done
+```
+
+Then train all models on `spatial_features_*`; model selection uses only 2023.
+
+```bash
+PYSPARK_SUBMIT_ARGS='--master local[4] --driver-memory 6g --conf spark.sql.shuffle.partitions=32 pyspark-shell' \
+python3 project2/scripts/train_logistic_baseline.py --feature-set spatial --threshold-mm 1
+
+PYSPARK_SUBMIT_ARGS='--master local[4] --driver-memory 6g --conf spark.sql.shuffle.partitions=32 pyspark-shell' \
+python3 project2/scripts/train_tree_candidate.py --model rf --feature-set spatial --threshold-mm 1
+
+PYSPARK_SUBMIT_ARGS='--master local[4] --driver-memory 6g --conf spark.sql.shuffle.partitions=32 pyspark-shell' \
+python3 project2/scripts/train_tree_candidate.py --model gbt --feature-set spatial --threshold-mm 1
+
+PYSPARK_SUBMIT_ARGS='--master local[4] --driver-memory 6g --conf spark.sql.shuffle.partitions=32 pyspark-shell' \
+python3 project2/scripts/train_mlp_candidate.py --threshold-mm 1
+```
+
 ## Source and scope
 
 Source: National Environment Agency, [Historical Rainfall across Singapore](https://data.gov.sg/collections/2279/view).

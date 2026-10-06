@@ -58,6 +58,7 @@ def main() -> None:
     parser.add_argument("--rainfall-threshold-mm", type=float, default=1.0)
     parser.add_argument("--model-dir", type=Path, default=PROJECT_DIR / "models" / "logistic_threshold_1mm")
     parser.add_argument("--processed-dir", type=Path, default=PROJECT_DIR / "data" / "processed")
+    parser.add_argument("--feature-prefix", default="rainfall_features")
     parser.add_argument("--decision-report", type=Path, default=PROJECT_DIR / "reports" / "decision_threshold_1mm.json")
     parser.add_argument("--report", type=Path, default=PROJECT_DIR / "reports" / "probability_metrics_1mm.json")
     parser.add_argument("--splits", nargs="+", choices=("validation", "test"), default=("validation", "test"))
@@ -75,7 +76,7 @@ def main() -> None:
         split_years = {"validation": 2023, "test": 2024}
         for role in args.splits:
             year = split_years[role]
-            frame = spark.read.parquet(str(args.processed_dir / f"rainfall_features_{year}"))
+            frame = spark.read.parquet(str(args.processed_dir / f"{args.feature_prefix}_{year}"))
             transformed = model.transform(
                 frame.filter("history_60m_complete AND future_30m_complete").withColumn(
                     "label", (F.col("future_30m_rainfall_mm") > F.lit(args.rainfall_threshold_mm)).cast("double")

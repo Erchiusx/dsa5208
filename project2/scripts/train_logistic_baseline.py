@@ -18,6 +18,7 @@ PROJECT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_DIR / "src"))
 
 from rainfall_project.clean import build_spark  # noqa: E402
+from rainfall_project.spatial import SPATIAL_NUMERIC_FEATURES  # noqa: E402
 
 
 NUMERIC_FEATURES = [
@@ -27,8 +28,8 @@ NUMERIC_FEATURES = [
 ]
 
 
-def read_feature_years(spark, processed_dir: Path, years: list[int]) -> DataFrame:
-    frames = [spark.read.parquet(str(processed_dir / f"rainfall_features_{year}")) for year in years]
+def read_feature_years(spark, processed_dir: Path, prefix: str, years: list[int]) -> DataFrame:
+    frames = [spark.read.parquet(str(processed_dir / f"{prefix}_{year}")) for year in years]
     return reduce(lambda left, right: left.unionByName(right), frames)
 
 
@@ -74,26 +75,38 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--threshold-mm", type=float, default=1.0)
     parser.add_argument("--processed-dir", type=Path, default=PROJECT_DIR / "data" / "processed")
+    parser.add_argument("--feature-set", choices=("single_station", "spatial"), default="single_station")
+    parser.add_argument("--feature-prefix", help="Override the annual Parquet prefix selected by --feature-set")
+    parser.add_argument(
+        "--evaluate-test", action="store_true",
+        help="Evaluate 2024 only after choosing this candidate and its threshold on 2023.",
+    )
     parser.add_argument("--model-dir", type=Path)
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
     if args.threshold_mm < 0:
         parser.error("--threshold-mm must be non-negative")
     suffix = f"{args.threshold_mm:g}mm"
-    model_dir = args.model_dir or PROJECT_DIR / "models" / f"logistic_threshold_{suffix}"
-    report_path = args.report or PROJECT_DIR / "reports" / f"logistic_threshold_{suffix}.json"
+    feature_prefix = args.feature_prefix or ("spatial_features" if args.feature_set == "spatial" else "rainfall_features")
+    artifact_prefix = "logistic_spatial" if args.feature_set == "spatial" else "logistic"
+    model_dir = args.model_dir or PROJECT_DIR / "models" / f"{artifact_prefix}_threshold_{suffix}"
+    report_path = args.report or PROJECT_DIR / "reports" / f"{artifact_prefix}_threshold_{suffix}.json"
 
     spark = build_spark("dsa5208-rainfall-logistic-baseline")
     try:
-        all_years = list(range(2017, 2025))
-        features = read_feature_years(spark, args.processed_dir, all_years)
-        train = with_label_and_weight(features.filter(F.col("year").between(2017, 2022)), args.threshold_mm, weighted=True)
-        validation = with_label_and_weight(features.filter(F.col("year") == 2023), args.threshold_mm, weighted=False)
-        test = with_label_and_weight(features.filter(F.col("year") == 2024), args.threshold_mm, weighted=False)
+        train = with_label_and_weight(
+            read_feature_years(spark, args.processed_dir, feature_prefix, list(range(2017, 2023))),
+            args.threshold_mm,
+            weighted=True,
+        )
+        validation = with_label_and_weight(
+            read_feature_years(spark, args.processed_dir, feature_prefix, [2023]), args.threshold_mm, weighted=False
+        )
 
         indexer = StringIndexer(inputCol="station_id", outputCol="station_index", handleInvalid="keep")
         encoder = OneHotEncoder(inputCols=["station_index"], outputCols=["station_vector"], handleInvalid="keep")
-        assembler = VectorAssembler(inputCols=["station_vector", *NUMERIC_FEATURES], outputCol="features", handleInvalid="error")
+        numeric_features = [*NUMERIC_FEATURES, *(SPATIAL_NUMERIC_FEATURES if args.feature_set == "spatial" else [])]
+        assembler = VectorAssembler(inputCols=["station_vector", *numeric_features], outputCol="features", handleInvalid="error")
         classifier = LogisticRegression(
             featuresCol="features", labelCol="label", weightCol="class_weight", maxIter=50, regParam=0.01
         )
@@ -101,14 +114,23 @@ def main() -> None:
         model.write().overwrite().save(str(model_dir))
         report = {
             "threshold_mm": args.threshold_mm,
+            "feature_set": args.feature_set,
+            "feature_prefix": feature_prefix,
             "train_years": [2017, 2018, 2019, 2020, 2021, 2022],
-            "validation_year": 2023, "test_year": 2024,
-            "features": ["station_id", *NUMERIC_FEATURES],
+            "validation_year": 2023,
+            "features": ["station_id", *numeric_features],
             "class_weighting": "balanced by inverse class frequency on training years only",
             "validation": metrics(model.transform(validation)),
-            "test": metrics(model.transform(test)),
             "model_dir": str(model_dir),
         }
+        if args.evaluate_test:
+            test = with_label_and_weight(
+                read_feature_years(spark, args.processed_dir, feature_prefix, [2024]), args.threshold_mm, weighted=False
+            )
+            report["test_year"] = 2024
+            report["test"] = metrics(model.transform(test))
+        else:
+            report["test_set_status"] = "not evaluated; choose candidate and probability threshold on validation first"
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(report, indent=2) + "\n")
         print(json.dumps(report, indent=2))

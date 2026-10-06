@@ -1,0 +1,50 @@
+{
+  "threshold_mm": 1.0,
+  "feature_set": "spatial",
+  "feature_prefix": "spatial_features",
+  "train_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_year": 2023,
+  "features": [
+    "station_id",
+    "longitude",
+    "latitude",
+    "rainfall_last_5m_mm",
+    "rainfall_last_15m_mm",
+    "rainfall_last_30m_mm",
+    "rainfall_last_60m_mm",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "neighbor_count_available",
+    "neighbor_weight_available",
+    "neighbor_min_distance_km_available",
+    "neighbor_rainfall_last_5m_mm_idw_mean",
+    "neighbor_rainfall_last_15m_mm_idw_mean",
+    "neighbor_rainfall_last_30m_mm_idw_mean",
+    "neighbor_rainfall_last_60m_mm_idw_mean",
+    "neighbor_rainfall_last_30m_mm_max",
+    "neighbor_raining_fraction_5m"
+  ],
+  "class_weighting": "balanced by inverse class frequency on training years only",
+  "validation": {
+    "rows": 6683128,
+    "area_under_roc": 0.9275469371509372,
+    "area_under_pr": 0.5245699988169298,
+    "precision_at_0_5": 0.30910718871683107,
+    "recall_at_0_5": 0.7602902262057192,
+    "f1_at_0_5": 0.4395207453318069,
+    "true_positives": 133602,
+    "false_positives": 298617,
+    "false_negatives": 42123
+  },
+  "model_dir": "/home/erchius/development/dsa5208/project1/project2/models/logistic_spatial_threshold_1mm",
+  "test_set_status": "not evaluated; choose candidate and probability threshold on validation first"
+}
