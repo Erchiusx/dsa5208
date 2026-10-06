@@ -80,20 +80,23 @@ def metrics(predictions: DataFrame) -> dict[str, float | int]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--threshold-mm", type=float, default=1.0)
-    parser.add_argument("--negative-to-positive", type=float, default=1.0)
-    parser.add_argument("--hidden-layers", nargs="+", type=int, default=[32, 16])
-    parser.add_argument("--max-iter", type=int, default=60)
+    parser.add_argument("--negative-to-positive", type=float, default=3.0)
+    parser.add_argument("--hidden-layers", nargs="+", type=int, default=[128, 64])
+    parser.add_argument("--max-iter", type=int, default=120)
     parser.add_argument("--block-size", type=int, default=256)
+    parser.add_argument("--solver", choices=("gd", "l-bfgs"), default="l-bfgs")
+    parser.add_argument("--step-size", type=float, default=0.03, help="Gradient-descent learning rate; ignored by l-bfgs")
+    parser.add_argument("--variant", default="centered_lbfgs", help="Artifact label; keeps runs with different settings separate")
     parser.add_argument("--seed", type=int, default=5208)
     parser.add_argument("--processed-dir", type=Path, default=PROJECT_DIR / "data" / "processed")
     parser.add_argument("--feature-prefix", default="spatial_features")
     parser.add_argument("--model-dir", type=Path)
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
-    if args.threshold_mm < 0 or args.negative_to_positive <= 0 or any(width < 1 for width in args.hidden_layers):
+    if args.threshold_mm < 0 or args.negative_to_positive <= 0 or args.step_size <= 0 or any(width < 1 for width in args.hidden_layers):
         parser.error("threshold must be non-negative; sampling ratio and hidden-layer widths must be positive")
 
-    suffix = f"mlp_spatial_threshold_{args.threshold_mm:g}mm"
+    suffix = f"mlp_spatial_{args.variant}_threshold_{args.threshold_mm:g}mm"
     model_dir = args.model_dir or PROJECT_DIR / "models" / suffix
     report_path = args.report or PROJECT_DIR / "reports" / f"{suffix}_validation.json"
     spark = build_spark("dsa5208-rainfall-spatial-mlp")
@@ -104,23 +107,30 @@ def main() -> None:
         preprocessor = Pipeline(stages=[
             StringIndexer(inputCol="station_id", outputCol="station_index", handleInvalid="keep"),
             OneHotEncoder(inputCols=["station_index"], outputCols=["station_vector"], handleInvalid="keep", dropLast=False),
-            VectorAssembler(inputCols=["station_vector", *NUMERIC_FEATURES], outputCol="features", handleInvalid="error"),
-            StandardScaler(inputCol="features", outputCol="scaled_features", withStd=True, withMean=False),
+            VectorAssembler(inputCols=NUMERIC_FEATURES, outputCol="numeric_features", handleInvalid="error"),
+            # Center dense numeric predictors without densifying the station one-hot vector.
+            StandardScaler(inputCol="numeric_features", outputCol="numeric_features_scaled", withStd=True, withMean=True),
+            VectorAssembler(inputCols=["station_vector", "numeric_features_scaled"], outputCol="features", handleInvalid="error"),
         ]).fit(train)
         prepared_train = preprocessor.transform(train)
-        input_dimension = int(prepared_train.schema["scaled_features"].metadata["ml_attr"]["num_attrs"])
+        input_dimension = int(prepared_train.schema["features"].metadata["ml_attr"]["num_attrs"])
         layers = [input_dimension, *args.hidden_layers, 2]
-        classifier = MultilayerPerceptronClassifier(
-            featuresCol="scaled_features", labelCol="label", layers=layers, maxIter=args.max_iter,
-            blockSize=args.block_size, seed=args.seed,
+        classifier_args = dict(
+            featuresCol="features", labelCol="label", layers=layers, maxIter=args.max_iter,
+            blockSize=args.block_size, seed=args.seed, solver=args.solver,
         )
+        if args.solver == "gd":
+            classifier_args["stepSize"] = args.step_size
+        classifier = MultilayerPerceptronClassifier(**classifier_args)
         classifier_model = classifier.fit(prepared_train)
         model = PipelineModel([*preprocessor.stages, classifier_model])
         model.write().overwrite().save(str(model_dir))
         report = {
-            "model": "mlp", "threshold_mm": args.threshold_mm, "feature_prefix": args.feature_prefix,
+            "model": "mlp", "variant": args.variant, "threshold_mm": args.threshold_mm, "feature_prefix": args.feature_prefix,
             "train_years": [2017, 2018, 2019, 2020, 2021, 2022], "validation_year": 2023,
-            "features": ["station_id", *NUMERIC_FEATURES], "layers": layers, "sampling": sampling,
+            "features": ["station_id", *NUMERIC_FEATURES], "layers": layers, "solver": args.solver,
+            "step_size": args.step_size if args.solver == "gd" else None, "numeric_standardization": "zero mean and unit variance",
+            "sampling": sampling,
             "validation_at_default_probability_threshold": metrics(model.transform(validation)),
             "model_dir": str(model_dir),
             "test_set_status": "not evaluated; select candidate and probability threshold using validation first",
