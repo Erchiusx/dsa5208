@@ -1,0 +1,50 @@
+{
+  "threshold_mm": 1.0,
+  "train_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_year": 2023,
+  "test_year": 2024,
+  "features": [
+    "station_id",
+    "longitude",
+    "latitude",
+    "rainfall_last_5m_mm",
+    "rainfall_last_15m_mm",
+    "rainfall_last_30m_mm",
+    "rainfall_last_60m_mm",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos"
+  ],
+  "class_weighting": "balanced by inverse class frequency on training years only",
+  "validation": {
+    "rows": 6683128,
+    "area_under_roc": 0.8907606914363244,
+    "area_under_pr": 0.472818292722131,
+    "precision_at_0_5": 0.2864683631361761,
+    "recall_at_0_5": 0.6636904253805662,
+    "f1_at_0_5": 0.4001990237541714,
+    "true_positives": 116627,
+    "false_positives": 290493,
+    "false_negatives": 59098
+  },
+  "test": {
+    "rows": 6334889,
+    "area_under_roc": 0.8776622521483186,
+    "area_under_pr": 0.45694135336657354,
+    "precision_at_0_5": 0.2745031643659062,
+    "recall_at_0_5": 0.6421238133834384,
+    "f1_at_0_5": 0.38459487439754775,
+    "true_positives": 104575,
+    "false_positives": 276386,
+    "false_negatives": 58283
+  },
+  "model_dir": "/home/erchius/development/dsa5208/project1/project2/models/logistic_threshold_1mm"
+}

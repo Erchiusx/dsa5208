@@ -1,0 +1,54 @@
+{
+  "source_collection": "https://data.gov.sg/collections/2279/view",
+  "verified_at_utc": "2026-09-29T11:57:25.667900+00:00",
+  "files": {
+    "2017": {
+      "dataset_id": "d_1990a5a1aeaf3dd243cf4dae294a61c4",
+      "bytes": 1007353435,
+      "bytes_downloaded": 881206891,
+      "sha256": "a51a27378607c6c37d51b72383259b27dae5dc7d5760a8b8fff04e86d9f92ddf"
+    },
+    "2018": {
+      "dataset_id": "d_024fb501ce7092b71bb713eaf54fa7eb",
+      "bytes": 879809824,
+      "bytes_downloaded": 769547920,
+      "sha256": "f42b40c37edbbc9a3ddb6e53e147606878280cbe1362e6580ea86aaf528db887"
+    },
+    "2019": {
+      "dataset_id": "d_61995f092320e7155b7528050880b502",
+      "bytes": 963396474,
+      "bytes_downloaded": 842751786,
+      "sha256": "1f30310b94912c800a96a9beedd65fcff62c663a1cbc2ff5606f0f174867d73c"
+    },
+    "2020": {
+      "dataset_id": "d_9e7de44094f876f6804b8b5bcee45c81",
+      "bytes": 1200974276,
+      "bytes_downloaded": 1048946924,
+      "sha256": "2b8df4c6adebb3ea41183ca22fc261fdb34ef78a492bb205f660c431b924ec48"
+    },
+    "2021": {
+      "dataset_id": "d_3b41598f74f1f11fc3430348fea51af5",
+      "bytes": 1327644674,
+      "bytes_downloaded": 1158573170,
+      "sha256": "3bb97164ec298b4057303bfecea4acc0a824fc41d83aa3df41c93bba2b91b96b"
+    },
+    "2022": {
+      "dataset_id": "d_42d64cc6c176ace1c52fbb40b9ede302",
+      "bytes": 1343853171,
+      "bytes_downloaded": 1172655651,
+      "sha256": "481eeafe94025f03e7ca0e8a22e78ff0addf76b35aeaf392e8bc5066b6a4cf14"
+    },
+    "2023": {
+      "dataset_id": "d_f864cc30d58b467db83659ad17c737bf",
+      "bytes": 1269318635,
+      "bytes_downloaded": 1107489275,
+      "sha256": "94e23e285182c03ced2b6cae513332c94c64dcc051938753ec0bbf5d7f2afd11"
+    },
+    "2024": {
+      "dataset_id": "d_a0b69d3e02576a1fd0ab673e71f83507",
+      "bytes": 1219623324,
+      "bytes_downloaded": 1065873084,
+      "sha256": "2cc8433e1252ba8ef12dbc4c14cf01b5ddd62a2e14fcee5856ddaf354b53b9b3"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "model": "rf",
+  "threshold_mm": 1.0,
+  "train_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_year": 2023,
+  "features": [
+    "station_index",
+    "longitude",
+    "latitude",
+    "rainfall_last_5m_mm",
+    "rainfall_last_15m_mm",
+    "rainfall_last_30m_mm",
+    "rainfall_last_60m_mm",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "day_of_week_sgt"
+  ],
+  "sampling": {
+    "source_counts": {
+      "1.0": 791875,
+      "0.0": 33183679
+    },
+    "sample_counts": {
+      "1.0": 791875,
+      "0.0": 2373547
+    },
+    "negative_sampling_fraction": 0.07159016334505888,
+    "negative_to_positive_target": 3.0,
+    "seed": 5208
+  },
+  "validation_at_default_probability_threshold": {
+    "rows": 6683128,
+    "roc_auc": 0.9143279399958202,
+    "pr_auc": 0.479892603937775,
+    "precision_at_0_5": 0.2446324240337987,
+    "recall_at_0_5": 0.7400825152937829,
+    "f1_at_0_5": 0.36771693506544917,
+    "true_positives": 130051,
+    "false_positives": 401567,
+    "false_negatives": 45674
+  },
+  "model_dir": "/home/erchius/development/dsa5208/project1/project2/models/rf_threshold_1mm",
+  "test_set_status": "not evaluated; select candidate and probability threshold using validation first"
+}

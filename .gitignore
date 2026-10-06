@@ -1,3 +1,14 @@
 __pycache__/
 .pytest_cache/
 *.egg-info/
+
+# Project 2: raw and derived data can be recreated from the public source.
+project2/data/raw/*
+!project2/data/raw/.gitkeep
+project2/data/metadata/poll-*.json
+project2/data/interim/*
+!project2/data/interim/.gitkeep
+project2/data/processed/*
+!project2/data/processed/.gitkeep
+project2/models/*
+!project2/models/.gitkeep

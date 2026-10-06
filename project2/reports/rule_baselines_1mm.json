@@ -1,0 +1,66 @@
+{
+  "rainfall_threshold_mm": 1.0,
+  "rules": [
+    "always_negative",
+    "rain_in_current_5m",
+    "persistence_last_30m_exceeds_r"
+  ],
+  "years": {
+    "2023": {
+      "rows": 6683128,
+      "positive_prevalence": 0.02629382528660232,
+      "always_negative": {
+        "true_positives": 0,
+        "false_positives": 0,
+        "false_negatives": 175725,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "rain_in_current_5m": {
+        "true_positives": 116076,
+        "false_positives": 169290,
+        "false_negatives": 59649,
+        "precision": 0.4067618426862345,
+        "recall": 0.6605548442168161,
+        "f1": 0.5034841278619622
+      },
+      "persistence_last_30m_exceeds_r": {
+        "true_positives": 97593,
+        "false_positives": 99288,
+        "false_negatives": 78132,
+        "precision": 0.4956953692839837,
+        "recall": 0.5553734528382416,
+        "f1": 0.5238401958100514
+      }
+    },
+    "2024": {
+      "rows": 6334889,
+      "positive_prevalence": 0.025708106329882022,
+      "always_negative": {
+        "true_positives": 0,
+        "false_positives": 0,
+        "false_negatives": 162858,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "rain_in_current_5m": {
+        "true_positives": 105920,
+        "false_positives": 151472,
+        "false_negatives": 56938,
+        "precision": 0.4115124013178343,
+        "recall": 0.650382541846271,
+        "f1": 0.5040809042236765
+      },
+      "persistence_last_30m_exceeds_r": {
+        "true_positives": 89014,
+        "false_positives": 93228,
+        "false_negatives": 73844,
+        "precision": 0.4884384499731127,
+        "recall": 0.5465743162755283,
+        "f1": 0.5158736598087511
+      }
+    }
+  }
+}

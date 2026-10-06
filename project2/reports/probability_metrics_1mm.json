@@ -1,0 +1,37 @@
+{
+  "rainfall_threshold_mm": 1.0,
+  "decision_threshold": 0.651,
+  "decision_threshold_selected_on": "2023 validation only",
+  "splits": {
+    "validation": {
+      "rows": 6683128,
+      "positive_prevalence": 0.02629382528660232,
+      "brier_score": 0.12798406981408575,
+      "brier_score_climatology": 0.025602460038399954,
+      "brier_skill_score": -3.998897356821505,
+      "precision_at_frozen_threshold": 0.5149798280043135,
+      "recall_at_frozen_threshold": 0.5353592260634514,
+      "f1_at_frozen_threshold": 0.5249718195109428,
+      "true_positives": 94076,
+      "false_positives": 88603,
+      "false_negatives": 81649,
+      "roc_auc": 0.8907550738672224,
+      "pr_auc": 0.47281831399244456
+    },
+    "test": {
+      "rows": 6334889,
+      "positive_prevalence": 0.025708106329882022,
+      "brier_score": 0.1286976994819272,
+      "brier_score_climatology": 0.0250471995988135,
+      "brier_skill_score": -4.138207126677094,
+      "precision_at_frozen_threshold": 0.5088450785693628,
+      "recall_at_frozen_threshold": 0.5185621830060544,
+      "f1_at_frozen_threshold": 0.5136576791372945,
+      "true_positives": 84452,
+      "false_positives": 81516,
+      "false_negatives": 78406,
+      "roc_auc": 0.8776608290650096,
+      "pr_auc": 0.4569432958975849
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "model": "gbt",
+  "threshold_mm": 1.0,
+  "train_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_year": 2023,
+  "features": [
+    "station_index",
+    "longitude",
+    "latitude",
+    "rainfall_last_5m_mm",
+    "rainfall_last_15m_mm",
+    "rainfall_last_30m_mm",
+    "rainfall_last_60m_mm",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "day_of_week_sgt"
+  ],
+  "sampling": {
+    "source_counts": {
+      "1.0": 791875,
+      "0.0": 33183679
+    },
+    "sample_counts": {
+      "1.0": 791875,
+      "0.0": 2373547
+    },
+    "negative_sampling_fraction": 0.07159016334505888,
+    "negative_to_positive_target": 3.0,
+    "seed": 5208
+  },
+  "validation_at_default_probability_threshold": {
+    "rows": 6683128,
+    "roc_auc": 0.916828788730578,
+    "pr_auc": 0.5676397940582684,
+    "precision_at_0_5": 0.20646275132921835,
+    "recall_at_0_5": 0.7690083937971262,
+    "f1_at_0_5": 0.32552800679317545,
+    "true_positives": 135134,
+    "false_positives": 519386,
+    "false_negatives": 40591
+  },
+  "model_dir": "/home/erchius/development/dsa5208/project1/project2/models/gbt_threshold_1mm",
+  "test_set_status": "not evaluated; select candidate and probability threshold using validation first"
+}

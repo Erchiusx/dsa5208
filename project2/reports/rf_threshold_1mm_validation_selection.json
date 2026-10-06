@@ -1,0 +1,17 @@
+{
+  "rainfall_threshold_mm": 1.0,
+  "selection_dataset": "2023 validation only",
+  "selection_method": "maximum F1 over probability thresholds at 0.001 resolution",
+  "decision_threshold": 0.954,
+  "validation_f1": 0.5782159096465066,
+  "validation_at_selected_threshold": {
+    "rows": 6683128,
+    "true_positives": 94610,
+    "false_positives": 56913,
+    "false_negatives": 81115,
+    "precision": 0.624393656408598,
+    "recall": 0.5383980651586285,
+    "f1": 0.5782159096465066
+  },
+  "test_set_status": "not evaluated; pass --evaluate-test only after selecting a candidate on validation"
+}

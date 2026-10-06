@@ -1,0 +1,25 @@
+{
+  "rainfall_threshold_mm": 1.0,
+  "selection_dataset": "2023 validation only",
+  "selection_method": "maximum F1 over probability thresholds at 0.001 resolution",
+  "decision_threshold": 0.651,
+  "validation_f1": 0.524971819510943,
+  "validation_at_selected_threshold": {
+    "rows": 6683128,
+    "true_positives": 94076,
+    "false_positives": 88603,
+    "false_negatives": 81649,
+    "precision": 0.5149798280043135,
+    "recall": 0.5353592260634514,
+    "f1": 0.5249718195109428
+  },
+  "test_at_selected_threshold": {
+    "rows": 6334889,
+    "true_positives": 84452,
+    "false_positives": 81516,
+    "false_negatives": 78406,
+    "precision": 0.5088450785693628,
+    "recall": 0.5185621830060544,
+    "f1": 0.5136576791372945
+  }
+}
