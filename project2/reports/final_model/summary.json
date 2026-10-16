@@ -1,0 +1,150 @@
+{
+ "all:all:1": {
+  "rows": 6298383,
+  "events": 162852,
+  "bss": 0.4508,
+  "mean_p_over_rate": 1.009,
+  "share_rows": 1.0,
+  "share_events": 1.0,
+  "share_brier": 1.0
+ },
+ "all:all:5": {
+  "rows": 6298383,
+  "events": 52882,
+  "bss": 0.3055,
+  "mean_p_over_rate": 1.045,
+  "share_rows": 1.0,
+  "share_events": 1.0,
+  "share_brier": 1.0
+ },
+ "state:all dry:1": {
+  "rows": 5192424,
+  "events": 20096,
+  "bss": 0.0929,
+  "mean_p_over_rate": 1.12,
+  "share_rows": 0.8244,
+  "share_events": 0.1234,
+  "share_brier": 0.2291
+ },
+ "state:neighbour wet:1": {
+  "rows": 530862,
+  "events": 22339,
+  "bss": 0.1229,
+  "mean_p_over_rate": 1.106,
+  "share_rows": 0.0843,
+  "share_events": 0.1372,
+  "share_brier": 0.2172
+ },
+ "state:station wet:1": {
+  "rows": 575097,
+  "events": 120417,
+  "bss": 0.5808,
+  "mean_p_over_rate": 0.972,
+  "share_rows": 0.0913,
+  "share_events": 0.7394,
+  "share_brier": 0.5537
+ },
+ "state:all dry:5": {
+  "rows": 5192424,
+  "events": 6507,
+  "bss": 0.0373,
+  "mean_p_over_rate": 1.155,
+  "share_rows": 0.8244,
+  "share_events": 0.123,
+  "share_brier": 0.1783
+ },
+ "state:neighbour wet:5": {
+  "rows": 530862,
+  "events": 8066,
+  "bss": 0.0676,
+  "mean_p_over_rate": 1.168,
+  "share_rows": 0.0843,
+  "share_events": 0.1525,
+  "share_brier": 0.204
+ },
+ "state:station wet:5": {
+  "rows": 575097,
+  "events": 38309,
+  "bss": 0.4037,
+  "mean_p_over_rate": 1.0,
+  "share_rows": 0.0913,
+  "share_events": 0.7244,
+  "share_brier": 0.6177
+ },
+ "season:IM1:1": {
+  "rows": 1066298,
+  "events": 26500,
+  "bss": 0.4629,
+  "mean_p_over_rate": 1.035,
+  "share_rows": 0.1693,
+  "share_events": 0.1627,
+  "share_brier": 0.1593
+ },
+ "season:SWM:1": {
+  "rows": 2061529,
+  "events": 41595,
+  "bss": 0.4321,
+  "mean_p_over_rate": 1.036,
+  "share_rows": 0.3273,
+  "share_events": 0.2554,
+  "share_brier": 0.2657
+ },
+ "season:IM2:1": {
+  "rows": 1028561,
+  "events": 33426,
+  "bss": 0.4879,
+  "mean_p_over_rate": 0.991,
+  "share_rows": 0.1633,
+  "share_events": 0.2053,
+  "share_brier": 0.1905
+ },
+ "season:NEM:1": {
+  "rows": 2141995,
+  "events": 61331,
+  "bss": 0.4382,
+  "mean_p_over_rate": 0.988,
+  "share_rows": 0.3401,
+  "share_events": 0.3766,
+  "share_brier": 0.3844
+ },
+ "season:IM1:5": {
+  "rows": 1066298,
+  "events": 9751,
+  "bss": 0.3101,
+  "mean_p_over_rate": 1.076,
+  "share_rows": 0.1693,
+  "share_events": 0.1844,
+  "share_brier": 0.183
+ },
+ "season:SWM:5": {
+  "rows": 2061529,
+  "events": 14362,
+  "bss": 0.2934,
+  "mean_p_over_rate": 1.046,
+  "share_rows": 0.3273,
+  "share_events": 0.2716,
+  "share_brier": 0.2767
+ },
+ "season:IM2:5": {
+  "rows": 1028561,
+  "events": 11453,
+  "bss": 0.3567,
+  "mean_p_over_rate": 0.985,
+  "share_rows": 0.1633,
+  "share_events": 0.2166,
+  "share_brier": 0.2002
+ },
+ "season:NEM:5": {
+  "rows": 2141995,
+  "events": 17316,
+  "bss": 0.279,
+  "mean_p_over_rate": 1.065,
+  "share_rows": 0.3401,
+  "share_events": 0.3274,
+  "share_brier": 0.34
+ },
+ "hour_bss_1mm_range": [
+  0.2476,
+  0.6171
+ ]
+}

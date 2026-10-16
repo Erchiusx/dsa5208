@@ -1,3 +1,9 @@
-# Spark runtime used for cleaning, feature engineering, and modelling.
+# Spark runtime used for cleaning, feature engineering, and modelling (Java 17 required).
 pyspark==4.0.1
 numpy>=2.1,<3
+# pandas UDFs in the ZILN model need pandas + pyarrow; scipy for the error distributions.
+pandas>=2.2
+pyarrow>=15
+scipy>=1.13
+# Task 1 / Task 2 figures.
+matplotlib>=3.9

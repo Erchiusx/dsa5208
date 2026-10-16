@@ -1,0 +1,42 @@
+{
+  "params": {
+    "layers": [
+      155,
+      64,
+      64,
+      15
+    ],
+    "maxIter": 300,
+    "blockSize": 1024,
+    "solver": "l-bfgs"
+  },
+  "n_station": 87,
+  "ziln_dir": "models/ziln_rich_qc",
+  "feature_set": "rich",
+  "train_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "fit_seconds": 1985,
+  "kind": "mlp",
+  "edges": [
+    0.2,
+    0.4,
+    0.5,
+    1.0,
+    1.4,
+    2.0,
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0,
+    50.0
+  ]
+}

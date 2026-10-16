@@ -1,0 +1,111 @@
+rule,station_id,start,end,days_with_data,own_total_mm,own_max5_mm,hours_ge_1mm,n_neighbours,nb_max_mm,nb_median_mm,neighbour_wet_days,nb_median_sum_mm,nb_median_max_mm,nb_totals,detail
+A_stuck_zero,S24B,2017-01-01,2017-04-25,115,0.0,,,,,,29,626.9,61.6,,32648 zero readings
+A_stuck_zero,S66,2017-04-08,2017-04-27,20,0.0,,,,,,6,107.6,30.6,,5433 zero readings
+A_stuck_zero,S63,2017-04-09,2017-04-14,6,0.0,,,,,,3,31.1,12.5,,1489 zero readings
+A_stuck_zero,S112,2017-05-09,2017-06-14,37,0.0,,,,,,12,219.9,39.6,,10460 zero readings
+A_stuck_zero,S29,2017-05-09,2017-05-29,21,0.0,,,,,,7,108.1,20.5,,5884 zero readings
+A_stuck_zero,S11,2017-05-20,2017-06-16,28,0.0,,,,,,9,205.4,41.7,,7714 zero readings
+A_stuck_zero,S29,2017-08-08,2017-09-05,29,0.0,,,,,,3,87.3,38.2,,8165 zero readings
+C_phantom_rain,S106,2017-11-05,2017-11-05,1,57.0,10.6,3,6,2.4,0.4,,,,S29:2.4 S24:0.4 S94:0.4 S81:1.0 S84:0.4 S55:0.4,273 readings
+A_stuck_zero,S84,2017-11-21,2017-11-30,10,0.0,,,,,,3,36.4,16.7,,2833 zero readings
+A_stuck_zero,S29,2017-12-06,2017-12-12,7,0.0,,,,,,4,81.5,30.8,,1951 zero readings
+A_stuck_zero,S29,2017-12-24,2018-01-02,10,0.0,,,,,,5,154.6,73.0,,2576 zero readings
+A_stuck_zero,S90,2018-01-09,2018-01-18,10,0.0,,,,,,6,94.7,38.5,,2832 zero readings
+A_stuck_zero,S91,2018-01-09,2018-01-18,10,0.0,,,,,,6,83.2,24.1,,2831 zero readings
+A_stuck_zero,S106,2018-09-05,2018-09-19,15,0.0,,,,,,3,36.0,13.6,,4268 zero readings
+E_spike,S215,2018-09-07,2018-09-07,,,13.53,,5,0.0,,,,,,"2018-09-07 12:30 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S215,2018-09-07,2018-09-07,,,13.62,,5,0.0,,,,,,"2018-09-07 12:40 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S215,2018-09-07,2018-09-07,,,13.78,,5,0.0,,,,,,"2018-09-07 12:50 SGT, prev=0.0 next=None mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S100,2018-10-30,2018-11-12,14,0.0,,,,,,9,190.6,44.8,,3860 zero readings
+C_phantom_rain,S117,2018-10-31,2018-10-31,1,42.8,8.0,4,6,1.2,0.5,,,,S33:0.2 S89:1.2 S115:1.0 S116:0.2 S82:0.4 S44:0.6,288 readings
+A_stuck_zero,S29,2018-11-01,2018-11-11,11,0.0,,,,,,5,63.7,20.2,,3166 zero readings
+A_stuck_zero,S36,2018-12-04,2020-08-20,506,0.0,,,,,,44,918.5,59.6,,61962 zero readings
+C_phantom_rain,S84,2019-04-08,2019-04-08,1,25.2,12.4,5,8,0.0,0.0,,,,S94:0.0 S61:0.0 S107:0.0 S29:0.0 S24:0.0 S113:0.0 S43:0.0 S215:0.0,288 readings
+E_spike,S84,2019-04-08,2019-04-08,,,5.8,,4,0.0,,,,,,"2019-04-08 09:10 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S84,2019-04-08,2019-04-08,,,12.4,,4,0.0,,,,,,"2019-04-08 19:00 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S89,2019-07-07,2019-07-07,,,5.2,,4,0.2,,,,,,"2019-07-07 22:25 SGT, prev=0.2 next=0.4 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S84,2019-11-24,2020-01-09,47,0.0,,,,,,11,373.3,61.8,,10851 zero readings
+A_stuck_zero,S71,2020-03-12,2020-03-31,20,0.0,,,,,,4,73.8,24.5,,5760 zero readings
+C_phantom_rain,S36,2020-08-21,2020-08-21,1,73.8,11.8,5,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S07:0.0,79 readings
+D_repeat,S36,2020-08-21,2020-09-09,,,,,,,,,,,,6 B/C days <= 30 d apart
+E_spike,S36,2020-08-21,2020-08-21,,,6.0,,7,0.0,,,,,,"2020-08-21 18:50 SGT, prev=0.0 next=0.2 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+C_phantom_rain,S36,2020-08-24,2020-08-24,1,58.6,7.8,5,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S07:0.0,103 readings
+C_phantom_rain,S36,2020-08-28,2020-08-28,1,46.6,12.6,5,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S07:0.0,119 readings
+E_spike,S36,2020-08-29,2020-08-29,,,8.0,,7,0.0,,,,,,"2020-08-29 00:10 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+B_isolated_extreme+C_phantom_rain,S36,2020-08-30,2020-08-30,1,143.8,20.6,8,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S07:0.0,98 readings
+E_spike,S36,2020-08-30,2020-08-30,,,6.6,,7,0.0,,,,,,"2020-08-30 16:00 SGT, prev=0.4 next=0.4 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+C_phantom_rain,S36,2020-09-08,2020-09-08,1,46.2,6.8,4,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S07:0.0,109 readings
+C_phantom_rain,S36,2020-09-09,2020-09-09,1,60.2,19.6,3,8,0.2,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S07:0.2,32 readings
+A_stuck_zero,S118,2020-10-29,2020-11-09,12,0.0,,,,,,5,119.4,33.5,,3238 zero readings
+B_isolated_extreme+C_phantom_rain,S36,2020-11-12,2020-11-12,1,125.2,12.2,7,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S215:0.0 S221:0.0 S07:0.0 S119:0.0,104 readings
+E_spike,S36,2020-11-12,2020-11-12,,,11.4,,6,0.0,,,,,,"2020-11-12 18:15 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S36,2020-11-12,2020-11-12,,,5.2,,6,0.0,,,,,,"2020-11-12 21:00 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S36,2020-11-13,2020-11-13,,,5.4,,6,0.0,,,,,,"2020-11-13 01:05 SGT, prev=0.2 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S36,2020-12-18,2020-12-18,,,11.4,,7,0.0,,,,,,"2020-12-18 01:45 SGT, prev=0.6 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S218,2021-01-05,2021-01-20,16,0.0,,,,,,3,148.3,87.5,,4302 zero readings
+A_stuck_zero,S208,2021-01-12,2021-02-01,21,0.0,,,,,,3,51.0,16.1,,6048 zero readings
+A_stuck_zero,S226,2021-01-14,2021-01-30,17,0.0,,,,,,4,46.5,24.6,,4896 zero readings
+B_isolated_extreme+C_phantom_rain,S36,2021-01-20,2021-01-20,1,137.8,15.0,6,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0,288 readings
+D_repeat,S36,2021-01-20,2021-01-26,,,,,,,,,,,,3 B/C days <= 30 d apart
+E_spike,S36,2021-01-20,2021-01-20,,,10.4,,7,0.0,,,,,,"2021-01-20 10:45 SGT, prev=0.0 next=0.2 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+B_isolated_extreme+C_phantom_rain,S36,2021-01-21,2021-01-21,1,141.2,14.8,11,8,4.6,1.2,,,,S217:1.6 S88:1.6 S123:0.2 S43:4.4 S216:0.8 S215:0.4 S221:4.6 S119:0.0,228 readings
+C_phantom_rain,S36,2021-01-26,2021-01-26,1,69.0,10.0,6,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0,138 readings
+E_spike,S36,2021-01-26,2021-01-26,,,9.8,,7,0.0,,,,,,"2021-01-26 17:05 SGT, prev=0.0 next=0.2 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S36,2021-01-26,2021-01-26,,,5.4,,7,0.0,,,,,,"2021-01-26 17:50 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S226,2021-02-01,2021-04-02,61,0.0,,,,,,11,337.7,63.3,,17547 zero readings
+C_phantom_rain,S36,2021-03-22,2021-03-22,1,48.8,9.2,4,8,0.0,0.0,,,,S217:0.0 S88:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0 S78:0.0,82 readings
+D_repeat,S36,2021-03-22,2021-05-16,,,,,,,,,,,,11 B/C days <= 30 d apart
+C_phantom_rain,S123,2021-03-30,2021-03-30,1,30.4,0.2,24,8,0.0,0.0,,,,S119:0.0 S88:0.0 S111:0.0 S118:0.0 S217:0.0 S79:0.0 S215:0.0 S214:0.0,288 readings
+B_isolated_extreme+C_phantom_rain,S36,2021-04-01,2021-04-01,1,318.2,19.6,12,8,13.8,0.0,,,,S217:0.0 S88:0.0 S123:13.8 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0,288 readings
+E_spike,S36,2021-04-01,2021-04-01,,,10.0,,7,0.2,,,,,,"2021-04-01 06:25 SGT, prev=0.2 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S36,2021-04-01,2021-04-01,,,5.6,,7,0.2,,,,,,"2021-04-01 06:45 SGT, prev=0.0 next=0.4 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S36,2021-04-01,2021-04-01,,,7.8,,7,0.2,,,,,,"2021-04-01 09:50 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+C_phantom_rain,S36,2021-04-07,2021-04-07,1,67.2,18.4,3,8,0.8,0.0,,,,S217:0.0 S88:0.0 S123:0.8 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S78:0.0,126 readings
+E_spike,S36,2021-04-07,2021-04-07,,,6.0,,7,0.0,,,,,,"2021-04-07 21:05 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S226,2021-04-10,2021-04-21,12,0.0,,,,,,4,171.7,125.8,,3456 zero readings
+B_isolated_extreme+C_phantom_rain,S36,2021-04-10,2021-04-10,1,126.6,16.0,5,8,0.4,0.0,,,,S217:0.0 S88:0.0 S123:0.4 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0,61 readings
+C_phantom_rain,S36,2021-04-12,2021-04-12,1,31.6,5.0,6,8,0.4,0.0,,,,S217:0.0 S88:0.0 S123:0.4 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.2,74 readings
+C_phantom_rain,S36,2021-04-13,2021-04-13,1,54.4,15.8,4,8,0.4,0.0,,,,S217:0.0 S88:0.0 S123:0.4 S43:0.0 S216:0.2 S215:0.0 S221:0.0 S119:0.0,25 readings
+E_spike,S36,2021-04-14,2021-04-14,,,5.6,,7,0.0,,,,,,"2021-04-14 14:25 SGT, prev=0.2 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S36,2021-04-14,2021-04-14,,,12.2,,7,0.0,,,,,,"2021-04-14 14:55 SGT, prev=0.0 next=None mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+C_phantom_rain,S36,2021-04-19,2021-04-19,1,41.0,9.0,5,8,1.2,0.0,,,,S217:0.2 S88:0.4 S123:0.0 S43:0.0 S216:1.2 S215:0.0 S221:0.0 S119:0.0,52 readings
+E_spike,S36,2021-04-19,2021-04-19,,,9.0,,7,0.0,,,,,,"2021-04-19 14:15 SGT, prev=0.0 next=0.4 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S36,2021-04-21,2021-04-21,,,12.8,,7,0.0,,,,,,"2021-04-21 14:10 SGT, prev=None next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+B_isolated_extreme+C_phantom_rain,S36,2021-04-23,2021-04-23,1,100.4,11.0,6,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0,79 readings
+C_phantom_rain,S36,2021-04-25,2021-04-25,1,41.6,6.6,5,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0,45 readings
+C_phantom_rain,S36,2021-05-02,2021-05-02,1,59.2,7.6,6,8,0.0,0.0,,,,S217:0.0 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0,79 readings
+E_spike,S36,2021-05-02,2021-05-02,,,5.6,,7,0.0,,,,,,"2021-05-02 17:40 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+B_isolated_extreme+C_phantom_rain,S36,2021-05-16,2021-05-16,1,106.4,22.2,5,8,0.2,0.0,,,,S217:0.2 S88:0.0 S123:0.0 S43:0.0 S216:0.0 S215:0.0 S221:0.0 S119:0.0,99 readings
+E_spike,S36,2021-05-22,2021-05-22,,,5.2,,7,0.0,,,,,,"2021-05-22 17:30 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S226,2021-06-08,2021-06-19,12,0.0,,,,,,3,59.8,31.2,,3456 zero readings
+C_phantom_rain,S71,2021-06-21,2021-06-21,1,33.2,0.2,19,8,0.2,0.0,,,,S203:0.2 S230:0.0 S223:0.2 S226:0.0 S202:0.2 S116:0.0 S77:0.0 S201:0.0,288 readings
+A_stuck_zero,S36,2021-07-16,2021-08-31,21,0.0,,,,,,3,38.0,16.6,,2155 zero readings
+A_stuck_zero,S213,2021-08-11,2021-08-15,5,0.0,,,,,,3,63.6,23.1,,1440 zero readings
+A_stuck_zero,S36,2021-09-10,2022-02-17,93,0.0,,,,,,6,132.1,24.1,,5776 zero readings
+A_stuck_zero,S33,2022-01-21,2022-02-07,18,0.0,,,,,,3,53.9,34.3,,5184 zero readings
+A_stuck_zero,S36,2022-02-24,2022-03-23,28,0.0,,,,,,11,269.9,51.6,,5592 zero readings
+E_spike,S40,2022-03-16,2022-03-16,,,18.2,,5,0.0,,,,,,"2022-03-16 12:40 SGT, prev=0.0 next=0.2 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S40,2022-03-26,2022-03-26,,,12.8,,5,0.2,,,,,,"2022-03-26 21:30 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S208,2022-04-07,2022-05-06,30,0.0,,,,,,8,164.5,33.4,,8635 zero readings
+A_stuck_zero,S82,2022-04-14,2022-04-18,5,0.0,,,,,,3,50.2,19.6,,1440 zero readings
+B_isolated_extreme,S107,2022-08-20,2022-08-20,1,261.4,29.4,10,8,31.8,9.5,,,,S207:0.4 S212:19.2 S84:31.8 S224:2.8 S208:0.4 S113:7.0 S94:23.0 S24:12.0,286 readings
+E_spike,S107,2022-08-20,2022-08-20,,,15.0,,7,0.0,,,,,,"2022-08-20 16:00 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+B_isolated_extreme+C_phantom_rain,S107,2022-08-21,2022-08-21,1,786.4,37.2,21,8,31.8,19.5,,,,S207:15.1 S212:31.8 S84:20.8 S224:18.3 S208:25.3 S113:30.6 S94:10.8 S24:6.6,282 readings
+E_spike,S107,2022-08-21,2022-08-21,,,6.4,,7,0.0,,,,,,"2022-08-21 16:30 SGT, prev=0.0 next=0.6 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S107,2022-08-21,2022-08-21,,,8.4,,7,0.0,,,,,,"2022-08-21 16:40 SGT, prev=0.6 next=None mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S107,2022-08-21,2022-08-21,,,8.0,,7,0.0,,,,,,"2022-08-21 21:40 SGT, prev=0.0 next=0.0 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+E_spike,S107,2022-08-21,2022-08-21,,,7.2,,7,0.0,,,,,,"2022-08-21 23:45 SGT, prev=None next=None mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S208,2023-01-25,2023-02-06,13,0.0,,,,,,9,143.5,43.6,,3707 zero readings
+A_stuck_zero,S204,2023-03-21,2023-03-29,9,0.0,,,,,,3,41.0,14.1,,2592 zero readings
+A_stuck_zero,S112,2023-08-06,2023-08-23,18,0.0,,,,,,3,62.6,20.5,,5184 zero readings
+A_stuck_zero,S66,2023-09-09,2023-09-29,21,0.0,,,,,,5,61.3,22.0,,6048 zero readings
+C_phantom_rain,S89,2023-09-18,2023-09-18,1,21.8,3.4,3,6,1.0,0.0,,,,S228:0.0 S33:0.0 S115:1.0 S117:0.8 S229:0.0 S121:0.0,288 readings
+E_spike,S33,2023-12-01,2023-12-01,,,5.4,,4,0.0,,,,,,"2023-12-01 17:35 SGT, prev=0.0 next=0.2 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S208,2024-01-21,2024-02-05,16,0.0,,,,,,4,107.0,54.6,,4604 zero readings
+A_stuck_zero,S104,2024-04-29,2024-05-12,14,0.0,,,,,,6,106.1,39.0,,3827 zero readings
+A_stuck_zero,S208,2024-05-05,2024-05-17,13,0.0,,,,,,4,61.3,23.0,,3739 zero readings
+A_stuck_zero,S115,2024-05-19,2024-06-27,30,0.0,,,,,,8,117.2,38.8,,8278 zero readings
+A_stuck_zero,S112,2024-05-23,2024-06-04,13,0.0,,,,,,4,75.9,28.9,,3729 zero readings
+A_stuck_zero,S208,2024-06-03,2024-07-02,30,0.0,,,,,,7,222.4,77.0,,8625 zero readings
+E_spike,S88,2024-12-15,2024-12-15,,,5.4,,6,0.0,,,,,,"2024-12-15 15:45 SGT, prev=0.0 next=0.2 mm; nb_max_mm = max neighbour 5-min value within +-30 min"
+A_stuck_zero,S224,2024-12-19,2024-12-31,13,0.0,,,,,,5,66.2,32.2,,3743 zero readings

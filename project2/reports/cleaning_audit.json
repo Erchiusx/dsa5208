@@ -1,0 +1,97 @@
+{
+  "readings": {
+    "n": 48538713,
+    "sec_ne_0": 1775327,
+    "off_slot": 1775327,
+    "off_0p2_lattice": 323342,
+    "wet": 1416983
+  },
+  "off_lattice_values": [
+    [
+      0.201,
+      47849
+    ],
+    [
+      0.203,
+      40431
+    ],
+    [
+      0.204,
+      24951
+    ],
+    [
+      0.202,
+      17353
+    ],
+    [
+      0.198,
+      14995
+    ],
+    [
+      0.197,
+      14357
+    ],
+    [
+      0.402,
+      14308
+    ],
+    [
+      0.406,
+      11401
+    ],
+    [
+      0.408,
+      7467
+    ],
+    [
+      0.603,
+      6653
+    ],
+    [
+      0.609,
+      5542
+    ],
+    [
+      0.404,
+      5223
+    ]
+  ],
+  "slot_duplicates": {
+    "slots_with_2plus": 86,
+    "slots_conflicting_values": 0
+  },
+  "after_gap": {
+    "readings_after_1h_gap": 12542,
+    "p_ge5_after_gap": 0.0005581247010046245,
+    "p_ge5_regular": 0.0008085150623629764,
+    "p_wet_after_gap": 0.019614096635305375,
+    "p_wet_regular": 0.02922087123114094
+  },
+  "labels": {
+    "rows": 46993571,
+    "eps_above_0.2": 0,
+    "eps_above_0.4": 0,
+    "eps_above_0.5": 0,
+    "eps_above_1": 0,
+    "eps_above_2": 2186,
+    "eps_above_5": 1781,
+    "eps_above_10": 324,
+    "eps_above_20": 65,
+    "true_above_0.2": 2140148,
+    "true_above_0.4": 1687409,
+    "true_above_0.5": 1621868,
+    "true_above_1": 1130458,
+    "true_above_2": 749107,
+    "true_above_5": 386168,
+    "true_above_10": 183896,
+    "true_above_20": 50855
+  },
+  "slot_exact_target": {
+    "rows": 46993571,
+    "slot_window_incomplete": 0,
+    "y_differs": 0,
+    "label_differs_1": 0,
+    "label_differs_5": 0,
+    "sum_y_minus_slot": null
+  }
+}

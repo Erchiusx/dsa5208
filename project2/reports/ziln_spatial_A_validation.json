@@ -1,0 +1,47 @@
+{
+  "model_dir": "models/ziln_spatial_A",
+  "n_wet": 2039695,
+  "n_dry": 31935859,
+  "dry_keep_rate": 0.1916054614344333,
+  "gbt_params_occurrence": {
+    "maxIter": 60,
+    "maxDepth": 6,
+    "stepSize": 0.05,
+    "maxBins": 128,
+    "subsamplingRate": 0.8,
+    "seed": 5208
+  },
+  "gbt_params_amount": {
+    "maxIter": 60,
+    "maxDepth": 6,
+    "stepSize": 0.05,
+    "maxBins": 128,
+    "subsamplingRate": 0.8,
+    "seed": 5208
+  },
+  "train_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_year": 2023,
+  "sigma_selection_2023": {
+    "const": {
+      "nll_lattice": 0.3219250544759748,
+      "nll_density": 0.2185367357122236,
+      "crps": 0.11154783531223281,
+      "rows": 6683128
+    },
+    "gbt": {
+      "nll_lattice": 0.31741156895755196,
+      "nll_density": 0.2137316960747739,
+      "crps": 0.11058598442941915,
+      "rows": 6683128
+    }
+  },
+  "selection_rule": "lowest 2023 lattice NLL",
+  "test_set_status": "not evaluated; run evaluate_ziln.py"
+}

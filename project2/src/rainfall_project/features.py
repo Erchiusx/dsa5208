@@ -40,7 +40,7 @@ def feature_frame(cleaned: DataFrame) -> DataFrame:
         .withColumn("history_15m_observations", F.count("rainfall_mm").over(recent_15m))
         .withColumn("history_30m_observations", F.count("rainfall_mm").over(recent_30m))
         .withColumn("history_60m_observations", F.count("rainfall_mm").over(recent_60m))
-        .withColumn("future_30m_rainfall_mm", F.sum("rainfall_mm").over(future_30m))
+        .withColumn("future_30m_rainfall_mm", F.round(F.sum("rainfall_mm").over(future_30m), 3))  # see ziln.eligible
         .withColumn("future_30m_observations", F.count("rainfall_mm").over(future_30m))
         .withColumn("history_60m_complete", F.col("history_60m_observations") == 13)
         .withColumn("future_30m_complete", F.col("future_30m_observations") == 6)

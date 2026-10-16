@@ -12,3 +12,13 @@ project2/data/processed/*
 !project2/data/processed/.gitkeep
 project2/models/*
 !project2/models/.gitkeep
+# the submitted final model (occurrence GBT + MLP amount model, 3.7 MB)
+!project2/models/ziln_rich_qc/
+!project2/models/amount_mlp_qc/
+.tools/
+# Project 2: QC'd data can be recreated with scripts/run_qc_pipeline.sh; local experiment environment.
+project2/data/interim_qc/
+project2/data/processed_qc/
+project2/experiments/distributional/.venv/
+project2/experiments/distributional/runs/
+project2/experiments/distributional/*.log

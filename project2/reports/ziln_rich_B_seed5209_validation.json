@@ -1,0 +1,104 @@
+{
+  "model_dir": "models/ziln_rich_B_seed5209",
+  "n_wet": 2039695,
+  "n_dry": 31935859,
+  "dry_keep_rate": 0.1916054614344333,
+  "gbt_params_occurrence": {
+    "maxIter": 120,
+    "maxDepth": 6,
+    "stepSize": 0.2,
+    "maxBins": 128,
+    "subsamplingRate": 0.8,
+    "seed": 5209
+  },
+  "gbt_params_amount": {
+    "maxIter": 100,
+    "maxDepth": 6,
+    "stepSize": 0.1,
+    "maxBins": 128,
+    "subsamplingRate": 0.8,
+    "seed": 5209
+  },
+  "variance_model": "log_r2",
+  "variance_scale_c": 3.0367914446738435,
+  "train_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_year": 2023,
+  "feature_set": "rich",
+  "selection_2023": {
+    "const/gaussian": {
+      "nll_lattice": 0.3030574257094432,
+      "nll_density": 0.1983515666559727,
+      "crps": 0.10667548946610649,
+      "mean_p_gt_1": 0.028480457992848585,
+      "rate_gt_1": 0.02629382528660232,
+      "mean_p_gt_5": 0.0063404123861727285,
+      "rate_gt_5": 0.008738273455184459,
+      "mean_p_gt_10": 0.0026577491376598658,
+      "rate_gt_10": 0.004123518208838735
+    },
+    "const/empirical": {
+      "nll_lattice": 0.30216499205736985,
+      "nll_density": null,
+      "crps": 0.10739514967546131,
+      "mean_p_gt_1": 0.02690196315085818,
+      "rate_gt_1": 0.02629382528660232,
+      "mean_p_gt_5": 0.006849833477639751,
+      "rate_gt_5": 0.008738273455184459,
+      "mean_p_gt_10": 0.0031352658967722055,
+      "rate_gt_10": 0.004123518208838735
+    },
+    "const/empirical_by_m": {
+      "nll_lattice": 0.2970083608853587,
+      "nll_density": null,
+      "crps": 0.10623452799533141,
+      "mean_p_gt_1": 0.026567567225376194,
+      "rate_gt_1": 0.02629382528660232,
+      "mean_p_gt_5": 0.008492185430882506,
+      "rate_gt_5": 0.008738273455184459,
+      "mean_p_gt_10": 0.003844706559146981,
+      "rate_gt_10": 0.004123518208838735
+    },
+    "gbt/gaussian": {
+      "nll_lattice": 0.2989150309800927,
+      "nll_density": 0.1938000547901468,
+      "crps": 0.10598183239343373,
+      "mean_p_gt_1": 0.027397442694841737,
+      "rate_gt_1": 0.02629382528660232,
+      "mean_p_gt_5": 0.0071981001344902755,
+      "rate_gt_5": 0.008738273455184459,
+      "mean_p_gt_10": 0.0032950392860943765,
+      "rate_gt_10": 0.004123518208838735
+    },
+    "gbt/empirical": {
+      "nll_lattice": 0.2975180184419869,
+      "nll_density": null,
+      "crps": 0.10642682511095616,
+      "mean_p_gt_1": 0.026247604010317338,
+      "rate_gt_1": 0.02629382528660232,
+      "mean_p_gt_5": 0.007298988542169086,
+      "rate_gt_5": 0.008738273455184459,
+      "mean_p_gt_10": 0.00351112548945962,
+      "rate_gt_10": 0.004123518208838735
+    },
+    "gbt/empirical_by_m": {
+      "nll_lattice": 0.2947888046713054,
+      "nll_density": null,
+      "crps": 0.10580675386247426,
+      "mean_p_gt_1": 0.026825295149804234,
+      "rate_gt_1": 0.02629382528660232,
+      "mean_p_gt_5": 0.008116845641287639,
+      "rate_gt_5": 0.008738273455184459,
+      "mean_p_gt_10": 0.003787998191795994,
+      "rate_gt_10": 0.004123518208838735
+    }
+  },
+  "selection_rule": "lowest 2023 lattice NLL over sigma x error distribution",
+  "test_set_status": "not evaluated; run evaluate_ziln.py"
+}

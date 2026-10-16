@@ -1,0 +1,234 @@
+{
+  "config": {
+    "radius_km": 10.0,
+    "neighbour_count": 8,
+    "hour_cover": 0.8,
+    "stuck_wet_median_mm": 5.0,
+    "stuck_min_neighbours": 3,
+    "stuck_min_wet_days": 3,
+    "extreme_total_mm": 100.0,
+    "extreme_ratio": 0.15,
+    "extreme_min_neighbours": 3,
+    "phantom_total_mm": 20.0,
+    "phantom_ratio": 0.05,
+    "phantom_hour_mm": 1.0,
+    "phantom_min_hours": 3,
+    "phantom_min_neighbours": 5,
+    "repeat_min_days": 3,
+    "repeat_max_gap_days": 30,
+    "day_buffer": 1,
+    "spike_mm": 5.0,
+    "spike_adjacent_ratio": 0.1,
+    "spike_neighbour_mm": 1.0,
+    "spike_window_slots": 6,
+    "spike_min_neighbours": 3
+  },
+  "rules": {
+    "A_stuck_zero": "run of consecutive station-days with data and exact-zero total (no-data days do not break it) containing >= 3 days whose hour-matched neighbour median >= 5.0 mm (>= 3 neighbours); whole run masked",
+    "B_isolated_extreme": "station-day total >= 100.0 mm and wettest hour-matched neighbour < 15% of it (>= 3 neighbours); day +-1 masked",
+    "C_phantom_rain": "station-day total >= 20.0 mm with >= 1.0 mm in >= 3 different hours, wettest of >= 5 hour-matched neighbours <= 5% of it; day +-1 masked",
+    "D_repeat": ">= 3 B/C days at a station with consecutive flags <= 30 days apart; span first..last +-1 day masked",
+    "E_spike": "single 5-min value >= 5.0 mm, own previous and next readings < 10% of it, and no reading >= 1.0 mm at any of the 8 nearest neighbours within 10.0 km (>= 3 reporting) within +-30 min; that slot masked",
+    "neighbours": "stations within 10.0 km; daily totals are hour-matched (only hours in which the station reported), a neighbour must cover >= 80% of those hours, nearest 8 used"
+  },
+  "flag_events_by_start_year": {
+    "2017": {
+      "A_stuck_zero": 10,
+      "C_phantom_rain": 1
+    },
+    "2018": {
+      "A_stuck_zero": 6,
+      "E_spike": 3,
+      "C_phantom_rain": 1
+    },
+    "2019": {
+      "C_phantom_rain": 1,
+      "E_spike": 3,
+      "A_stuck_zero": 1
+    },
+    "2020": {
+      "A_stuck_zero": 2,
+      "C_phantom_rain": 5,
+      "D_repeat": 1,
+      "E_spike": 7,
+      "B_isolated_extreme+C_phantom_rain": 2
+    },
+    "2021": {
+      "A_stuck_zero": 9,
+      "B_isolated_extreme+C_phantom_rain": 6,
+      "D_repeat": 2,
+      "E_spike": 13,
+      "C_phantom_rain": 10
+    },
+    "2022": {
+      "A_stuck_zero": 4,
+      "E_spike": 7,
+      "B_isolated_extreme": 1,
+      "B_isolated_extreme+C_phantom_rain": 1
+    },
+    "2023": {
+      "A_stuck_zero": 4,
+      "C_phantom_rain": 1,
+      "E_spike": 1
+    },
+    "2024": {
+      "A_stuck_zero": 7,
+      "E_spike": 1
+    }
+  },
+  "masked_station_days_by_year_and_rule": {
+    "2017": {
+      "A_stuck_zero": 281,
+      "C_phantom_rain": 3
+    },
+    "2018": {
+      "C_phantom_rain": 3,
+      "A_stuck_zero": 87
+    },
+    "2019": {
+      "C_phantom_rain": 3,
+      "A_stuck_zero": 356
+    },
+    "2020": {
+      "A_stuck_zero": 204,
+      "C_phantom_rain": 10,
+      "B_isolated_extreme": 5,
+      "D_repeat": 18
+    },
+    "2021": {
+      "A_stuck_zero": 218,
+      "B_isolated_extreme": 15,
+      "D_repeat": 40,
+      "C_phantom_rain": 23
+    },
+    "2022": {
+      "A_stuck_zero": 121,
+      "B_isolated_extreme": 4
+    },
+    "2023": {
+      "A_stuck_zero": 61,
+      "C_phantom_rain": 3
+    },
+    "2024": {
+      "A_stuck_zero": 129
+    }
+  },
+  "masked_station_days_by_year": {
+    "2017": 284,
+    "2018": 90,
+    "2019": 359,
+    "2020": 223,
+    "2021": 264,
+    "2022": 125,
+    "2023": 64,
+    "2024": 129
+  },
+  "readings_by_year": {
+    "2017": {
+      "rows_before": 5256106,
+      "rows_after": 5176714,
+      "rows_removed": 79392,
+      "rows_removed_day_masks": 79392,
+      "rows_matched_by_rule": {
+        "A_stuck_zero": 78667,
+        "B_isolated_extreme": 0,
+        "C_phantom_rain": 725,
+        "D_repeat": 0,
+        "E_spike": 0
+      }
+    },
+    "2018": {
+      "rows_before": 4594246,
+      "rows_after": 4571885,
+      "rows_removed": 22361,
+      "rows_removed_day_masks": 22358,
+      "rows_matched_by_rule": {
+        "A_stuck_zero": 21494,
+        "B_isolated_extreme": 0,
+        "C_phantom_rain": 864,
+        "D_repeat": 0,
+        "E_spike": 3
+      }
+    },
+    "2019": {
+      "rows_before": 5026862,
+      "rows_after": 4970910,
+      "rows_removed": 55952,
+      "rows_removed_day_masks": 55951,
+      "rows_matched_by_rule": {
+        "A_stuck_zero": 55087,
+        "B_isolated_extreme": 0,
+        "C_phantom_rain": 864,
+        "D_repeat": 0,
+        "E_spike": 3
+      }
+    },
+    "2020": {
+      "rows_before": 6334473,
+      "rows_after": 6309796,
+      "rows_removed": 24677,
+      "rows_removed_day_masks": 24676,
+      "rows_matched_by_rule": {
+        "A_stuck_zero": 22675,
+        "B_isolated_extreme": 671,
+        "C_phantom_rain": 654,
+        "D_repeat": 1684,
+        "E_spike": 7
+      }
+    },
+    "2021": {
+      "rows_before": 7044646,
+      "rows_after": 6991403,
+      "rows_removed": 53243,
+      "rows_removed_day_masks": 53242,
+      "rows_matched_by_rule": {
+        "A_stuck_zero": 47646,
+        "B_isolated_extreme": 1527,
+        "C_phantom_rain": 3377,
+        "D_repeat": 3868,
+        "E_spike": 13
+      }
+    },
+    "2022": {
+      "rows_before": 7133230,
+      "rows_after": 7109821,
+      "rows_removed": 23409,
+      "rows_removed_day_masks": 23407,
+      "rows_matched_by_rule": {
+        "A_stuck_zero": 22281,
+        "B_isolated_extreme": 1126,
+        "C_phantom_rain": 0,
+        "D_repeat": 0,
+        "E_spike": 7
+      }
+    },
+    "2023": {
+      "rows_before": 6742890,
+      "rows_after": 6724494,
+      "rows_removed": 18396,
+      "rows_removed_day_masks": 18395,
+      "rows_matched_by_rule": {
+        "A_stuck_zero": 17531,
+        "B_isolated_extreme": 0,
+        "C_phantom_rain": 864,
+        "D_repeat": 0,
+        "E_spike": 1
+      }
+    },
+    "2024": {
+      "rows_before": 6406260,
+      "rows_after": 6369714,
+      "rows_removed": 36546,
+      "rows_removed_day_masks": 36545,
+      "rows_matched_by_rule": {
+        "A_stuck_zero": 36545,
+        "B_isolated_extreme": 0,
+        "C_phantom_rain": 0,
+        "D_repeat": 0,
+        "E_spike": 1
+      }
+    }
+  },
+  "flags_csv": "reports/qc_flags.csv",
+  "neighbour_pairs_within_radius": 2660
+}
