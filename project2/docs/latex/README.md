@@ -1,7 +1,6 @@
 # Report source
 
-`main.tex` is the DSA5208 Project 2 report by Jia Siqi and Jia Zeyue. Jia Zeyue's student
-ID is still to be added to the `\memberB` macro at the top before submitting.
+`main.tex` is the DSA5208 Project 2 report by Jia Siqi (A0333724H) and Jia Zeyue (A0326500U).
 
 ## Local compilation
 
