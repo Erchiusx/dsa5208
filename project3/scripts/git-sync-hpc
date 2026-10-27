@@ -25,4 +25,6 @@ rsync -avz --itemize-changes "${rsync_options[@]}" \
   --exclude='/build/' \
   --exclude='/results/' \
   --exclude='/logs/' \
+  --exclude='/figures/*.aux' \
+  --exclude='/figures/*.log' \
   "$project_dir/" "$destination"
