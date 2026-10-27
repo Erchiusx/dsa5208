@@ -171,22 +171,24 @@ Result root_search(const chess::Board& initial, const chess::Movelist& moves, in
     for (int i = first_parallel; i < n; ++i) local_work_nodes += per_move[i].nodes;
 #ifdef USE_MPI
     if (use_mpi) {
-        if (rank == 0) {
-            result.rank_nodes.resize(ranks);
-            result.rank_work_seconds.resize(ranks);
+        if (seed_first) {
+            if (rank == 0) {
+                result.rank_nodes.resize(ranks);
+                result.rank_work_seconds.resize(ranks);
+            }
+            MPI_Gather(&local_work_nodes, 1, MPI_UINT64_T,
+                       rank == 0 ? result.rank_nodes.data() : nullptr, 1, MPI_UINT64_T,
+                       0, MPI_COMM_WORLD);
+            MPI_Gather(&local_work_seconds, 1, MPI_DOUBLE,
+                       rank == 0 ? result.rank_work_seconds.data() : nullptr, 1, MPI_DOUBLE,
+                       0, MPI_COMM_WORLD);
         }
-        MPI_Gather(&local_work_nodes, 1, MPI_UINT64_T,
-                   rank == 0 ? result.rank_nodes.data() : nullptr, 1, MPI_UINT64_T,
-                   0, MPI_COMM_WORLD);
-        MPI_Gather(&local_work_seconds, 1, MPI_DOUBLE,
-                   rank == 0 ? result.rank_work_seconds.data() : nullptr, 1, MPI_DOUBLE,
-                   0, MPI_COMM_WORLD);
         std::vector<int> combined(n);
         MPI_Allreduce(scores.data(), combined.data(), n, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
         scores.swap(combined);
     }
 #endif
-    if (!use_mpi) {
+    if (!use_mpi && seed_first) {
         result.rank_nodes = {local_work_nodes};
         result.rank_work_seconds = {local_work_seconds};
     }

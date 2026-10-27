@@ -23,5 +23,21 @@ Every trial returned score -100, move `a2a3`, and 25,604,258 search nodes,
 matching the serial alpha-beta baseline's result and work count. The four-node
 configuration is slower than the two-node configuration. These allocations
 used different hosts, so the cause cannot be isolated from this table alone.
-The next instrumented run will record first-move time and each rank's work
-to distinguish serial setup from load imbalance.
+
+An instrumented 4-node run (1500122) used the same four CN hosts as 1500114
+and returned the same score, move, and total node count. It took 3.81183
+seconds. The first root move used 1,079,144 nodes and 0.346827 seconds.
+After that, rank-local work was:
+
+| Rank | Parallel nodes | Parallel search seconds |
+| ---: | ---: | ---: |
+| 0 | 14,144,715 | 3.45865 |
+| 1 | 2,635,093 | 0.333183 |
+| 2 | 3,860,797 | 0.444193 |
+| 3 | 3,884,508 | 0.391087 |
+
+The first-move serial phase was only about 9% of total time; rank 0's
+static assignment dominates the remaining critical path. This is direct
+evidence of load imbalance from mapping root moves by `move_index % ranks`.
+The instrumented source SHA-256 is
+`c73be24cd5044346c24ce3c538eaa7be8be2acee2419fe67e042d1c3c959b75b`.
