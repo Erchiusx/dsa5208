@@ -56,6 +56,8 @@ def main():
     writer = csv.DictWriter(sys.stdout, fieldnames=FIELDS, lineterminator="\n")
     writer.writeheader()
     for path in sorted(raw_dir.glob("[0-9]*.txt")):
+        if not path.stem.isdecimal():
+            continue  # GPU/build and affinity logs have separate formats.
         for row in rows(path):
             writer.writerow(row)
 

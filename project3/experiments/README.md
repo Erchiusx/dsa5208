@@ -120,3 +120,29 @@ alpha-beta median, that same 720-core pilot is only 3.35x faster because it
 performs about 36 times as many search-node visits. The one-worker baseline
 has only one trial, so these efficiency estimates are provisional. Finish
 the queued 720-core repeated run before making its final plotted point.
+
+## OpenMP GPU-offload feasibility
+
+The first NVHPC job (1499966) reached an A40 node but failed compilation:
+`nvc++` could not find `<functional>`. Explicitly selecting Vanda's GCC
+13.2 toolchain with `--gcc-toolchain=$EBROOTGCCCORE` resolved this. The next
+two jobs compiled, exited 0, and reported `ran_on_device=1` with
+`OMP_TARGET_OFFLOAD=MANDATORY`. Each GPU score and move matched the serial
+search for the same initial position and depth.
+
+| PBS job | Depth | CPU-built tree nodes | GPU total (s) | GPU target (s) | Serial search (s) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1499986 | 3 | 9,322 | 0.246888 | 0.244381 | 0.000125092 |
+| 1499992 | 4 | 206,603 | 0.270310 | 0.238880 | 0.000237436 |
+
+The GPU path constructs the entire legal tree on the CPU, copies it to the
+device, then searches independent root branches on the GPU. At these depths,
+the measured target region accounts for nearly all GPU time and remains
+around 0.24 seconds as the tree grows more than 20-fold. The current counters
+do not separate launch, transfer, and kernel time. The GPU total is about
+1,974x and 1,138x slower than serial alpha-beta at
+depths 3 and 4 respectively. The CPU-built tree itself also grows quickly,
+so this implementation is a bounded feasibility study rather than a
+competitive chess-engine GPU design. GPU and serial visit different node
+counts because the GPU root branches use independent full windows. The raw
+GPU run and compiler logs are saved in `raw/`.

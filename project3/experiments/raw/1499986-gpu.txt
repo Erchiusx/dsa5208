@@ -1,0 +1,7 @@
+Tue Oct 27 01:22:53 PM UTC 2026
+job=1499986.stdct-mgmt-02 depth=3
+150790118eb51c0216cf2f812eb780dea16fab85fbc4fa097d38893bda317819  src/main.cpp
+b37ab03046b98d19c1163b1c6e009497fcafb63b4db0cc4e2102d8d6e757c6ae  scripts/vanda_gpu.pbs
+GCC toolchain: /app1/ebapps/arches/flat-avx2/software/GCCcore/13.2.0
+backend=gpu depth=3 ranks=1 threads=1 score=0 move=a2a3 split_depth=1 nodes=1304 leaves=883 cutoffs=378 seconds=0.246888 tree_nodes=9322 preparation_seconds=0.00248929 target_seconds=0.244381 ran_on_device=1
+backend=serial depth=3 ranks=1 threads=1 score=0 move=a2a3 split_depth=1 nodes=586 leaves=524 cutoffs=38 seconds=0.000125092
