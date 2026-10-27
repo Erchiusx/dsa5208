@@ -288,18 +288,21 @@ MPI currently uses round-robin task assignment, not dynamic load balancing.
 seven positions (including checkmate, stalemate, promotion, and en passant) at depths 1–3; it also
 checks CPU split-depth 2 and 3 where applicable. That checks
 the target algorithm's CPU execution path; it does **not** validate an actual
-GPU or MPI run. Actual Vanda runs must check `ran_on_device=1` and compare
-scores with the serial reference at every benchmark position/depth.
+GPU or MPI run on its own. Vanda MPI results and A40 offload results are
+recorded in [`experiments/`](experiments/README.md), including
+`ran_on_device=1` and score comparisons with serial search.
 
 Current implementation does not use transposition tables, iterative
 deepening, quiescence search, a sophisticated evaluation function, or dynamic
 MPI task scheduling. These are deliberate experimental boundaries rather than
-claims of a competitive engine. Multi-node scaling and GPU performance are
-unmeasured.
+claims of a competitive engine. Multi-node scaling and GPU performance have
+been measured on Vanda; the 720-core repeated run is still pending.
 
 ## AI usage
 
-The initial algorithm implementation, README, and smoke checks were drafted
-with OpenAI Codex assistance. The final report should disclose this use,
-describe human review and any subsequent changes, and distinguish source
-code tests from actual Vanda measurements.
+OpenAI Codex assisted with the algorithm implementation, CPU/GPU and MPI
+variants, PBS scripts, smoke tests, SSH experiment orchestration, diagnosis,
+result analysis, documentation, and the scaling figure. The final report
+should disclose this use and distinguish local tests from measured Vanda
+results. The submitted code and conclusions should be reviewed by the
+students before submission.
