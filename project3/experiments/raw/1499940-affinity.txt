@@ -1,0 +1,24 @@
+Tue Oct 27 01:10:02 PM UTC 2026
+job=1499940.stdct-mgmt-02
+PBS shell host and affinity:
+CN-017
+Cpus_allowed_list:	49,51,53,55
+0::/pbs_jobs.service/jobs/1499940.1/1
+MPI rank without binding:
+[CN-017:1052262] pmix_mca_base_component_repository_open: unable to open /app1/ebapps/arches/flat-avx512/software/OpenMPI/5.0.7-GCC-14.2.0/lib/prte/prte_mca_plm_tm: 
+    dlopen error: libpbs.so.0: cannot open shared object file: No such file or directory
+    Perhaps a missing symbol, or compiled for a different version of prte? (ignored)
+Authorized users only. All activity may be monitored and reported.
+[CN-017:1052279] Rank 0 is not bound (or bound to all available processors)
+CN-017
+Cpus_allowed_list:	49,51,53,55
+0::/pbs_jobs.service/jobs/1499940.1/2
+MPI rank bound to four cores:
+[CN-017:1052407] pmix_mca_base_component_repository_open: unable to open /app1/ebapps/arches/flat-avx512/software/OpenMPI/5.0.7-GCC-14.2.0/lib/prte/prte_mca_plm_tm: 
+    dlopen error: libpbs.so.0: cannot open shared object file: No such file or directory
+    Perhaps a missing symbol, or compiled for a different version of prte? (ignored)
+Authorized users only. All activity may be monitored and reported.
+[CN-017:1052414] Rank 0 bound to package[1][core:49,51,53,55]
+CN-017
+Cpus_allowed_list:	49,51,53,55
+0::/pbs_jobs.service/jobs/1499940.1/3

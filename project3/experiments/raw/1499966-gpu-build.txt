@@ -1,0 +1,11 @@
+/app1/ebapps/arches/flat-avx2/software/NVHPC/24.7-CUDA-12.3.0/Linux_x86_64/24.7/compilers/bin/nvc++
+/usr/bin/nvidia-smi
+GPU 0: NVIDIA A40 (UUID: GPU-e7a05ee9-60fa-51a6-959a-780fc2bc5232)
+nvc++ -O2 -std=c++17 -mp=gpu -Ithird_party/chess-library src/main.cpp -o build/chess_search_gpu
+"third_party/chess-library/chess.hpp", line 35: catastrophic error: cannot open source file "functional"
+  #include <functional>
+                       ^
+
+1 catastrophic error detected in the compilation of "src/main.cpp".
+Compilation terminated.
+make: *** [Makefile:26: gpu] Error 2

@@ -79,14 +79,37 @@ raw log. This is a **feasibility run**, not a scaling point: it changes the
 split depth and search work relative to the single-node pilot, has no
 repetitions, and excludes process startup from the program's timed region.
 
-Before interpreting the smaller jobs' speedups, verify that MPI ranks
-launched via SSH respect the PBS CPU allocation. The Open MPI PRTE PBS
-component emits a `libpbs.so.0` warning and appears to use SSH for remote
-launches. A dedicated affinity probe is in `scripts/vanda_affinity.pbs`.
+The Open MPI PRTE PBS component emits a `libpbs.so.0` warning and uses SSH
+for rank launches, so we checked CPU isolation explicitly. Job 1499940
+requested 4 CPUs on CN-017. The PBS shell and the MPI rank with
+`--bind-to none` both reported `Cpus_allowed_list: 49,51,53,55` and joined
+the job's PBS cgroup. The rank with `--map-by ppr:1:node:PE=4 --bind-to core`
+reported the same four CPUs. This confirms the unbound MPI rank remains
+inside the PBS CPU allocation on that tested node. The raw probe output is
+`raw/1499940-affinity.txt`; the script is `scripts/vanda_affinity.pbs`.
 
-After the affinity check, measure one split depth and fixed position at
-1, 2, 4, and 8 workers, then larger worker counts only if the task count and
-single-node timing justify them. Record at least three independent runs per
-configuration and use their median. Include a 1-worker task-decomposition
-baseline as well as the serial alpha-beta baseline: they answer different
-scaling questions.
+## Depth-8 strong-scaling series (full nodes)
+
+For a like-for-like comparison to 720 cores, split depth 3 and all other
+search parameters were held fixed while changing the number of 72-core
+nodes. Each row below has three trials in one PBS allocation. The 720-core
+pilot above has one trial; a three-trial job was submitted separately.
+
+| PBS job | Nodes | Allocated cores | Internal search times (s) | Median (s) |
+| --- | ---: | ---: | --- | ---: |
+| 1499947 | 1 | 72 | 9.28207, 8.95906, 9.09414 | 9.09414 |
+| 1499950 | 2 | 144 | 3.28496, 3.04777, 3.03716 | 3.04777 |
+| 1499952 | 4 | 288 | 1.9669, 1.94508, 1.74921 | 1.94508 |
+
+All trials agree on 929,868,807 search nodes, score -100, and move `a2a3`.
+The 72-to-144-core median ratio is 2.98 and the 72-to-288-core ratio is
+4.68. These exceed ideal linear scaling; task distribution, node variation,
+and cache effects need more investigation before interpreting the cause.
+The numbers measure only the application's search region. PBS walltime also
+includes repeated MPI launches and other setup, so it should be reported
+separately. `scripts/summarize_vanda.py` regenerates `runs.csv` from the
+preserved raw logs.
+
+Next, finish the 720-core repeated run and obtain a one-worker decomposition
+baseline. Both the serial alpha-beta reference and the one-worker task
+decomposition should remain visible: they answer different scaling questions.

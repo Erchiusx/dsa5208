@@ -93,9 +93,12 @@ qsub scripts/vanda_compile.pbs
 ```
 
 For a separate GPU submission, the listing includes
-`NVHPC/24.7-CUDA-12.3.0`. Load it in a fresh login shell, check
-`command -v nvc++`, then submit `scripts/vanda_gpu.pbs`. The GPU compile and
-runtime still need a real GPU allocation for validation.
+`NVHPC/24.7-CUDA-12.3.0`. Load it together with `GCC/13.2.0` in a fresh
+login shell, check `command -v nvc++`, then submit
+`scripts/vanda_gpu.pbs`. The script passes `--gcc-toolchain=$EBROOTGCCCORE`
+to `nvc++`; without this option, the first A40 job could not find the
+standard C++ header `<functional>`. GPU device execution still needs to be
+confirmed by the job output.
 
 The CPU template requests one chunk with 4 CPU cores, 1 MPI rank and 4
 OpenMP threads. To run multiple nodes, edit its `#PBS -l select=...` to

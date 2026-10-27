@@ -15,14 +15,19 @@ mkdir -p "$output_dir"
 
 gpu_compiler="${GPU_CXX:-nvc++}"
 command -v "$gpu_compiler"
+command -v g++
 command -v nvidia-smi
 nvidia-smi -L
-make gpu GPU_CXX="$gpu_compiler"
+test -n "${EBROOTGCCCORE:-}"
+make gpu GPU_CXX="$gpu_compiler" \
+  GPU_FLAGS="-O2 -std=c++17 -mp=gpu --gcc-toolchain=$EBROOTGCCCORE"
 export OMP_TARGET_OFFLOAD=MANDATORY
 
 {
   date -u
   printf 'job=%s depth=%s\n' "${PBS_JOBID:-manual}" "$depth"
+  sha256sum src/main.cpp scripts/vanda_gpu.pbs
+  printf 'GCC toolchain: %s\n' "$EBROOTGCCCORE"
   ./build/chess_search_gpu --backend gpu --depth "$depth" --fen "$fen"
   ./build/chess_search_gpu --backend serial --depth "$depth" --fen "$fen"
 } 2>&1 | tee "$output_dir/run.txt"
