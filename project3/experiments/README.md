@@ -110,6 +110,13 @@ includes repeated MPI launches and other setup, so it should be reported
 separately. `scripts/summarize_vanda.py` regenerates `runs.csv` from the
 preserved raw logs.
 
-Next, finish the 720-core repeated run and obtain a one-worker decomposition
-baseline. Both the serial alpha-beta reference and the one-worker task
-decomposition should remain visible: they answer different scaling questions.
+A one-worker decomposition run (1499970) with the **same** depth-8,
+split-depth-3 search visited 929,868,807 nodes in 198.129 seconds and
+exited 0. Using this single run as the work-preserving baseline gives the
+72-core median a speedup of 21.79 (30.3% efficiency), the 144-core median
+65.01 (45.1%), and the 288-core median 101.86 (35.4%). The one-time
+720-core pilot gives 124.36 (17.3%) by this definition. Against the serial
+alpha-beta median, that same 720-core pilot is only 3.35x faster because it
+performs about 36 times as many search-node visits. The one-worker baseline
+has only one trial, so these efficiency estimates are provisional. Finish
+the queued 720-core repeated run before making its final plotted point.
