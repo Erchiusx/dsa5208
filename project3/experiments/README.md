@@ -17,16 +17,23 @@ The best move printed in every row was `a2a3`. The serial alpha-beta search
 visits about 31 times fewer nodes than the depth-2 task decomposition because
 the independent tasks use full windows; the latter cannot share alpha/beta
 bounds across the frontier. The 4-thread depth-2 run is slower than its
-1-thread counterpart. Open MPI 5 binds a single rank to a core by default,
-which may explain this, but the recorded runs did not report affinity. This
-hypothesis needs a controlled rerun with binding reported. The two-node speedup
+1-thread counterpart. A controlled rerun below confirms that Open MPI's
+default one-core binding caused much of this slowdown. The two-node speedup
 of 1.63 relative to the one-node 4-thread run is **not** speedup over the
 serial alpha-beta reference.
 
 The CPU PBS script now records binding and defaults to `--bind-to none` for
 hybrid MPI/OpenMP runs. Use `JOB_BINDING=default` to reproduce the previous
-launcher policy. Compare default and none with otherwise identical PBS
-allocations before expanding the node count. Open MPI's
+launcher policy. A controlled rerun on CN-017 confirmed the binding issue:
+
+| PBS job | Binding report | Threads | Search seconds | Search nodes |
+| --- | --- | ---: | ---: | ---: |
+| 1499905 | `Rank 0 bound to package[1][core:49]` | 4 | 6.22858 | 28,716,385 |
+| 1499911 | `Rank 0 is not bound` | 4 | 2.432 | 28,716,385 |
+
+Both jobs exited with status 0 and returned score 100 / move `a2a3`.
+Removing the one-core MPI binding reduced measured search time by 2.56x in
+this pair. This is one observation, so repeat for final figures. Open MPI's
 [5.0.7 mpirun documentation](https://docs.open-mpi.org/en/v5.0.7/man-openmpi/man1/mpirun.1.html)
 describes this threading and binding interaction.
 
