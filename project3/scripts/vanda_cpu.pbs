@@ -15,7 +15,14 @@ split_depth="${JOB_SPLIT_DEPTH:-2}"
 backend="${JOB_BACKEND:-mpi}"
 binding="${JOB_BINDING:-none}"
 repeats="${JOB_REPEATS:-1}"
-fen="${JOB_FEN:-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}"
+case "${JOB_FEN_PRESET:-startpos}" in
+  startpos) fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' ;;
+  kiwipete) fen='r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1' ;;
+  promotion) fen='4k3/P7/8/8/8/8/8/4K3 w - - 0 1' ;;
+  enpassant) fen='4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 1' ;;
+  *) echo "unknown JOB_FEN_PRESET" >&2; exit 2 ;;
+esac
+fen="${JOB_FEN:-$fen}"
 ranks="$(wc -l < "$PBS_NODEFILE")"
 if [[ "$backend" != mpi && "$backend" != mpi-pv && "$backend" != serial ]]; then
   echo "JOB_BACKEND must be mpi, mpi-pv, or serial" >&2
@@ -58,6 +65,7 @@ make mpi
   date -u
   printf 'job=%s backend=%s ranks=%s threads=%s depth=%s split_depth=%s binding=%s repeats=%s\n' \
     "${PBS_JOBID:-manual}" "$backend" "$ranks" "$threads" "$depth" "$split_depth" "$binding" "$repeats"
+  printf 'fen=%s\n' "$fen"
   sha256sum src/main.cpp scripts/vanda_cpu.pbs
   printf 'nodes:\n'
   sort -u "$PBS_NODEFILE"

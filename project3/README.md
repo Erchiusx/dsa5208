@@ -155,6 +155,9 @@ alpha-beta pruning while exposing only one task per remaining root move, so
 it is a useful contrast with the depth-2/3 frontier strategy. Both PV modes
 require `--split-depth 1`. On Vanda, set
 `JOB_BACKEND=mpi-pv,JOB_SPLIT_DEPTH=1` in the CPU PBS job.
+The CPU script accepts `JOB_FEN_PRESET=startpos|kiwipete|promotion|enpassant`
+and logs the full FEN for each job; an explicit `JOB_FEN` overrides the
+preset. This makes multi-position validation straightforward with `qsub -v`.
 
 NUS's [PBS resource guide](https://nusit.nus.edu.sg/technus/understand-pbs-job-submission-in-hpc-cloud/)
 documents `select`, `ncpus`, `mpiprocs`, and `ompthreads`; a
