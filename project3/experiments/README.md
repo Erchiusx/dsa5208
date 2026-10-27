@@ -58,6 +58,32 @@ to the 1-worker task-decomposition run, it is 8.65x faster at 16 workers
 reference, which prunes substantially more of the game tree. These ratios
 are provisional because each configuration has only one measured run.
 
+## Depth-8 workload and 720-core feasibility
+
+The depth-8 serial baseline in job 1499919 ran three trials on CN-016:
+5.33762, 5.34012, and 5.34224 seconds (median 5.34012). Every trial
+returned score -100 / move `a2a3` and visited 25,604,258 nodes. A
+single-node 4-thread depth-2 pilot (1499920) visited 420,118,518 nodes and
+took 42.3628 seconds, showing how the decomposition loses pruning. A
+depth-7, split-depth-3 pilot (1499922) produced 9,323 frontier nodes and
+returned the same depth-7 score as the other backends.
+
+At the user's request, job 1499923 successfully requested 10 scattered
+nodes, each with 72 CPUs: 720 allocated CPU cores. It used 10 MPI ranks and
+72 requested OpenMP threads per rank, depth 8, split depth 3. PBS reported
+exit status 0, 53 seconds of job walltime, and the program reported 1.59317
+seconds of internal search time. The search visited 929,868,807 nodes and
+returned score -100 / move `a2a3`, matching the depth-8 serial baseline.
+One allocated host was a GN-A40 node; the hostname list is preserved in the
+raw log. This is a **feasibility run**, not a scaling point: it changes the
+split depth and search work relative to the single-node pilot, has no
+repetitions, and excludes process startup from the program's timed region.
+
+Before interpreting the smaller jobs' speedups, verify that MPI ranks
+launched via SSH respect the PBS CPU allocation. The Open MPI PRTE PBS
+component emits a `libpbs.so.0` warning and appears to use SSH for remote
+launches. A dedicated affinity probe is in `scripts/vanda_affinity.pbs`.
+
 After the affinity check, measure one split depth and fixed position at
 1, 2, 4, and 8 workers, then larger worker counts only if the task count and
 single-node timing justify them. Record at least three independent runs per

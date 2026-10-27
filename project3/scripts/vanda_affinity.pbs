@@ -1,0 +1,26 @@
+#!/bin/bash
+#PBS -N chess-affinity
+#PBS -j oe
+#PBS -V
+#PBS -l select=1:ncpus=4:mpiprocs=1:ompthreads=4:mem=8gb
+#PBS -l walltime=00:05:00
+
+set -euo pipefail
+cd "$PBS_O_WORKDIR"
+output_dir="results/${PBS_JOBID:-manual}"
+mkdir -p "$output_dir"
+
+{
+  date -u
+  printf 'job=%s\n' "${PBS_JOBID:-manual}"
+  printf 'PBS shell host and affinity:\n'
+  hostname
+  grep Cpus_allowed_list /proc/self/status
+  cat /proc/self/cgroup
+  printf 'MPI rank without binding:\n'
+  mpirun --report-bindings --bind-to none -np 1 bash -c \
+    'hostname; grep Cpus_allowed_list /proc/self/status; cat /proc/self/cgroup'
+  printf 'MPI rank bound to four cores:\n'
+  mpirun --report-bindings --map-by ppr:1:node:PE=4 --bind-to core -np 1 bash -c \
+    'hostname; grep Cpus_allowed_list /proc/self/status; cat /proc/self/cgroup'
+} 2>&1 | tee "$output_dir/affinity.txt"
