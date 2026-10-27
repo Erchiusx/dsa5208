@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -N chess-gpu
+#PBS -j oe
+#PBS -V
+#PBS -l select=1:ncpus=4:ngpus=1:mem=8gb
+#PBS -l walltime=00:15:00
+
+set -euo pipefail
+cd "$PBS_O_WORKDIR"
+
+depth="${JOB_DEPTH:-3}"
+fen="${JOB_FEN:-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}"
+output_dir="results/${PBS_JOBID:-manual}"
+mkdir -p "$output_dir"
+
+gpu_compiler="${GPU_CXX:-nvc++}"
+command -v "$gpu_compiler"
+command -v nvidia-smi
+nvidia-smi -L
+make gpu GPU_CXX="$gpu_compiler"
+export OMP_TARGET_OFFLOAD=MANDATORY
+
+{
+  date -u
+  printf 'job=%s depth=%s\n' "${PBS_JOBID:-manual}" "$depth"
+  ./build/chess_search_gpu --backend gpu --depth "$depth" --fen "$fen"
+  ./build/chess_search_gpu --backend serial --depth "$depth" --fen "$fen"
+} 2>&1 | tee "$output_dir/run.txt"

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo 'Usage: git sync-hpc [--dry-run]' >&2
+}
+
+rsync_options=()
+if (( $# == 1 )) && [[ "$1" == '--dry-run' ]]; then
+  rsync_options+=(--dry-run)
+elif (( $# != 0 )); then
+  usage
+  exit 2
+fi
+
+project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+destination="${CHESS_HPC_DEST:-e1538331@vanda.nus.edu.sg:~/dsa5208/project3/}"
+
+printf 'Syncing %s/ to %s\n' "$project_dir" "$destination"
+rsync -avz --itemize-changes "${rsync_options[@]}" \
+  --exclude='/.git/' \
+  --exclude='/.agents/' \
+  --exclude='/.codex/' \
+  --exclude='/.aws/' \
+  --exclude='/build/' \
+  --exclude='/results/' \
+  --exclude='/logs/' \
+  "$project_dir/" "$destination"

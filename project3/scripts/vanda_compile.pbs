@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -N chess-build
+#PBS -j oe
+#PBS -V
+#PBS -l select=1:ncpus=1:mem=4gb
+#PBS -l walltime=00:10:00
+
+set -euo pipefail
+cd "$PBS_O_WORKDIR"
+mkdir -p logs
+log="logs/mpi-compile-${PBS_JOBID:-manual}.log"
+
+{
+  date -u
+  printf 'host=%s job=%s\n' "$(hostname)" "${PBS_JOBID:-manual}"
+  command -v mpic++
+  mpic++ --version
+  make mpi
+  printf 'MPI build succeeded: %s\n' "$(realpath build/chess_search_mpi)"
+} 2>&1 | tee "$log"

@@ -1,0 +1,12 @@
+Tue Oct 27 12:45:40 PM UTC 2026
+job=1499874.stdct-mgmt-02 backend=serial ranks=1 threads=1 depth=7 split_depth=1
+nodes:
+cn-016.stdct.loc
+GCC runtime libraries resolved by the launcher:
+	libstdc++.so.6 => /app1/ebapps/arches/flat-avx512/software/GCCcore/14.2.0/lib/gcc/x86_64-pc-linux-gnu/14.2.0/../../../../lib64/libstdc++.so.6 (0x000014e52a4b8000)
+	libgomp.so.1 => /app1/ebapps/arches/flat-avx512/software/GCCcore/14.2.0/lib/gcc/x86_64-pc-linux-gnu/14.2.0/../../../../lib64/libgomp.so.1 (0x000014e52a376000)
+[CN-016:1920497] pmix_mca_base_component_repository_open: unable to open /app1/ebapps/arches/flat-avx512/software/OpenMPI/5.0.7-GCC-14.2.0/lib/prte/prte_mca_plm_tm: 
+    dlopen error: libpbs.so.0: cannot open shared object file: No such file or directory
+    Perhaps a missing symbol, or compiled for a different version of prte? (ignored)
+Authorized users only. All activity may be monitored and reported.
+backend=serial depth=7 ranks=1 threads=1 score=100 move=a2a3 split_depth=1 nodes=927081 leaves=857031 cutoffs=49699 seconds=0.192181
