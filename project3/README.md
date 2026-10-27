@@ -136,7 +136,10 @@ OpenMP threads can run on the cores PBS assigned to the job. Set
 `JOB_BINDING=default` to test Open MPI's default binding policy. Keep the PBS
 `ncpus` and `ompthreads` requests consistent with `JOB_THREADS`. The first
 depth-7 runs with default binding showed a 4-thread run slower than a
-1-thread run, so affinity is being checked before a larger scaling study.
+1-thread run; the binding report confirmed it was restricted to one core.
+Set `JOB_REPEATS=3` to run three sequential trials in one allocation. The
+output marks each trial and records SHA-256 hashes of the source and PBS
+script. Final figures should use medians across those trials.
 
 NUS's [PBS resource guide](https://nusit.nus.edu.sg/technus/understand-pbs-job-submission-in-hpc-cloud/)
 documents `select`, `ncpus`, `mpiprocs`, and `ompthreads`; a

@@ -14,6 +14,7 @@ depth="${JOB_DEPTH:-4}"
 split_depth="${JOB_SPLIT_DEPTH:-2}"
 backend="${JOB_BACKEND:-mpi}"
 binding="${JOB_BINDING:-none}"
+repeats="${JOB_REPEATS:-1}"
 fen="${JOB_FEN:-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}"
 ranks="$(wc -l < "$PBS_NODEFILE")"
 if [[ "$backend" != mpi && "$backend" != serial ]]; then
@@ -26,6 +27,10 @@ if [[ "$backend" == serial && ( "$ranks" != 1 || "$split_depth" != 1 ) ]]; then
 fi
 if [[ "$binding" != none && "$binding" != default ]]; then
   echo "JOB_BINDING must be none or default" >&2
+  exit 2
+fi
+if [[ ! "$repeats" =~ ^[1-9][0-9]*$ ]]; then
+  echo "JOB_REPEATS must be a positive integer" >&2
   exit 2
 fi
 mpi_binding=()
@@ -47,14 +52,18 @@ make mpi
 
 {
   date -u
-  printf 'job=%s backend=%s ranks=%s threads=%s depth=%s split_depth=%s binding=%s\n' \
-    "${PBS_JOBID:-manual}" "$backend" "$ranks" "$threads" "$depth" "$split_depth" "$binding"
+  printf 'job=%s backend=%s ranks=%s threads=%s depth=%s split_depth=%s binding=%s repeats=%s\n' \
+    "${PBS_JOBID:-manual}" "$backend" "$ranks" "$threads" "$depth" "$split_depth" "$binding" "$repeats"
+  sha256sum src/main.cpp scripts/vanda_cpu.pbs
   printf 'nodes:\n'
   sort -u "$PBS_NODEFILE"
   printf 'GCC runtime libraries resolved by the launcher:\n'
   ldd ./build/chess_search_mpi | grep -E 'libstdc\+\+|libgomp'
-  mpirun "${mpi_binding[@]}" --report-bindings -x LD_LIBRARY_PATH -x PATH -np "$ranks" \
-    ./build/chess_search_mpi --backend "$backend" \
-    --threads "$threads" --depth "$depth" --split-depth "$split_depth" \
-    --fen "$fen"
+  for ((trial = 1; trial <= repeats; ++trial)); do
+    printf 'trial=%s\n' "$trial"
+    mpirun "${mpi_binding[@]}" --report-bindings -x LD_LIBRARY_PATH -x PATH -np "$ranks" \
+      ./build/chess_search_mpi --backend "$backend" \
+      --threads "$threads" --depth "$depth" --split-depth "$split_depth" \
+      --fen "$fen"
+  done
 } 2>&1 | tee "$output_dir/run.txt"

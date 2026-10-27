@@ -37,6 +37,27 @@ this pair. This is one observation, so repeat for final figures. Open MPI's
 [5.0.7 mpirun documentation](https://docs.open-mpi.org/en/v5.0.7/man-openmpi/man1/mpirun.1.html)
 describes this threading and binding interaction.
 
+## Corrected-binding scaling pilot
+
+These additional single runs used `--bind-to none`, depth 7 and the same
+initial-position FEN. Each job returned score 100 / move `a2a3` and exited 0.
+The two- and four-node jobs requested `place=scatter`; PBS and the logged
+hostnames confirm distinct machines.
+
+| PBS job | Nodes | Threads total | Split depth | Search seconds | Search nodes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1499914 | 1 | 4 | 1 | 1.20833 | 16,236,941 |
+| 1499911 | 1 | 4 | 2 | 2.432 | 28,716,385 |
+| 1499915 | 2 | 8 | 2 | 1.49415 | 28,716,385 |
+| 1499917 | 4 | 16 | 2 | 0.714599 | 28,716,385 |
+
+For the fixed split-depth-2 work, the four-node run is 3.40x faster than
+the one-node run (85.1% efficiency for the 4x resource increase). Relative
+to the 1-worker task-decomposition run, it is 8.65x faster at 16 workers
+(54.0% efficiency). It remains 3.72x slower than the serial alpha-beta
+reference, which prunes substantially more of the game tree. These ratios
+are provisional because each configuration has only one measured run.
+
 After the affinity check, measure one split depth and fixed position at
 1, 2, 4, and 8 workers, then larger worker counts only if the task count and
 single-node timing justify them. Record at least three independent runs per
