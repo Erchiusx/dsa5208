@@ -86,6 +86,10 @@ struct Result {
     int move_index = -1;
     Stats stats;
     double seconds = 0;
+    double seed_seconds = 0;
+    std::uint64_t seed_nodes = 0;
+    std::vector<std::uint64_t> rank_nodes;
+    std::vector<double> rank_work_seconds;
     double preparation_seconds = 0;
     double device_seconds = 0;
     bool ran_on_device = false;
@@ -140,9 +144,12 @@ Result root_search(const chess::Board& initial, const chess::Movelist& moves, in
         // Search the first move exactly, then use its score as a fixed root
         // bound. Other moves only need to prove that they beat this score.
         if (rank == 0) {
+            const auto seed_start = Clock::now();
             chess::Board board = initial;
             board.makeMove(moves[0]);
             scores[0] = -negamax(board, depth - 1, 1, -INF, INF, per_move[0]);
+            result.seed_seconds = elapsed(seed_start);
+            result.seed_nodes = per_move[0].nodes;
         }
 #ifdef USE_MPI
         if (use_mpi) MPI_Bcast(&scores[0], 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -150,6 +157,7 @@ Result root_search(const chess::Board& initial, const chess::Movelist& moves, in
         seed_score = scores[0];
         first_parallel = 1;
     }
+    const auto parallel_start = Clock::now();
 #pragma omp parallel for schedule(dynamic, 1) if(use_omp)
     for (int i = first_parallel; i < n; ++i) {
         if (use_mpi && i % ranks != rank) continue;
@@ -158,13 +166,30 @@ Result root_search(const chess::Board& initial, const chess::Movelist& moves, in
         scores[i] = -negamax(board, depth - 1, 1, -INF,
                              seed_first ? -seed_score : INF, per_move[i]);
     }
+    const double local_work_seconds = elapsed(parallel_start);
+    std::uint64_t local_work_nodes = 0;
+    for (int i = first_parallel; i < n; ++i) local_work_nodes += per_move[i].nodes;
 #ifdef USE_MPI
     if (use_mpi) {
+        if (rank == 0) {
+            result.rank_nodes.resize(ranks);
+            result.rank_work_seconds.resize(ranks);
+        }
+        MPI_Gather(&local_work_nodes, 1, MPI_UINT64_T,
+                   rank == 0 ? result.rank_nodes.data() : nullptr, 1, MPI_UINT64_T,
+                   0, MPI_COMM_WORLD);
+        MPI_Gather(&local_work_seconds, 1, MPI_DOUBLE,
+                   rank == 0 ? result.rank_work_seconds.data() : nullptr, 1, MPI_DOUBLE,
+                   0, MPI_COMM_WORLD);
         std::vector<int> combined(n);
         MPI_Allreduce(scores.data(), combined.data(), n, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
         scores.swap(combined);
     }
 #endif
+    if (!use_mpi) {
+        result.rank_nodes = {local_work_nodes};
+        result.rank_work_seconds = {local_work_seconds};
+    }
     for (int i = 0; i < n; ++i) {
         if (scores[i] > result.score) {
             result.score = scores[i];
@@ -566,6 +591,17 @@ int main(int argc, char** argv) {
                       << " cutoffs=" << result.stats.cutoffs << " seconds=" << result.seconds;
             if (options.split_depth > 1 && (options.backend == "omp" || options.backend == "mpi"))
                 std::cout << " frontier_nodes=" << result.tree_nodes;
+            if (options.backend == "omp-pv" || options.backend == "mpi-pv")
+                std::cout << " seed_seconds=" << result.seed_seconds
+                          << " seed_nodes=" << result.seed_nodes;
+            if (options.backend == "omp-pv" || options.backend == "mpi-pv") {
+                std::cout << " rank_nodes=";
+                for (std::size_t i = 0; i < result.rank_nodes.size(); ++i)
+                    std::cout << (i ? "," : "") << result.rank_nodes[i];
+                std::cout << " rank_work_seconds=";
+                for (std::size_t i = 0; i < result.rank_work_seconds.size(); ++i)
+                    std::cout << (i ? "," : "") << result.rank_work_seconds[i];
+            }
             if (options.backend == "gpu" || options.backend == "gpu-host")
                 std::cout << " tree_nodes=" << result.tree_nodes
                           << " preparation_seconds=" << result.preparation_seconds

@@ -1,0 +1,31 @@
+Tue Oct 27 01:33:15 PM UTC 2026
+job=1500009.stdct-mgmt-02 backend=mpi-pv ranks=1 threads=4 depth=8 split_depth=1 binding=none repeats=3
+8ae6851b5106bdddc412d6fc47c5b659957611598db2d55a198c150960ac0b94  src/main.cpp
+c202914a9d1a3b5dbea6e5501e3183a66a76769c2c2a9267897e5f0dd447caf0  scripts/vanda_cpu.pbs
+nodes:
+gn-a40-074.stdct.loc
+GCC runtime libraries resolved by the launcher:
+	libstdc++.so.6 => /app1/ebapps/arches/flat-avx512/software/GCCcore/14.2.0/lib/gcc/x86_64-pc-linux-gnu/14.2.0/../../../../lib64/libstdc++.so.6 (0x0000152c60b00000)
+	libgomp.so.1 => /app1/ebapps/arches/flat-avx512/software/GCCcore/14.2.0/lib/gcc/x86_64-pc-linux-gnu/14.2.0/../../../../lib64/libgomp.so.1 (0x0000152c609bc000)
+trial=1
+[GN-A40-074:1700945] pmix_mca_base_component_repository_open: unable to open /app1/ebapps/arches/flat-avx512/software/OpenMPI/5.0.7-GCC-14.2.0/lib/prte/prte_mca_plm_tm: 
+    dlopen error: libpbs.so.0: cannot open shared object file: No such file or directory
+    Perhaps a missing symbol, or compiled for a different version of prte? (ignored)
+Warning: Permanently added 'gn-a40-074.stdct.loc' (ED25519) to the list of known hosts.
+Authorized users only. All activity may be monitored and reported.
+[GN-A40-074:1700962] Rank 0 is not bound (or bound to all available processors)
+backend=mpi-pv depth=8 ranks=1 threads=4 score=-100 move=a2a3 split_depth=1 nodes=25604258 leaves=23547465 cutoffs=1725041 seconds=3.03251
+trial=2
+[GN-A40-074:1701093] pmix_mca_base_component_repository_open: unable to open /app1/ebapps/arches/flat-avx512/software/OpenMPI/5.0.7-GCC-14.2.0/lib/prte/prte_mca_plm_tm: 
+    dlopen error: libpbs.so.0: cannot open shared object file: No such file or directory
+    Perhaps a missing symbol, or compiled for a different version of prte? (ignored)
+Authorized users only. All activity may be monitored and reported.
+[GN-A40-074:1701100] Rank 0 is not bound (or bound to all available processors)
+backend=mpi-pv depth=8 ranks=1 threads=4 score=-100 move=a2a3 split_depth=1 nodes=25604258 leaves=23547465 cutoffs=1725041 seconds=3.01045
+trial=3
+[GN-A40-074:1701232] pmix_mca_base_component_repository_open: unable to open /app1/ebapps/arches/flat-avx512/software/OpenMPI/5.0.7-GCC-14.2.0/lib/prte/prte_mca_plm_tm: 
+    dlopen error: libpbs.so.0: cannot open shared object file: No such file or directory
+    Perhaps a missing symbol, or compiled for a different version of prte? (ignored)
+Authorized users only. All activity may be monitored and reported.
+[GN-A40-074:1701291] Rank 0 is not bound (or bound to all available processors)
+backend=mpi-pv depth=8 ranks=1 threads=4 score=-100 move=a2a3 split_depth=1 nodes=25604258 leaves=23547465 cutoffs=1725041 seconds=2.67925

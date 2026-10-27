@@ -1,2 +1,3 @@
 # Preserve captured HPC stdout/stderr verbatim, including tool-emitted whitespace.
 experiments/raw/*.txt -whitespace
+experiments/pv/raw/*.txt -whitespace
