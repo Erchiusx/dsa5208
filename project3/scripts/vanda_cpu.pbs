@@ -17,8 +17,12 @@ binding="${JOB_BINDING:-none}"
 repeats="${JOB_REPEATS:-1}"
 fen="${JOB_FEN:-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}"
 ranks="$(wc -l < "$PBS_NODEFILE")"
-if [[ "$backend" != mpi && "$backend" != serial ]]; then
-  echo "JOB_BACKEND must be mpi or serial" >&2
+if [[ "$backend" != mpi && "$backend" != mpi-pv && "$backend" != serial ]]; then
+  echo "JOB_BACKEND must be mpi, mpi-pv, or serial" >&2
+  exit 2
+fi
+if [[ "$backend" == mpi-pv && "$split_depth" != 1 ]]; then
+  echo "mpi-pv requires JOB_SPLIT_DEPTH=1" >&2
   exit 2
 fi
 if [[ "$backend" == serial && ( "$ranks" != 1 || "$split_depth" != 1 ) ]]; then

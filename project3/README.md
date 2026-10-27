@@ -2,8 +2,9 @@
 
 This project studies fixed-depth negamax with alpha-beta pruning. The current
 program provides an exhaustive minimax validation mode, a serial CPU reference,
-root- and second/third-level OpenMP
-CPU versions, optional MPI + OpenMP versions, and an OpenMP target version of
+root- and second/third-level OpenMP CPU versions, a seeded-root variant that
+searches the first move before parallelizing the others, optional MPI +
+OpenMP versions, and an OpenMP target version of
 alpha-beta search over a legal tree generated on the CPU. All versions use the
 same material evaluation and chess terminal rules. This is an implementation
 starting point. Initial Vanda CPU pilot results and raw logs are in
@@ -145,6 +146,15 @@ depth-7 runs with default binding showed a 4-thread run slower than a
 Set `JOB_REPEATS=3` to run three sequential trials in one allocation. The
 output marks each trial and records SHA-256 hashes of the source and PBS
 script. Final figures should use medians across those trials.
+
+`--backend omp-pv` and `--backend mpi-pv` perform a full-window search of the
+first legal root move, then use that score as a fixed bound for the other root
+moves. A move that cannot beat the bound may return an inexact score; the
+maximum root score remains exact. This preserves substantially more
+alpha-beta pruning while exposing only one task per remaining root move, so
+it is a useful contrast with the depth-2/3 frontier strategy. Both PV modes
+require `--split-depth 1`. On Vanda, set
+`JOB_BACKEND=mpi-pv,JOB_SPLIT_DEPTH=1` in the CPU PBS job.
 
 NUS's [PBS resource guide](https://nusit.nus.edu.sg/technus/understand-pbs-job-submission-in-hpc-cloud/)
 documents `select`, `ncpus`, `mpiprocs`, and `ompthreads`; a

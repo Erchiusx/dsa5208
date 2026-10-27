@@ -26,6 +26,7 @@ for fen in "${fens[@]}"; do
     minimax="$($program --backend minimax --depth "$depth" --fen "$fen")"
     [[ "$(score_of "$minimax")" == "$expected" ]]
     omp="$($program --backend omp --threads 4 --depth "$depth" --fen "$fen")"
+    omp_pv="$($program --backend omp-pv --threads 4 --depth "$depth" --fen "$fen")"
     if (( depth >= 2 )); then
       frontier="$($program --backend omp --threads 4 --split-depth 2 --depth "$depth" --fen "$fen")"
       [[ "$(score_of "$frontier")" == "$expected" ]]
@@ -36,6 +37,7 @@ for fen in "${fens[@]}"; do
     fi
     gpu_host="$($program --backend gpu-host --depth "$depth" --fen "$fen")"
     [[ "$(score_of "$omp")" == "$expected" ]]
+    [[ "$(score_of "$omp_pv")" == "$expected" ]]
     [[ "$(score_of "$gpu_host")" == "$expected" ]]
     [[ "$gpu_host" == *'ran_on_device=0'* ]]
     count=$((count + 1))
@@ -47,4 +49,4 @@ if "$program" --backend gpu --depth 2 >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "Passed: $count position/depth comparisons across minimax, serial alpha-beta, OpenMP and target host fallback."
+echo "Passed: $count position/depth comparisons across minimax, serial alpha-beta, OpenMP, seeded-root OpenMP and target host fallback."

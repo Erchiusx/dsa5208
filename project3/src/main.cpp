@@ -127,19 +127,36 @@ Result serial_search(const chess::Board& initial, const chess::Movelist& moves, 
 }
 
 Result root_search(const chess::Board& initial, const chess::Movelist& moves, int depth,
-                   bool use_omp, bool use_mpi, int rank, int ranks) {
+                   bool use_omp, bool use_mpi, int rank, int ranks, bool seed_first = false) {
     Result result;
     if (moves.empty() || drawn(initial)) return serial_search(initial, moves, depth);
     auto start = Clock::now();
     std::vector<int> scores(moves.size(), -INF);
     std::vector<Stats> per_move(moves.size());
     const int n = moves.size();
+    int first_parallel = 0;
+    int seed_score = -INF;
+    if (seed_first) {
+        // Search the first move exactly, then use its score as a fixed root
+        // bound. Other moves only need to prove that they beat this score.
+        if (rank == 0) {
+            chess::Board board = initial;
+            board.makeMove(moves[0]);
+            scores[0] = -negamax(board, depth - 1, 1, -INF, INF, per_move[0]);
+        }
+#ifdef USE_MPI
+        if (use_mpi) MPI_Bcast(&scores[0], 1, MPI_INT, 0, MPI_COMM_WORLD);
+#endif
+        seed_score = scores[0];
+        first_parallel = 1;
+    }
 #pragma omp parallel for schedule(dynamic, 1) if(use_omp)
-    for (int i = 0; i < n; ++i) {
+    for (int i = first_parallel; i < n; ++i) {
         if (use_mpi && i % ranks != rank) continue;
         chess::Board board = initial;
         board.makeMove(moves[i]);
-        scores[i] = -negamax(board, depth - 1, 1, -INF, INF, per_move[i]);
+        scores[i] = -negamax(board, depth - 1, 1, -INF,
+                             seed_first ? -seed_score : INF, per_move[i]);
     }
 #ifdef USE_MPI
     if (use_mpi) {
@@ -471,7 +488,7 @@ Options parse_options(int argc, char** argv) {
     for (int i = 1; i < argc; ++i) {
         const std::string arg = argv[i];
         if (arg == "--help") {
-            std::cout << "Usage: chess_search [--backend serial|minimax|omp|mpi|gpu|gpu-host] "
+            std::cout << "Usage: chess_search [--backend serial|minimax|omp|mpi|omp-pv|mpi-pv|gpu|gpu-host] "
                          "[--depth N] [--threads N] [--split-depth N] "
                          "[--fen 'FEN'] [--max-tree-nodes N]\n";
             std::exit(0);
@@ -509,12 +526,14 @@ int main(int argc, char** argv) {
 #endif
     try {
         const Options options = parse_options(argc, argv);
-        if (ranks > 1 && options.backend != "mpi")
-            throw std::runtime_error("multiple MPI ranks require --backend mpi");
+        const bool use_mpi = options.backend == "mpi" || options.backend == "mpi-pv";
+        const bool use_omp = options.backend == "omp" || options.backend == "omp-pv";
+        if (ranks > 1 && !use_mpi)
+            throw std::runtime_error("multiple MPI ranks require --backend mpi or mpi-pv");
         if (options.split_depth != 1 && options.backend != "omp" && options.backend != "mpi")
             throw std::runtime_error("--split-depth above 1 requires --backend omp or mpi");
 #ifndef USE_MPI
-        if (options.backend == "mpi") throw std::runtime_error("rebuild with mpic++ and -DUSE_MPI");
+        if (use_mpi) throw std::runtime_error("rebuild with mpic++ and -DUSE_MPI");
 #endif
         omp_set_num_threads(options.threads);
         chess::Board board;
@@ -524,13 +543,14 @@ int main(int argc, char** argv) {
         Result result;
         if (options.backend == "serial") result = serial_search(board, moves, options.depth);
         else if (options.backend == "minimax") result = serial_search(board, moves, options.depth, false);
-        else if (options.backend == "omp" || options.backend == "mpi") {
+        else if (use_omp || use_mpi) {
             if (options.split_depth == 1)
-                result = root_search(board, moves, options.depth, options.backend == "omp" || options.threads > 1,
-                                     options.backend == "mpi", rank, ranks);
+                result = root_search(board, moves, options.depth, use_omp || options.threads > 1,
+                                     use_mpi, rank, ranks,
+                                     options.backend == "omp-pv" || options.backend == "mpi-pv");
             else
                 result = frontier_search(board, options.depth, options.split_depth,
-                                         options.max_tree_nodes, options.backend == "mpi", rank, ranks);
+                                         options.max_tree_nodes, use_mpi, rank, ranks);
         }
         else if (options.backend == "gpu" || options.backend == "gpu-host")
             result = gpu_search(board, moves, options.depth, options.max_tree_nodes, options.backend == "gpu");
