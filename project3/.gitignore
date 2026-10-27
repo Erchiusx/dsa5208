@@ -1,3 +1,5 @@
 /build/
 /logs/
 /results/
+/figures/*.aux
+/figures/*.log

@@ -1,0 +1,64 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{pgfplots}
+\usetikzlibrary{calc}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=2 by 1, horizontal sep=1.6cm},
+  width=7.0cm,
+  height=6.2cm,
+  xmode=log,
+  log basis x=2,
+  xmin=0.8,
+  xmax=900,
+  xtick={1,72,144,288,720},
+  xticklabels={1,72,144,288,720},
+  xticklabel style={font=\scriptsize, rotate=25, anchor=north east},
+  xlabel={Allocated CPU cores},
+  tick label style={font=\small},
+  label style={font=\small},
+  title style={font=\small\bfseries},
+  grid=major,
+  grid style={gray!18},
+]
+\nextgroupplot[
+  title={Search time},
+  ymode=log,
+  ymin=0.18,
+  ymax=300,
+  ylabel={Seconds},
+  legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east,
+                draw=none, fill=white, fill opacity=0.85,
+                text opacity=1},
+]
+\addplot[blue!70!black, thick, mark=*, mark size=2pt]
+  coordinates {(1,198.129) (72,9.09414) (144,3.04777) (288,1.94508)};
+\addlegendentry{Task search}
+\addplot[blue!70!black, only marks, mark=o, mark size=3pt, very thick]
+  coordinates {(720,1.59317)};
+\addlegendentry{720-core pilot (1 trial)}
+\addplot[gray!80, dashed, thick, domain=1:720, samples=2] {198.129/x};
+\addlegendentry{Ideal from 1 worker}
+\addplot[red!65!black, densely dotted, thick, domain=1:720, samples=2] {5.34012};
+\addlegendentry{Serial alpha-beta median}
+
+\nextgroupplot[
+  title={Efficiency vs. 1-worker task search},
+  ymin=0,
+  ymax=1.05,
+  ylabel={Speedup / allocated cores},
+]
+\addplot[blue!70!black, thick, mark=*, mark size=2pt]
+  coordinates {(1,1) (72,0.30259) (144,0.45144) (288,0.35369)};
+\addplot[blue!70!black, only marks, mark=o, mark size=3pt, very thick]
+  coordinates {(720,0.17272)};
+\addplot[gray!80, dashed, thick, domain=1:720, samples=2] {1};
+\end{groupplot}
+\node[anchor=north, font=\scriptsize, align=center] at ($(group c1r1.south)!0.5!(group c2r1.south)+(0,-1.35cm)$)
+  {Initial position, depth 8, split depth 3. Search time excludes MPI startup.\\
+   1-worker and 720-core pilot: 1 trial; 72--288 cores: 3 trials per point.};
+\end{tikzpicture}
+\end{document}

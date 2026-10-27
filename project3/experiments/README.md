@@ -120,6 +120,9 @@ alpha-beta median, that same 720-core pilot is only 3.35x faster because it
 performs about 36 times as many search-node visits. The one-worker baseline
 has only one trial, so these efficiency estimates are provisional. Finish
 the queued 720-core repeated run before making its final plotted point.
+The current vector figure is [`figures/scaling.pdf`](../figures/scaling.pdf),
+built from `figures/scaling.tex` with `pdflatex`; its open 720-core marker explicitly
+denotes the single pilot trial. Rebuild it after the repeated run completes.
 
 ## OpenMP GPU-offload feasibility
 
