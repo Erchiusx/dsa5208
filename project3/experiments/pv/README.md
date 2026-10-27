@@ -41,3 +41,23 @@ static assignment dominates the remaining critical path. This is direct
 evidence of load imbalance from mapping root moves by `move_index % ranks`.
 The instrumented source SHA-256 is
 `c73be24cd5044346c24ce3c538eaa7be8be2acee2419fe67e042d1c3c959b75b`.
+
+## Additional position: Kiwipete
+
+The CPU PBS script now records each full FEN. For the move-rich Kiwipete
+position (`r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1`),
+depth 6, serial job 1500143 on CN-017 and two-node `mpi-pv` job 1500145 on
+GN-A40-074/076 each ran three trials and exited 0. Every trial returned
+score -90 and move `e2a6`.
+
+| Backend | Median search time (s) | Search nodes |
+| --- | ---: | ---: |
+| Serial | 5.35890 | 19,227,176 |
+| 2-node `mpi-pv` | 4.67023 | 26,893,288 |
+
+Here the first legal move did not supply a bound as useful as the fully
+sequential search's evolving alpha value, so the seeded-root variant visited
+about 1.40x as many nodes. The two ranks' parallel work was 6,904,003 and
+19,385,929 nodes, respectively; the second rank dominated elapsed time.
+Different allocated hosts limit direct performance comparison, while the
+matching score and best move support correctness across another position.
