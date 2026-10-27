@@ -75,9 +75,11 @@ exit status 0, 53 seconds of job walltime, and the program reported 1.59317
 seconds of internal search time. The search visited 929,868,807 nodes and
 returned score -100 / move `a2a3`, matching the depth-8 serial baseline.
 One allocated host was a GN-A40 node; the hostname list is preserved in the
-raw log. This is a **feasibility run**, not a scaling point: it changes the
-split depth and search work relative to the single-node pilot, has no
-repetitions, and excludes process startup from the program's timed region.
+raw log. This is a **feasibility run**, not a finalized scaling point: it
+changes the split depth and search work relative to the earlier single-node
+depth-2 pilot, has no repetitions, and excludes process startup from the
+program's timed region. The later split-depth-3 series and one-worker
+baseline provide the like-for-like comparison used in the draft figure.
 
 The Open MPI PRTE PBS component emits a `libpbs.so.0` warning and uses SSH
 for rank launches, so we checked CPU isolation explicitly. Job 1499940

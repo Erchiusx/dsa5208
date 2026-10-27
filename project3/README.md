@@ -1,4 +1,4 @@
-# Parallel chess search: initial C++ implementation
+# Parallel chess search: C++ implementation and Vanda experiments
 
 This project studies fixed-depth negamax with alpha-beta pruning. The current
 program provides an exhaustive minimax validation mode, a serial CPU reference,
@@ -6,10 +6,10 @@ root- and second/third-level OpenMP CPU versions, a seeded-root variant that
 searches the first move before parallelizing the others, optional MPI +
 OpenMP versions, and an OpenMP target version of
 alpha-beta search over a legal tree generated on the CPU. All versions use the
-same material evaluation and chess terminal rules. This is an implementation
-starting point. Initial Vanda CPU pilot results and raw logs are in
-[`experiments/`](experiments/README.md); they are single runs, not final
-benchmark statistics.
+same material evaluation and chess terminal rules. Vanda CPU and GPU results,
+including repeated scaling runs, are in
+[`experiments/`](experiments/README.md). The draft
+[`report/main.pdf`](report/main.pdf) discusses the algorithm and evidence.
 
 ## Third-party code and ownership
 
@@ -47,10 +47,8 @@ mpirun -n 2 build/chess_search_mpi --backend mpi --threads 4 --depth 4
 ```
 
 The local development environment has `g++` but no `mpic++` or functioning
-GPU driver. The MPI source compiles conditionally with `-DUSE_MPI`, but has
-not yet been compiled or run here. On Vanda, load a compiler with OpenMP
-target support and build the GPU binary. The default Makefile command assumes
-NVIDIA HPC SDK `nvc++`:
+GPU driver. MPI and GPU versions have compiled and run on Vanda. For the GPU
+binary, use an NVIDIA HPC SDK `nvc++` installation with OpenMP target support:
 
 ```sh
 make gpu GPU_CXX=nvc++ GPU_FLAGS='-O2 -std=c++17 -mp=gpu'
@@ -61,6 +59,17 @@ Inspect `ran_on_device=1` in the output. The program refuses `--backend gpu`
 if a target region ran on the host. `--backend gpu-host` explicitly permits
 host fallback for correctness checks without a GPU. Compiler flags and GPU
 availability must be verified on the allocated Vanda node.
+
+To rebuild the report and its vector figure locally with TeX Live:
+
+```sh
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory figures figures/scaling.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory report report/main.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory report report/main.tex
+```
+
+The report marks its single-trial 720-core point as provisional while a
+three-trial job remains queued.
 
 ## NUS Vanda batch jobs
 
@@ -302,7 +311,7 @@ been measured on Vanda; the 720-core repeated run is still pending.
 
 OpenAI Codex assisted with the algorithm implementation, CPU/GPU and MPI
 variants, PBS scripts, smoke tests, SSH experiment orchestration, diagnosis,
-result analysis, documentation, and the scaling figure. The final report
-should disclose this use and distinguish local tests from measured Vanda
-results. The submitted code and conclusions should be reviewed by the
-students before submission.
+result analysis, documentation, the scaling figure, and the report draft.
+The report discloses this use and distinguishes local tests from measured
+Vanda results. The submitted code and conclusions should be reviewed by
+the students before submission.

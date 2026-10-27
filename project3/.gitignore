@@ -3,3 +3,6 @@
 /results/
 /figures/*.aux
 /figures/*.log
+/report/*.aux
+/report/*.log
+/report/*.out
