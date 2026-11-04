@@ -9,6 +9,7 @@ set -euo pipefail
 cd "$PBS_O_WORKDIR"
 
 depth="${JOB_DEPTH:-3}"
+max_tree_nodes="${JOB_MAX_TREE_NODES:-2000000}"
 fen="${JOB_FEN:-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}"
 output_dir="results/${PBS_JOBID:-manual}"
 mkdir -p "$output_dir"
@@ -25,9 +26,9 @@ export OMP_TARGET_OFFLOAD=MANDATORY
 
 {
   date -u
-  printf 'job=%s depth=%s\n' "${PBS_JOBID:-manual}" "$depth"
+  printf 'job=%s depth=%s max_tree_nodes=%s\n' "${PBS_JOBID:-manual}" "$depth" "$max_tree_nodes"
   sha256sum src/main.cpp scripts/vanda_gpu.pbs
   printf 'GCC toolchain: %s\n' "$EBROOTGCCCORE"
-  ./build/chess_search_gpu --backend gpu --depth "$depth" --fen "$fen"
+  ./build/chess_search_gpu --backend gpu --depth "$depth" --max-tree-nodes "$max_tree_nodes" --fen "$fen"
   ./build/chess_search_gpu --backend serial --depth "$depth" --fen "$fen"
 } 2>&1 | tee "$output_dir/run.txt"
