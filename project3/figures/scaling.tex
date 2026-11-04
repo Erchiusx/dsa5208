@@ -35,11 +35,8 @@
                 text opacity=1},
 ]
 \addplot[blue!70!black, thick, mark=*, mark size=2pt]
-  coordinates {(1,198.129) (72,9.09414) (144,3.04777) (288,1.94508)};
+  coordinates {(1,198.129) (72,9.09414) (144,3.04777) (288,1.94508) (720,1.75406)};
 \addlegendentry{Task search}
-\addplot[blue!70!black, only marks, mark=o, mark size=3pt, very thick]
-  coordinates {(720,1.59317)};
-\addlegendentry{720-core pilot (1 trial)}
 \addplot[gray!80, dashed, thick, domain=1:720, samples=2] {198.129/x};
 \addlegendentry{Ideal from 1 worker}
 \addplot[red!65!black, densely dotted, thick, domain=1:720, samples=2] {5.34012};
@@ -52,13 +49,11 @@
   ylabel={Speedup / allocated cores},
 ]
 \addplot[blue!70!black, thick, mark=*, mark size=2pt]
-  coordinates {(1,1) (72,0.30259) (144,0.45144) (288,0.35369)};
-\addplot[blue!70!black, only marks, mark=o, mark size=3pt, very thick]
-  coordinates {(720,0.17272)};
+  coordinates {(1,1) (72,0.30259) (144,0.45144) (288,0.35369) (720,0.15688)};
 \addplot[gray!80, dashed, thick, domain=1:720, samples=2] {1};
 \end{groupplot}
 \node[anchor=north, font=\scriptsize, align=center] at ($(group c1r1.south)!0.5!(group c2r1.south)+(0,-1.35cm)$)
   {Initial position, depth 8, split depth 3. Search time excludes MPI startup.\\
-   1-worker and 720-core pilot: 1 trial; 72--288 cores: 3 trials per point.};
+   1 worker: 1 trial; 72--720 cores: median of 3 trials per point.};
 \end{tikzpicture}
 \end{document}

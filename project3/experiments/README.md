@@ -1,4 +1,4 @@
-# Vanda CPU pilot results
+# Vanda CPU and GPU experiments
 
 All rows below use the initial-position FEN, depth 7, GCC 14.2.0,
 OpenMPI 5.0.7, and one MPI rank per node. Times are **single runs**, not
@@ -94,14 +94,15 @@ inside the PBS CPU allocation on that tested node. The raw probe output is
 
 For a like-for-like comparison to 720 cores, split depth 3 and all other
 search parameters were held fixed while changing the number of 72-core
-nodes. Each row below has three trials in one PBS allocation. The 720-core
-pilot above has one trial; a three-trial job was submitted separately.
+nodes. Each row below has three trials in one PBS allocation. The earlier
+720-core feasibility run above remains a separate single-trial check.
 
 | PBS job | Nodes | Allocated cores | Internal search times (s) | Median (s) |
 | --- | ---: | ---: | --- | ---: |
 | 1499947 | 1 | 72 | 9.28207, 8.95906, 9.09414 | 9.09414 |
 | 1499950 | 2 | 144 | 3.28496, 3.04777, 3.03716 | 3.04777 |
 | 1499952 | 4 | 288 | 1.9669, 1.94508, 1.74921 | 1.94508 |
+| 1499963 | 10 | 720 | 1.59305, 1.75406, 1.79214 | 1.75406 |
 
 All trials agree on 929,868,807 search nodes, score -100, and move `a2a3`.
 The 72-to-144-core median ratio is 2.98 and the 72-to-288-core ratio is
@@ -117,14 +118,19 @@ split-depth-3 search visited 929,868,807 nodes in 198.129 seconds and
 exited 0. Using this single run as the work-preserving baseline gives the
 72-core median a speedup of 21.79 (30.3% efficiency), the 144-core median
 65.01 (45.1%), and the 288-core median 101.86 (35.4%). The one-time
-720-core pilot gives 124.36 (17.3%) by this definition. Against the serial
-alpha-beta median, that same 720-core pilot is only 3.35x faster because it
+720-core three-trial median gives 112.95 (15.7%) by this definition. Against
+the serial alpha-beta median, the 720-core median is 3.04x faster because it
 performs about 36 times as many search-node visits. The one-worker baseline
-has only one trial, so these efficiency estimates are provisional. Finish
-the queued 720-core repeated run before making its final plotted point.
+has only one trial, so the speedup and efficiency estimates inherit that
+baseline uncertainty. The 720-core repeated job used ten distinct CN hosts
+and the same source hash as the earlier pilot. All three trials matched the
+serial score and move; its full output is `raw/1499963.txt`. PBS history for
+this job had expired when collected, so the output proves completion of all
+three trials but does not independently recover its PBS exit status or
+walltime.
 The current vector figure is [`figures/scaling.pdf`](../figures/scaling.pdf),
-built from `figures/scaling.tex` with `pdflatex`; its open 720-core marker explicitly
-denotes the single pilot trial. Rebuild it after the repeated run completes.
+built from `figures/scaling.tex` with `pdflatex` and uses the three-trial
+median for 720 cores.
 
 ## OpenMP GPU-offload feasibility
 

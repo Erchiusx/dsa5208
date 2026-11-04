@@ -68,8 +68,8 @@ pdflatex -interaction=nonstopmode -halt-on-error -output-directory report report
 pdflatex -interaction=nonstopmode -halt-on-error -output-directory report report/main.tex
 ```
 
-The report marks its single-trial 720-core point as provisional while a
-three-trial job remains queued.
+The report uses the completed three-trial 720-core median; its one-worker
+task-search baseline has one trial.
 
 ## NUS Vanda batch jobs
 
@@ -305,7 +305,7 @@ Current implementation does not use transposition tables, iterative
 deepening, quiescence search, a sophisticated evaluation function, or dynamic
 MPI task scheduling. These are deliberate experimental boundaries rather than
 claims of a competitive engine. Multi-node scaling and GPU performance have
-been measured on Vanda; the 720-core repeated run is still pending.
+been measured on Vanda, including a completed three-trial 720-core series.
 
 ## AI usage
 

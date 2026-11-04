@@ -20,7 +20,7 @@
 
 \title{Parallel Chess Search with MPI, OpenMP, and GPU Offload}
 \author{Jia Siqi (A0333724H) \and Jia Zeyue (A0326500U)}
-\date{DSA5208 Project 3 --- draft, 27 October 2026}
+\date{DSA5208 Project 3 --- draft, 4 November 2026}
 
 \begin{document}
 \maketitle
@@ -32,8 +32,8 @@ splitting, deeper MPI+OpenMP task frontiers, a seeded-root variant that
 retains more pruning, and OpenMP GPU offload. The same legal-move library and
 simple material evaluation are used throughout. On Vanda, a depth-8,
 split-depth-3 task search visited 929.9 million nodes. A one-worker run took
-198.1 seconds; a ten-node, 720-core feasibility run reported 1.59 seconds of
-internal search time. The latter is a single trial pending a repeated run.
+198.1 seconds; the ten-node, 720-core run took a median of 1.754 seconds
+across three trials, a speedup of 112.95 with 15.7\% efficiency.
 The serial alpha-beta baseline visited only 25.6 million nodes and took a
 median of 5.34 seconds. These contrasting baselines reveal that increasing
 parallelism can lose so much pruning that hardware speedup over the serial
@@ -175,9 +175,8 @@ The main strong-scaling workload is the initial-position FEN, depth eight,
 split depth three. It visits exactly 929,868,807 nodes in every measured
 task-decomposition run. We repeat each 72-, 144-, and 288-core allocation
 three times inside one PBS job and use the median internal search time.
-The one-worker decomposition run and the 720-core feasibility run currently
-have one trial each. A separate three-trial 720-core job is queued and will
-replace the pilot point when complete. Source SHA-256, PBS job IDs, nodes,
+The one-worker decomposition run has one trial; the 720-core configuration
+has three trials in a single PBS allocation. Source SHA-256, PBS job IDs, nodes,
 toolchain libraries, scores, and raw output are preserved in
 \code{experiments/raw/}. The independent serial alpha-beta baseline uses the
 same initial position and depth but performs less work because it prunes
@@ -196,14 +195,15 @@ For $p$ allocated CPU cores, we define speedup against a one-worker run of
 the \emph{same task-decomposition algorithm} as
 $S(p)=T_{\mathrm{task}}(1)/T_{\mathrm{task}}(p)$ and efficiency
 $E(p)=S(p)/p$. Table~\ref{tab:scaling} and Figure~\ref{fig:scaling}
-show internal search time, excluding MPI startup. The 720-core row is
-provisional because it has one trial.
+show internal search time, excluding MPI startup. The one-worker baseline
+has only one trial, which limits the precision of the derived speedups.
 
 \begin{table}[ht]
 \centering
 \small
 \caption{Initial position, depth 8, split depth 3. Search work is
-929,868,807 nodes for every row. The one- and 720-core rows are single trials.}
+929,868,807 nodes for every row. One worker has one trial; all other rows
+show medians of three trials in one allocation.}
 \label{tab:scaling}
 \begin{tabular}{@{}rrrrr@{}}
 \toprule
@@ -213,7 +213,7 @@ Cores & Hosts & Time (s) & $S(p)$ & $E(p)$ \\
 72  & 1  & 9.094   & 21.79  & 30.3\% \\
 144 & 2  & 3.048   & 65.01  & 45.1\% \\
 288 & 4  & 1.945   & 101.86 & 35.4\% \\
-720 & 10 & 1.593   & 124.36 & 17.3\% \\
+720 & 10 & 1.754   & 112.95 & 15.7\% \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -221,10 +221,9 @@ Cores & Hosts & Time (s) & $S(p)$ & $E(p)$ \\
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{figures/scaling.pdf}
-\caption{Vanda internal search time and efficiency. The open 720-core
-marker is one trial, pending a three-trial result. The dashed time curve is
+\caption{Vanda internal search time and efficiency. The dashed time curve is
 ideal scaling from the one-worker task search; the dotted line is the serial
-alpha-beta median.}
+alpha-beta median. The 720-core point is the median of three trials.}
 \label{fig:scaling}
 \end{figure}
 
@@ -233,14 +232,14 @@ The 72-to-144-core median ratio is 2.98 and the 72-to-288-core ratio is
 mechanism: allocation-specific node performance, cache effects, and the
 static rank distribution are plausible contributors and were not isolated
 in this series. Efficiency relative to the one-worker task search is only
-17.3\% at the single 720-core point. The 720-core PBS job consumed 53
-seconds of walltime although its internal search reported 1.593 seconds;
+15.7\% at 720 cores. An earlier single-trial 720-core PBS feasibility job
+consumed 53 seconds of walltime although its internal search reported 1.593 seconds;
 process launch, setup, and teardown matter for a complete end-to-end cost.
 
 The serial alpha-beta search visited 25,604,258 nodes and took 5.33762,
 5.34012, and 5.34224 seconds (median 5.34012). The task decomposition
-visits about 36.3 times as many nodes. Thus the one-time 720-core search is
-only 3.35 times faster than serial alpha-beta, despite using 720 allocated
+visits about 36.3 times as many nodes. Thus the 720-core median is
+only 3.04 times faster than serial alpha-beta, despite using 720 allocated
 cores. This is the central algorithmic cost of parallelizing branches
 without their shared bounds.
 
@@ -339,8 +338,8 @@ root move first preserves pruning, yet exposes few tasks and suffers from
 static load imbalance. GPU offload is technically possible but not useful
 for this CPU-built, branch-heavy shallow tree. The strongest future
 improvement would be a load-aware or dynamic MPI scheduler together with a
-parallel search scheme that shares safe alpha-beta bounds. The queued
-three-trial 720-core result will be incorporated before final submission.
+parallel search scheme that shares safe alpha-beta bounds. Additional
+single-worker repetitions would improve the precision of the efficiency baseline.
 
 \begin{thebibliography}{9}
 \bibitem{knuth1975}
