@@ -53,6 +53,12 @@ for chunk_depth in 2 3; do
   [[ "$(score_of "$deep_chunk")" == "$(score_of "$deep_serial")" ]]
 done
 
+profile_full="$($program --backend gpu-profile-host --depth 3 --fen "${fens[0]}")"
+profile_chunk="$($program --backend gpu-chunk-profile-host --depth 5 --gpu-chunk-depth 3 --fen "${fens[0]}")"
+[[ "$(score_of "$profile_full")" == "$(score_of "$($program --backend serial --depth 3 --fen "${fens[0]}")")" ]]
+[[ "$(score_of "$profile_chunk")" == "$(score_of "$deep_serial")" ]]
+[[ "$profile_full" == *'h2d_bytes='* && "$profile_chunk" == *'d2h_bytes='* ]]
+
 if "$program" --backend gpu --depth 2 >/dev/null 2>&1; then
   echo 'GPU backend unexpectedly accepted CPU fallback' >&2
   exit 1

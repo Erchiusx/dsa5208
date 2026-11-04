@@ -92,6 +92,13 @@ struct Result {
     std::vector<double> rank_work_seconds;
     double preparation_seconds = 0;
     double device_seconds = 0;
+    double device_probe_seconds = 0;
+    double device_allocation_seconds = 0;
+    double transfer_to_seconds = 0;
+    double kernel_region_seconds = 0;
+    double transfer_from_seconds = 0;
+    std::uint64_t transfer_to_bytes = 0;
+    std::uint64_t transfer_from_bytes = 0;
     bool ran_on_device = false;
     std::size_t tree_nodes = 0;
     std::uint64_t gpu_chunks = 0;
@@ -446,8 +453,77 @@ int device_search(const TreeNode* nodes, const LeafBoard* leaves, int root,
 
 #pragma omp end declare target
 
+// Explicit OpenMP device copies expose the three timed phases. The kernel
+// region still includes target launch and synchronization, not only GPU work.
+void profile_device_batch(const TreeNode* nodes, int node_count,
+                          const LeafBoard* leaves, int leaf_count,
+                          int first, int n, bool negate,
+                          int* scores, std::uint64_t* visited,
+                          std::uint64_t* leaf_visits, std::uint64_t* cutoffs,
+                          Result& result) {
+    const int device = omp_get_default_device();
+    const int host = omp_get_initial_device();
+    const std::size_t node_bytes = static_cast<std::size_t>(node_count) * sizeof(TreeNode);
+    const std::size_t leaf_bytes = static_cast<std::size_t>(leaf_count) * sizeof(LeafBoard);
+    const std::size_t score_bytes = static_cast<std::size_t>(n) * sizeof(int);
+    const std::size_t counter_bytes = static_cast<std::size_t>(n) * sizeof(std::uint64_t);
+
+    auto allocation_start = Clock::now();
+    TreeNode* d_nodes = static_cast<TreeNode*>(omp_target_alloc(node_bytes, device));
+    LeafBoard* d_leaves = static_cast<LeafBoard*>(omp_target_alloc(leaf_bytes, device));
+    int* d_scores = static_cast<int*>(omp_target_alloc(score_bytes, device));
+    std::uint64_t* d_visited = static_cast<std::uint64_t*>(omp_target_alloc(counter_bytes, device));
+    std::uint64_t* d_leaf_visits = static_cast<std::uint64_t*>(omp_target_alloc(counter_bytes, device));
+    std::uint64_t* d_cutoffs = static_cast<std::uint64_t*>(omp_target_alloc(counter_bytes, device));
+    result.device_allocation_seconds += elapsed(allocation_start);
+    auto release = [&] {
+        omp_target_free(d_nodes, device);
+        omp_target_free(d_leaves, device);
+        omp_target_free(d_scores, device);
+        omp_target_free(d_visited, device);
+        omp_target_free(d_leaf_visits, device);
+        omp_target_free(d_cutoffs, device);
+    };
+    if (!d_nodes || !d_leaves || !d_scores || !d_visited || !d_leaf_visits || !d_cutoffs) {
+        release();
+        throw std::runtime_error("OpenMP device allocation failed");
+    }
+
+    auto transfer_start = Clock::now();
+    const int node_copy = omp_target_memcpy(d_nodes, nodes, node_bytes, 0, 0, device, host);
+    const int leaf_copy = omp_target_memcpy(d_leaves, leaves, leaf_bytes, 0, 0, device, host);
+    result.transfer_to_seconds += elapsed(transfer_start);
+    result.transfer_to_bytes += node_bytes + leaf_bytes;
+    if (node_copy || leaf_copy) {
+        release();
+        throw std::runtime_error("OpenMP host-to-device copy failed");
+    }
+
+    auto kernel_start = Clock::now();
+#pragma omp target teams distribute parallel for is_device_ptr(d_nodes, d_leaves, d_scores, d_visited, d_leaf_visits, d_cutoffs)
+    for (int i = 0; i < n; ++i) {
+        const int value = device_search(d_nodes, d_leaves, first + i,
+                                        &d_visited[i], &d_leaf_visits[i], &d_cutoffs[i]);
+        d_scores[i] = negate ? -value : value;
+    }
+    result.kernel_region_seconds += elapsed(kernel_start);
+
+    transfer_start = Clock::now();
+    const int score_copy = omp_target_memcpy(scores, d_scores, score_bytes, 0, 0, host, device);
+    const int visit_copy = omp_target_memcpy(visited, d_visited, counter_bytes, 0, 0, host, device);
+    const int leaf_visit_copy = omp_target_memcpy(leaf_visits, d_leaf_visits, counter_bytes, 0, 0, host, device);
+    const int cutoff_copy = omp_target_memcpy(cutoffs, d_cutoffs, counter_bytes, 0, 0, host, device);
+    result.transfer_from_seconds += elapsed(transfer_start);
+    result.transfer_from_bytes += score_bytes + 3 * counter_bytes;
+    allocation_start = Clock::now();
+    release();
+    result.device_allocation_seconds += elapsed(allocation_start);
+    if (score_copy || visit_copy || leaf_visit_copy || cutoff_copy)
+        throw std::runtime_error("OpenMP device-to-host copy failed");
+}
+
 Result gpu_search(const chess::Board& initial, const chess::Movelist& moves, int depth,
-                  std::size_t max_nodes, bool require_device) {
+                  std::size_t max_nodes, bool require_device, bool profile = false) {
     if (depth > MAX_GPU_DEPTH) throw std::runtime_error("GPU depth exceeds fixed device stack");
     if (moves.empty() || drawn(initial)) {
         if (require_device) throw std::runtime_error("no offloadable root moves in this position");
@@ -481,11 +557,17 @@ Result gpu_search(const chess::Board& initial, const chess::Movelist& moves, int
     auto device_start = Clock::now();
 #pragma omp target map(from: on_device)
     { on_device = !omp_is_initial_device(); }
+    result.device_probe_seconds = elapsed(device_start);
     if (require_device && !on_device)
         throw std::runtime_error("OpenMP target fell back to CPU; use --backend gpu-host for a host smoke test");
+    if (profile) {
+        profile_device_batch(nodes, node_count, leaves, leaf_count, 0, n, true,
+                             score_ptr, visit_ptr, leaf_visit_ptr, cutoff_ptr, result);
+    } else {
 #pragma omp target teams distribute parallel for map(to: nodes[0:node_count], leaves[0:leaf_count]) map(from: score_ptr[0:n], visit_ptr[0:n], leaf_visit_ptr[0:n], cutoff_ptr[0:n])
-    for (int i = 0; i < n; ++i)
-        score_ptr[i] = -device_search(nodes, leaves, i, &visit_ptr[i], &leaf_visit_ptr[i], &cutoff_ptr[i]);
+        for (int i = 0; i < n; ++i)
+            score_ptr[i] = -device_search(nodes, leaves, i, &visit_ptr[i], &leaf_visit_ptr[i], &cutoff_ptr[i]);
+    }
     result.device_seconds = elapsed(device_start);
     result.ran_on_device = on_device != 0;
     result.seconds = elapsed(total_start);
@@ -507,7 +589,7 @@ Result gpu_search(const chess::Board& initial, const chess::Movelist& moves, int
 // root children independently. Device visits can be pruned inside a chunk;
 // host generation of that chunk cannot be undone by a later cutoff.
 int chunked_negamax(chess::Board& board, int depth, int ply, int alpha, int beta,
-                    int chunk_depth, std::size_t max_nodes, Result& result) {
+                    int chunk_depth, std::size_t max_nodes, Result& result, bool profile) {
     if (depth > chunk_depth) {
         ++result.stats.nodes;
         chess::Movelist moves;
@@ -524,7 +606,7 @@ int chunked_negamax(chess::Board& board, int depth, int ply, int alpha, int beta
         for (const chess::Move move : moves) {
             board.makeMove(move);
             const int score = -chunked_negamax(board, depth - 1, ply + 1, -beta, -alpha,
-                                               chunk_depth, max_nodes, result);
+                                               chunk_depth, max_nodes, result, profile);
             board.unmakeMove(move);
             best = std::max(best, score);
             alpha = std::max(alpha, score);
@@ -558,11 +640,16 @@ int chunked_negamax(chess::Board& board, int depth, int ply, int alpha, int beta
     result.preparation_seconds += elapsed(preparation_start);
 
     auto device_start = Clock::now();
+    if (profile) {
+        profile_device_batch(nodes, node_count, leaves, leaf_count, first, n, !terminal,
+                             score_ptr, visit_ptr, leaf_visit_ptr, cutoff_ptr, result);
+    } else {
 #pragma omp target teams distribute parallel for map(to: nodes[0:node_count], leaves[0:leaf_count]) map(from: score_ptr[0:n], visit_ptr[0:n], leaf_visit_ptr[0:n], cutoff_ptr[0:n])
-    for (int i = 0; i < n; ++i) {
-        const int score = device_search(nodes, leaves, first + i,
-                                        &visit_ptr[i], &leaf_visit_ptr[i], &cutoff_ptr[i]);
-        score_ptr[i] = terminal ? score : -score;
+        for (int i = 0; i < n; ++i) {
+            const int score = device_search(nodes, leaves, first + i,
+                                            &visit_ptr[i], &leaf_visit_ptr[i], &cutoff_ptr[i]);
+            score_ptr[i] = terminal ? score : -score;
+        }
     }
     result.device_seconds += elapsed(device_start);
     ++result.gpu_chunks;
@@ -579,7 +666,7 @@ int chunked_negamax(chess::Board& board, int depth, int ply, int alpha, int beta
 
 Result gpu_chunked_search(const chess::Board& initial, const chess::Movelist& moves,
                           int depth, int chunk_depth, std::size_t max_nodes,
-                          bool require_device) {
+                          bool require_device, bool profile = false) {
     if (moves.empty() || drawn(initial)) {
         if (require_device) throw std::runtime_error("no offloadable root moves in this position");
         return serial_search(initial, moves, depth);
@@ -590,7 +677,8 @@ Result gpu_chunked_search(const chess::Board& initial, const chess::Movelist& mo
     auto probe_start = Clock::now();
 #pragma omp target map(from: on_device)
     { on_device = !omp_is_initial_device(); }
-    result.device_seconds += elapsed(probe_start);
+    result.device_probe_seconds = elapsed(probe_start);
+    result.device_seconds += result.device_probe_seconds;
     if (require_device && !on_device)
         throw std::runtime_error("OpenMP target fell back to CPU; use --backend gpu-chunk-host for a host smoke test");
     result.ran_on_device = on_device != 0;
@@ -600,7 +688,7 @@ Result gpu_chunked_search(const chess::Board& initial, const chess::Movelist& mo
         chess::Board board = initial;
         board.makeMove(moves[i]);
         const int score = -chunked_negamax(board, depth - 1, 1, -INF, -alpha,
-                                           chunk_depth, max_nodes, result);
+                                           chunk_depth, max_nodes, result, profile);
         if (score > result.score) {
             result.score = score;
             result.move_index = i;
@@ -626,7 +714,7 @@ Options parse_options(int argc, char** argv) {
     for (int i = 1; i < argc; ++i) {
         const std::string arg = argv[i];
         if (arg == "--help") {
-            std::cout << "Usage: chess_search [--backend serial|minimax|omp|mpi|omp-pv|mpi-pv|gpu|gpu-host|gpu-chunk|gpu-chunk-host] "
+            std::cout << "Usage: chess_search [--backend serial|minimax|omp|mpi|omp-pv|mpi-pv|gpu|gpu-host|gpu-chunk|gpu-chunk-host|gpu-profile|gpu-profile-host|gpu-chunk-profile|gpu-chunk-profile-host] "
                          "[--depth N] [--threads N] [--split-depth N] "
                          "[--fen 'FEN'] [--max-tree-nodes N] [--gpu-chunk-depth N]\n";
             std::exit(0);
@@ -692,11 +780,17 @@ int main(int argc, char** argv) {
                 result = frontier_search(board, options.depth, options.split_depth,
                                          options.max_tree_nodes, use_mpi, rank, ranks);
         }
-        else if (options.backend == "gpu" || options.backend == "gpu-host")
-            result = gpu_search(board, moves, options.depth, options.max_tree_nodes, options.backend == "gpu");
-        else if (options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host")
+        else if (options.backend == "gpu" || options.backend == "gpu-host" ||
+                 options.backend == "gpu-profile" || options.backend == "gpu-profile-host")
+            result = gpu_search(board, moves, options.depth, options.max_tree_nodes,
+                                options.backend == "gpu" || options.backend == "gpu-profile",
+                                options.backend == "gpu-profile" || options.backend == "gpu-profile-host");
+        else if (options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host" ||
+                 options.backend == "gpu-chunk-profile" || options.backend == "gpu-chunk-profile-host")
             result = gpu_chunked_search(board, moves, options.depth, options.gpu_chunk_depth,
-                                        options.max_tree_nodes, options.backend == "gpu-chunk");
+                                        options.max_tree_nodes,
+                                        options.backend == "gpu-chunk" || options.backend == "gpu-chunk-profile",
+                                        options.backend == "gpu-chunk-profile" || options.backend == "gpu-chunk-profile-host");
         else throw std::runtime_error("unknown backend: " + options.backend);
 
         if (rank == 0) {
@@ -721,14 +815,26 @@ int main(int argc, char** argv) {
                     std::cout << (i ? "," : "") << result.rank_work_seconds[i];
             }
             if (options.backend == "gpu" || options.backend == "gpu-host" ||
-                options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host")
+                options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host" ||
+                options.backend == "gpu-profile" || options.backend == "gpu-profile-host" ||
+                options.backend == "gpu-chunk-profile" || options.backend == "gpu-chunk-profile-host")
                 std::cout << " tree_nodes=" << result.tree_nodes
                           << " preparation_seconds=" << result.preparation_seconds
                           << " target_seconds=" << result.device_seconds
                           << " ran_on_device=" << result.ran_on_device;
-            if (options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host")
+            if (options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host" ||
+                options.backend == "gpu-chunk-profile" || options.backend == "gpu-chunk-profile-host")
                 std::cout << " gpu_chunks=" << result.gpu_chunks
                           << " gpu_chunk_depth=" << options.gpu_chunk_depth;
+            if (options.backend == "gpu-profile" || options.backend == "gpu-profile-host" ||
+                options.backend == "gpu-chunk-profile" || options.backend == "gpu-chunk-profile-host")
+                std::cout << " probe_seconds=" << result.device_probe_seconds
+                          << " device_alloc_seconds=" << result.device_allocation_seconds
+                          << " h2d_seconds=" << result.transfer_to_seconds
+                          << " kernel_region_seconds=" << result.kernel_region_seconds
+                          << " d2h_seconds=" << result.transfer_from_seconds
+                          << " h2d_bytes=" << result.transfer_to_bytes
+                          << " d2h_bytes=" << result.transfer_from_bytes;
             std::cout << '\n';
         }
 #ifdef USE_MPI
