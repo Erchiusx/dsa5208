@@ -9,6 +9,8 @@ set -euo pipefail
 cd "$PBS_O_WORKDIR"
 
 depth="${JOB_DEPTH:-3}"
+gpu_backend="${JOB_GPU_BACKEND:-gpu}"
+gpu_chunk_depth="${JOB_GPU_CHUNK_DEPTH:-2}"
 max_tree_nodes="${JOB_MAX_TREE_NODES:-2000000}"
 fen="${JOB_FEN:-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}"
 output_dir="results/${PBS_JOBID:-manual}"
@@ -26,9 +28,11 @@ export OMP_TARGET_OFFLOAD=MANDATORY
 
 {
   date -u
-  printf 'job=%s depth=%s max_tree_nodes=%s\n' "${PBS_JOBID:-manual}" "$depth" "$max_tree_nodes"
+  printf 'job=%s depth=%s backend=%s gpu_chunk_depth=%s max_tree_nodes=%s\n' \
+    "${PBS_JOBID:-manual}" "$depth" "$gpu_backend" "$gpu_chunk_depth" "$max_tree_nodes"
   sha256sum src/main.cpp scripts/vanda_gpu.pbs
   printf 'GCC toolchain: %s\n' "$EBROOTGCCCORE"
-  ./build/chess_search_gpu --backend gpu --depth "$depth" --max-tree-nodes "$max_tree_nodes" --fen "$fen"
+  ./build/chess_search_gpu --backend "$gpu_backend" --depth "$depth" \
+    --gpu-chunk-depth "$gpu_chunk_depth" --max-tree-nodes "$max_tree_nodes" --fen "$fen"
   ./build/chess_search_gpu --backend serial --depth "$depth" --fen "$fen"
 } 2>&1 | tee "$output_dir/run.txt"

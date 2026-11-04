@@ -94,6 +94,7 @@ struct Result {
     double device_seconds = 0;
     bool ran_on_device = false;
     std::size_t tree_nodes = 0;
+    std::uint64_t gpu_chunks = 0;
 };
 
 using Clock = std::chrono::steady_clock;
@@ -501,12 +502,122 @@ Result gpu_search(const chess::Board& initial, const chess::Movelist& moves, int
     return result;
 }
 
+// The host retains alpha-beta control above each bounded chunk. It generates
+// only a chunk that the search actually reaches, then the device searches its
+// root children independently. Device visits can be pruned inside a chunk;
+// host generation of that chunk cannot be undone by a later cutoff.
+int chunked_negamax(chess::Board& board, int depth, int ply, int alpha, int beta,
+                    int chunk_depth, std::size_t max_nodes, Result& result) {
+    if (depth > chunk_depth) {
+        ++result.stats.nodes;
+        chess::Movelist moves;
+        chess::movegen::legalmoves(moves, board);
+        if (moves.empty()) {
+            ++result.stats.leaves;
+            return board.inCheck() ? -MATE + ply : 0;
+        }
+        if (drawn(board)) {
+            ++result.stats.leaves;
+            return 0;
+        }
+        int best = -INF;
+        for (const chess::Move move : moves) {
+            board.makeMove(move);
+            const int score = -chunked_negamax(board, depth - 1, ply + 1, -beta, -alpha,
+                                               chunk_depth, max_nodes, result);
+            board.unmakeMove(move);
+            best = std::max(best, score);
+            alpha = std::max(alpha, score);
+            if (alpha >= beta) {
+                ++result.stats.cutoffs;
+                break;
+            }
+        }
+        return best;
+    }
+
+    auto preparation_start = Clock::now();
+    Tree tree;
+    tree.nodes.resize(1);
+    build_node(tree, 0, board, depth, ply, max_nodes);
+    result.tree_nodes += tree.nodes.size();
+    if (tree.leaves.empty()) tree.leaves.emplace_back();
+    const bool terminal = tree.nodes[0].child_count == 0;
+    const int first = terminal ? 0 : tree.nodes[0].first_child;
+    const int n = terminal ? 1 : tree.nodes[0].child_count;
+    const int node_count = static_cast<int>(tree.nodes.size());
+    const int leaf_count = static_cast<int>(tree.leaves.size());
+    TreeNode* nodes = tree.nodes.data();
+    LeafBoard* leaves = tree.leaves.data();
+    std::vector<int> scores(n);
+    std::vector<std::uint64_t> visited(n), leaf_visits(n), cutoffs(n);
+    int* score_ptr = scores.data();
+    std::uint64_t* visit_ptr = visited.data();
+    std::uint64_t* leaf_visit_ptr = leaf_visits.data();
+    std::uint64_t* cutoff_ptr = cutoffs.data();
+    result.preparation_seconds += elapsed(preparation_start);
+
+    auto device_start = Clock::now();
+#pragma omp target teams distribute parallel for map(to: nodes[0:node_count], leaves[0:leaf_count]) map(from: score_ptr[0:n], visit_ptr[0:n], leaf_visit_ptr[0:n], cutoff_ptr[0:n])
+    for (int i = 0; i < n; ++i) {
+        const int score = device_search(nodes, leaves, first + i,
+                                        &visit_ptr[i], &leaf_visit_ptr[i], &cutoff_ptr[i]);
+        score_ptr[i] = terminal ? score : -score;
+    }
+    result.device_seconds += elapsed(device_start);
+    ++result.gpu_chunks;
+    result.stats.nodes += terminal ? 0 : 1;
+    int best = -INF;
+    for (int i = 0; i < n; ++i) {
+        best = std::max(best, scores[i]);
+        result.stats.nodes += visited[i];
+        result.stats.leaves += leaf_visits[i];
+        result.stats.cutoffs += cutoffs[i];
+    }
+    return best;
+}
+
+Result gpu_chunked_search(const chess::Board& initial, const chess::Movelist& moves,
+                          int depth, int chunk_depth, std::size_t max_nodes,
+                          bool require_device) {
+    if (moves.empty() || drawn(initial)) {
+        if (require_device) throw std::runtime_error("no offloadable root moves in this position");
+        return serial_search(initial, moves, depth);
+    }
+    Result result;
+    auto start = Clock::now();
+    int on_device = 0;
+    auto probe_start = Clock::now();
+#pragma omp target map(from: on_device)
+    { on_device = !omp_is_initial_device(); }
+    result.device_seconds += elapsed(probe_start);
+    if (require_device && !on_device)
+        throw std::runtime_error("OpenMP target fell back to CPU; use --backend gpu-chunk-host for a host smoke test");
+    result.ran_on_device = on_device != 0;
+    result.stats.nodes = 1;
+    int alpha = -INF;
+    for (int i = 0; i < moves.size(); ++i) {
+        chess::Board board = initial;
+        board.makeMove(moves[i]);
+        const int score = -chunked_negamax(board, depth - 1, 1, -INF, -alpha,
+                                           chunk_depth, max_nodes, result);
+        if (score > result.score) {
+            result.score = score;
+            result.move_index = i;
+        }
+        alpha = std::max(alpha, score);
+    }
+    result.seconds = elapsed(start);
+    return result;
+}
+
 struct Options {
     std::string backend = "serial";
     std::string fen = std::string(chess::constants::STARTPOS);
     int depth = 4;
     int threads = 1;
     int split_depth = 1;
+    int gpu_chunk_depth = 2;
     std::size_t max_tree_nodes = 2000000;
 };
 
@@ -515,9 +626,9 @@ Options parse_options(int argc, char** argv) {
     for (int i = 1; i < argc; ++i) {
         const std::string arg = argv[i];
         if (arg == "--help") {
-            std::cout << "Usage: chess_search [--backend serial|minimax|omp|mpi|omp-pv|mpi-pv|gpu|gpu-host] "
+            std::cout << "Usage: chess_search [--backend serial|minimax|omp|mpi|omp-pv|mpi-pv|gpu|gpu-host|gpu-chunk|gpu-chunk-host] "
                          "[--depth N] [--threads N] [--split-depth N] "
-                         "[--fen 'FEN'] [--max-tree-nodes N]\n";
+                         "[--fen 'FEN'] [--max-tree-nodes N] [--gpu-chunk-depth N]\n";
             std::exit(0);
         }
         if (i + 1 >= argc) throw std::runtime_error("missing value for " + arg);
@@ -526,11 +637,13 @@ Options parse_options(int argc, char** argv) {
         else if (arg == "--depth") options.depth = std::stoi(value);
         else if (arg == "--threads") options.threads = std::stoi(value);
         else if (arg == "--split-depth") options.split_depth = std::stoi(value);
+        else if (arg == "--gpu-chunk-depth") options.gpu_chunk_depth = std::stoi(value);
         else if (arg == "--fen") options.fen = value;
         else if (arg == "--max-tree-nodes") options.max_tree_nodes = std::stoull(value);
         else throw std::runtime_error("unknown option: " + arg);
     }
     if (options.depth < 1 || options.depth > MAX_GPU_DEPTH || options.threads < 1 || options.max_tree_nodes < 1 ||
+        options.gpu_chunk_depth < 1 || options.gpu_chunk_depth > MAX_GPU_DEPTH ||
         options.split_depth < 1 || options.split_depth > options.depth)
         throw std::runtime_error("depth must be 1..12; split-depth must be 1..depth; other counts positive");
     return options;
@@ -581,6 +694,9 @@ int main(int argc, char** argv) {
         }
         else if (options.backend == "gpu" || options.backend == "gpu-host")
             result = gpu_search(board, moves, options.depth, options.max_tree_nodes, options.backend == "gpu");
+        else if (options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host")
+            result = gpu_chunked_search(board, moves, options.depth, options.gpu_chunk_depth,
+                                        options.max_tree_nodes, options.backend == "gpu-chunk");
         else throw std::runtime_error("unknown backend: " + options.backend);
 
         if (rank == 0) {
@@ -604,11 +720,15 @@ int main(int argc, char** argv) {
                 for (std::size_t i = 0; i < result.rank_work_seconds.size(); ++i)
                     std::cout << (i ? "," : "") << result.rank_work_seconds[i];
             }
-            if (options.backend == "gpu" || options.backend == "gpu-host")
+            if (options.backend == "gpu" || options.backend == "gpu-host" ||
+                options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host")
                 std::cout << " tree_nodes=" << result.tree_nodes
                           << " preparation_seconds=" << result.preparation_seconds
                           << " target_seconds=" << result.device_seconds
                           << " ran_on_device=" << result.ran_on_device;
+            if (options.backend == "gpu-chunk" || options.backend == "gpu-chunk-host")
+                std::cout << " gpu_chunks=" << result.gpu_chunks
+                          << " gpu_chunk_depth=" << options.gpu_chunk_depth;
             std::cout << '\n';
         }
 #ifdef USE_MPI

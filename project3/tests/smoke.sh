@@ -36,10 +36,13 @@ for fen in "${fens[@]}"; do
       [[ "$(score_of "$frontier3")" == "$expected" ]]
     fi
     gpu_host="$($program --backend gpu-host --depth "$depth" --fen "$fen")"
+    gpu_chunk_host="$($program --backend gpu-chunk-host --depth "$depth" --gpu-chunk-depth 2 --fen "$fen")"
     [[ "$(score_of "$omp")" == "$expected" ]]
     [[ "$(score_of "$omp_pv")" == "$expected" ]]
     [[ "$(score_of "$gpu_host")" == "$expected" ]]
+    [[ "$(score_of "$gpu_chunk_host")" == "$expected" ]]
     [[ "$gpu_host" == *'ran_on_device=0'* ]]
+    [[ "$gpu_chunk_host" == *'ran_on_device=0'* ]]
     count=$((count + 1))
   done
 done
@@ -48,5 +51,9 @@ if "$program" --backend gpu --depth 2 >/dev/null 2>&1; then
   echo 'GPU backend unexpectedly accepted CPU fallback' >&2
   exit 1
 fi
+if "$program" --backend gpu-chunk --depth 2 >/dev/null 2>&1; then
+  echo 'GPU chunk backend unexpectedly accepted CPU fallback' >&2
+  exit 1
+fi
 
-echo "Passed: $count position/depth comparisons across minimax, serial alpha-beta, OpenMP, seeded-root OpenMP and target host fallback."
+echo "Passed: $count position/depth comparisons across minimax, serial alpha-beta, OpenMP, seeded-root OpenMP and both target host-fallback methods."
