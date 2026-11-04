@@ -353,18 +353,63 @@ CPU retained some pruning, but the repeated construction, transfers, and
 launches still dominated. Neither GPU method is competitive with the serial
 CPU search in these measured cases.
 
+\subsection{Separating data transfer from target execution}
+
+The original target-region timer includes transfers, launch, synchronization,
+and device traversal. We added separate profiling backends that use OpenMP
+device allocation and explicit \code{omp\_target\_memcpy} calls \cite{openmp52}.
+They time host-to-device (H2D) copies, the search target region, and
+device-to-host (D2H) copies separately. They also time CPU tree preparation
+and an initial device probe. The target-region timer still includes kernel
+launch and synchronization, so it is an \emph{upper bound} on GPU computation
+time, not a pure arithmetic measurement. The explicit-copy path is a separate
+measurement from the implicit-map path above.
+
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{A40 profiling phases in seconds. Depth-5 rows are medians of three trials in one allocation; depth 8 is one trial.}
+\label{tab:gpu-profile}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Method & Total & CPU build & Probe & H2D & Target search & D2H \\
+\midrule
+Depth 5, full tree & 1.304 & 0.762 & 0.149 & 0.035 & 0.358 & $<$0.001 \\
+Depth 5, chunks 2 & 0.458 & 0.051 & 0.150 & 0.014 & 0.218 & 0.022 \\
+Depth 5, chunks 3 & 0.361 & 0.073 & 0.144 & 0.005 & 0.136 & 0.002 \\
+Depth 8, chunks 3 & 154.620 & 57.525 & 0.243 & 3.563 & 92.313 & 0.853 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At depth eight, explicit transfers took 4.417 seconds, or 2.9\% of total;
+CPU tree construction took 37.2\%, and the search target regions took 59.7\%.
+The 30,619 chunks uploaded 33.54 GB cumulatively and downloaded 17.8 MB.
+At depth five, the chunk-depth-three median spent 0.007 seconds on explicit
+copies, or 2.0\% of total. Its 0.144-second device probe is a substantial
+one-time cost for this short process; the depth-eight run amortized it.
+The paired depth-five serial median was 0.004981 seconds: CPU tree
+construction alone was about 153 times that for the full-tree method and
+15 times that for chunk depth three. At depth eight, CPU construction alone
+took 57.525 seconds versus 3.689 seconds for the complete serial search.
+CPU tree generation and the combined launch/search phase therefore dominate
+raw transfer time in these measured configurations. Device allocation
+and remaining host bookkeeping account for the small difference between
+the listed phases and total time.
+
 \section{Validation, reproducibility, and limits}
 
 The local smoke suite compares serial alpha-beta with exhaustive minimax,
 OpenMP root, seeded-root OpenMP, deeper OpenMP frontiers, and the GPU kernel
 on its host fallback path at depths one through three on seven FENs.
 These include checkmate, stalemate, promotion, and en-passant positions.
-All 21 shallow position/depth comparisons and the added depth-five chunk
-checks passed. On Vanda, MPI root/frontier and
+All 21 shallow position/depth comparisons, the added depth-five chunk checks,
+and the profiling host-fallback checks passed. On Vanda, MPI root/frontier and
 seeded-root runs matched the serial score on the initial position, the
 seeded-root MPI search also matched serial on Kiwipete, and all three A40 runs
 matched serial at their measured depths, including the new depth-eight chunk
-run and the three repeated depth-five comparisons. Equal-score moves may legitimately
+run, the three repeated depth-five comparisons, and the instrumented GPU
+profiles. Equal-score moves may legitimately
 differ; in the recorded comparisons the reported move also agreed. The
 selected move is always drawn from the library's legal-move list.
 

@@ -122,6 +122,9 @@ For on-demand chunks, set `JOB_GPU_BACKEND=gpu-chunk` and
 `scripts/vanda_gpu_compare.pbs` repeats serial, original GPU, and both chunk
 depths three times on one A40 allocation. Its results are recorded in
 `experiments/raw/1518527-gpu-compare.txt`.
+`scripts/vanda_gpu_profile.pbs` repeats the explicit-transfer profiling
+variants at depth 5 and runs a depth-8 chunk profile. Its measurements are
+recorded in `experiments/raw/1518578-gpu-profile.txt`.
 
 The depth-5 A40 pilot used `JOB_DEPTH=5` and
 `JOB_MAX_TREE_NODES=7000000` when submitting `scripts/vanda_gpu.pbs`.
@@ -266,6 +269,7 @@ build/chess_search --backend omp --threads 4 --depth 4
 build/chess_search --backend omp --threads 4 --split-depth 2 --depth 4
 build/chess_search --backend gpu-host --depth 3
 build/chess_search --backend gpu-chunk-host --depth 5 --gpu-chunk-depth 3
+build/chess_search --backend gpu-chunk-profile-host --depth 5 --gpu-chunk-depth 3
 build/chess_search --backend serial --depth 3 \
   --fen 'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1'
 ```
@@ -289,6 +293,13 @@ above the chunk but still builds every legal node within each reached chunk.
 includes cumulative generated `tree_nodes` and `gpu_chunks` (chunk target
 launches, plus one separate device probe)
 to expose the batch-size tradeoff.
+
+`gpu-profile` and `gpu-chunk-profile` use explicit OpenMP device allocations
+and copies to report `h2d_seconds`, `kernel_region_seconds`, and
+`d2h_seconds`, alongside an initial device probe and allocation time. The
+kernel-region timer includes launch and synchronization, so it does not
+isolate pure GPU arithmetic. The corresponding `*-host` modes allow local
+fallback checks. See the profiling results in `experiments/README.md`.
 
 `--split-depth 1` assigns legal root moves as independent tasks. For
 `--backend omp` or `mpi`, values 2 or 3 generate more tasks from a deeper

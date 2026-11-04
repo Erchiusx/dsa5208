@@ -206,3 +206,44 @@ at depth 5, yet about 60 times slower than the serial CPU search. At depth 8,
 the chunked backend generated 428.8 million cumulative tree nodes and spent
 96.669 seconds in target regions; its 154.521-second total was about 39 times
 the paired serial time. The exact source hashes and allocations are in the logs.
+
+## GPU transfer and search profiling
+
+PBS job `1518578` used the `gpu-profile` and `gpu-chunk-profile` backends on
+one A40 (GN-A40-017). It completed with exit status 0. All four profiled
+configurations matched the paired serial score and move, and each GPU run
+reported `ran_on_device=1`. Raw output is in
+`raw/1518578-gpu-profile.txt`. The depth-5 configurations ran three times;
+depth 8 ran once. The table uses medians for depth 5.
+
+The profiling backends replace the implicit OpenMP map with explicit device
+allocations and `omp_target_memcpy` calls. `H2D` and `D2H` measure those copy
+calls. `Target search` measures the synchronous target region, including
+launch and synchronization; it is **not pure device computation time**.
+`CPU build` includes constructing legal trees with the third-party library.
+`Probe` is a separate initial target call to verify real GPU execution.
+The timings are a new instrumented run, so compare its own phase totals
+instead of subtracting them from the older implicit-map runs.
+
+| Configuration | Total (s) | CPU build (s) | Probe (s) | H2D (s) | Target search (s) | D2H (s) | Uploaded bytes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Depth 5, full tree | 1.304 | 0.762 | 0.149 | 0.035 | 0.358 | <0.001 | 397,397,422 |
+| Depth 5, chunk 2 | 0.458 | 0.051 | 0.150 | 0.014 | 0.218 | 0.022 | 33,779,915 |
+| Depth 5, chunk 3 | 0.361 | 0.073 | 0.144 | 0.005 | 0.136 | 0.002 | 48,079,344 |
+| Depth 8, chunk 3 | 154.620 | 57.525 | 0.243 | 3.563 | 92.313 | 0.853 | 33,541,484,954 |
+
+At depth 8, explicit copies totaled 4.417 seconds (2.9% of total), CPU
+construction took 37.2%, and the combined target launch/search phase took
+59.7%. The GPU allocation/free total was 0.0935 seconds; remaining host
+bookkeeping was about 0.029 seconds. At depth 5 with chunk depth 3, explicit
+copies took about 0.0071 seconds (2.0%) while the one-time device probe took
+0.144 seconds (39.9%). The probe cost is specific to a fresh process and
+would be amortized across multiple searches in a persistent engine. Because
+the target search timer includes launch overhead, these measurements do not
+determine how much of its 92.313 seconds was device traversal alone.
+The paired depth-5 serial median was 0.004981 seconds. CPU tree construction
+alone was about 153 times that for the full-tree GPU method and 15 times
+that for chunk depth 3. At depth 8, CPU tree construction took 57.525 seconds
+against 3.689 seconds for the complete paired serial search. This is a
+work-amplification effect: a reached chunk is generated in full before
+device-side pruning can skip any of its branches.
