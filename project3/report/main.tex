@@ -38,7 +38,7 @@ The serial alpha-beta baseline visited only 25.6 million nodes and took a
 median of 5.34 seconds. These contrasting baselines reveal that increasing
 parallelism can lose so much pruning that hardware speedup over the serial
 algorithm remains modest. An A40 GPU executed the offload kernel correctly,
-but the measured depth-3 and depth-4 searches were far slower than serial.
+but the measured depth-3 through depth-5 searches were far slower than serial.
 \end{abstract}
 
 \section{Problem and algorithm}
@@ -269,8 +269,8 @@ and the corresponding raw PBS logs.
 
 \subsection{GPU execution and cost}
 
-Both A40 jobs compiled and returned \code{ran\_on\_device=1}; GPU and
-serial scores and selected moves agreed at depths three and four. Table
+All three A40 jobs compiled and returned \code{ran\_on\_device=1}; GPU and
+serial scores and selected moves agreed at depths three through five. Table
 \ref{tab:gpu} separates the CPU tree build plus target path total from
 time measured around the target regions. It does not separate device
 launch, transfer, and kernel execution.
@@ -286,14 +286,18 @@ Depth & CPU-built tree nodes & GPU total (s) & Target (s) & Serial (s) \\
 \midrule
 3 & 9,322   & 0.246888 & 0.244381 & 0.000125 \\
 4 & 206,603 & 0.270310 & 0.238880 & 0.000237 \\
+5 & 5,072,212 & 1.798000 & 0.660136 & 0.007303 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The combined target-region time stayed near 0.24 seconds as the tree grew
-more than twentyfold. The GPU total was roughly 1,974 and 1,138 times the
-serial time at depths three and four. These small workloads and the
-CPU-built full tree do not suit the GPU design; a larger GPU-native chess
+The combined target-region time stayed near 0.24 seconds from depths three
+to four, then rose to 0.66 seconds at depth five. At depth five, CPU
+preparation alone took 1.138 seconds, about 156 times the serial search's
+0.007303 seconds. The full GPU path took about 246 times as long as serial.
+The default two-million-node tree limit had to be raised to seven million
+for this bounded depth-five pilot. These workloads and the CPU-built full tree
+do not suit the GPU design; a larger GPU-native chess
 representation and a different task strategy would be needed for a useful
 performance comparison. We stop the offload study at this measured
 limitation rather than claiming a GPU speedup.
@@ -306,7 +310,7 @@ on its host fallback path at depths one through three on seven FENs.
 These include checkmate, stalemate, promotion, and en-passant positions.
 All 21 position/depth comparisons passed. On Vanda, MPI root/frontier and
 seeded-root runs matched the serial score on the initial position, the
-seeded-root MPI search also matched serial on Kiwipete, and both A40 runs
+seeded-root MPI search also matched serial on Kiwipete, and all three A40 runs
 matched serial at their measured depths. Equal-score moves may legitimately
 differ; in the recorded comparisons the reported move also agreed. The
 selected move is always drawn from the library's legal-move list.

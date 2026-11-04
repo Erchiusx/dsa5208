@@ -136,8 +136,8 @@ median for 720 cores.
 
 The first NVHPC job (1499966) reached an A40 node but failed compilation:
 `nvc++` could not find `<functional>`. Explicitly selecting Vanda's GCC
-13.2 toolchain with `--gcc-toolchain=$EBROOTGCCCORE` resolved this. The next
-two jobs compiled, exited 0, and reported `ran_on_device=1` with
+13.2 toolchain with `--gcc-toolchain=$EBROOTGCCCORE` resolved this. Three
+subsequent jobs compiled, exited 0, and reported `ran_on_device=1` with
 `OMP_TARGET_OFFLOAD=MANDATORY`. Each GPU score and move matched the serial
 search for the same initial position and depth.
 
@@ -145,15 +145,21 @@ search for the same initial position and depth.
 | --- | ---: | ---: | ---: | ---: | ---: |
 | 1499986 | 3 | 9,322 | 0.246888 | 0.244381 | 0.000125092 |
 | 1499992 | 4 | 206,603 | 0.270310 | 0.238880 | 0.000237436 |
+| 1518429 | 5 | 5,072,212 | 1.798000 | 0.660136 | 0.007303230 |
 
 The GPU path constructs the entire legal tree on the CPU, copies it to the
-device, then searches independent root branches on the GPU. At these depths,
-the measured target region accounts for nearly all GPU time and remains
-around 0.24 seconds as the tree grows more than 20-fold. The current counters
+device, then searches independent root branches on the GPU. From depths 3
+to 4, the target region remained near 0.24 seconds while the CPU-built tree
+grew more than 20-fold. At depth 5, the tree reached 5,072,212 nodes and
+the target region took 0.660 seconds. The current counters
 do not separate launch, transfer, and kernel time. The GPU total is about
-1,974x and 1,138x slower than serial alpha-beta at
-depths 3 and 4 respectively. The CPU-built tree itself also grows quickly,
+1,974x, 1,138x, and 246x slower than serial alpha-beta at
+depths 3, 4, and 5 respectively. At depth 5, CPU preparation alone took
+1.138 seconds, about 156 times the serial search time. This job required
+raising `--max-tree-nodes` from 2 million to 7 million; PBS reported a
+19-second total job walltime. The CPU-built tree itself grows quickly,
 so this implementation is a bounded feasibility study rather than a
 competitive chess-engine GPU design. GPU and serial visit different node
 counts because the GPU root branches use independent full windows. The raw
-GPU run and compiler logs are saved in `raw/`.
+GPU run and compiler logs are saved in `raw/`. The depth-5 log is
+`raw/1518429-gpu.txt`; its PBS history records exit status 0.

@@ -107,10 +107,15 @@ For a separate GPU submission, the listing includes
 login shell, check `command -v nvc++`, then submit
 `scripts/vanda_gpu.pbs`. The script passes `--gcc-toolchain=$EBROOTGCCCORE`
 to `nvc++`; without this option, the first A40 job could not find the
-standard C++ header `<functional>`. Vanda A40 jobs 1499986 and 1499992
-confirmed `ran_on_device=1` at depths 3 and 4, with the same score and move
+standard C++ header `<functional>`. Vanda A40 jobs 1499986, 1499992, and
+1518429 confirmed `ran_on_device=1` at depths 3, 4, and 5, with the same score and move
 as serial. See [`experiments/`](experiments/README.md) for the measured
 overhead and the bounded GPU conclusion.
+
+The depth-5 A40 pilot used `JOB_DEPTH=5` and
+`JOB_MAX_TREE_NODES=7000000` when submitting `scripts/vanda_gpu.pbs`.
+The latter increases the explicit CPU tree-build cap; it does not change
+the search result.
 
 The CPU template requests one chunk with 4 CPU cores, 1 MPI rank and 4
 OpenMP threads. To run multiple nodes, edit its `#PBS -l select=...` to
