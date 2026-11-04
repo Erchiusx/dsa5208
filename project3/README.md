@@ -10,6 +10,8 @@ same material evaluation and chess terminal rules. Vanda CPU and GPU results,
 including repeated scaling runs, are in
 [`experiments/`](experiments/README.md). The draft
 [`report/main.pdf`](report/main.pdf) discusses the algorithm and evidence.
+The main hybrid parallel implementation is MPI between nodes plus OpenMP
+threads on CPUs. OpenMP GPU target offload is an additional feasibility study.
 
 ## Third-party code and ownership
 
@@ -29,6 +31,9 @@ evaluation, CPU scheduling, GPU tree representation/traversal, instrumentation,
 and command-line code in `src/main.cpp` are project code. The library does not
 provide this program's search algorithm. The instructor approved using an
 externally credited legal-move library.
+The vendored library is used only on the CPU; none of its functions are called
+from an OpenMP target region. The GPU tree representation, traversal, and
+leaf evaluation are implemented in this project's source.
 
 ## Build
 

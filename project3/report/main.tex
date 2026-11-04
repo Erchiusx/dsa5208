@@ -109,6 +109,9 @@ move formatting; it does not supply our search algorithm. The instructor
 approved this credited external dependency. The header and license are in
 \code{third\_party/chess-library/}, with provenance in
 \code{THIRD\_PARTY.md}.
+All calls to this host-oriented library, including legal move generation,
+occur on the CPU. The OpenMP device code is project code and contains no
+third-party chess-library calls.
 
 \subsection{Independent root and deeper-frontier tasks}
 
@@ -147,12 +150,20 @@ tradeoff.
 
 \subsection{OpenMP target feasibility study}
 
+The principal hybrid implementation uses MPI between nodes and OpenMP CPU
+threads within each node. Following the instructor's suggestion, we also
+explored OpenMP target offload as an additional experiment.
 Move generation is branch-heavy and uses a complex CPU board type. For the
 GPU experiment, the CPU first expands the legal tree to the chosen shallow
-depth and packs nodes and leaf evaluations into flat arrays. An OpenMP
+depth and packs nodes and leaf board states into flat arrays. An OpenMP
 \code{target teams distribute parallel for} region gives independent root
 branches to the device \cite{openmp52}. Each device worker runs an iterative
-stack-based alpha-beta traversal of its branch. This is a deliberately
+stack-based alpha-beta traversal of its branch and evaluates visited leaves.
+Pruning on the device cannot recover the cost of nodes already generated on
+the CPU. Generating small batches on the CPU instead would introduce repeated
+device launches and transfers; batching transfers and retaining device data
+are standard GPU performance considerations \cite{nvidia-best-practices}.
+This is a deliberately
 bounded offload study: CPU tree expansion, device transfer, and limited root
 parallelism remain part of the measured GPU path. We require
 \code{OMP\_TARGET\_OFFLOAD=MANDATORY} and check
@@ -360,6 +371,10 @@ Open MPI, \emph{mpirun / mpiexec}, version 5.0.7 documentation.
 \bibitem{openmp52}
 OpenMP Architecture Review Board, \emph{OpenMP API Specification}, version
 5.2, 2021. \url{https://www.openmp.org/wp-content/uploads/OpenMP-API-Specification-5-2.pdf}.
+\bibitem{nvidia-best-practices}
+NVIDIA, \emph{CUDA C++ Best Practices Guide}, section 10.1, ``Data Transfer
+Between Host and Device.''
+\url{https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/}.
 \end{thebibliography}
 
 \end{document}
