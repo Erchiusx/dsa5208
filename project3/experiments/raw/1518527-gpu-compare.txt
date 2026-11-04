@@ -1,0 +1,19 @@
+Wed Nov  4 06:53:18 AM UTC 2026
+job=1518527.stdct-mgmt-02 depth=5 repeats=3
+9a0d32812efa91b01ac3e05e9142bc5c638e9316712ec7a8014d749d13f0aa60  src/main.cpp
+ee626515f8171d00edec12ca9f4b2df77352cd82f25c01ca573bebe3926d9a5c  scripts/vanda_gpu_compare.pbs
+trial=1
+backend=serial depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=35970 leaves=33215 cutoffs=1884 seconds=0.00717654
+backend=gpu depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=228680 leaves=207501 cutoffs=16219 seconds=1.65663 tree_nodes=5072212 preparation_seconds=1.01951 target_seconds=0.637096 ran_on_device=1
+backend=gpu-chunk depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=431744 leaves=413443 cutoffs=56 seconds=0.501165 tree_nodes=431665 preparation_seconds=0.0809038 target_seconds=0.419824 ran_on_device=1 gpu_chunks=844 gpu_chunk_depth=2
+backend=gpu-chunk depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=119699 leaves=92943 cutoffs=23983 seconds=0.427455 tree_nodes=615039 preparation_seconds=0.116944 target_seconds=0.310383 ran_on_device=1 gpu_chunks=58 gpu_chunk_depth=3
+trial=2
+backend=serial depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=35970 leaves=33215 cutoffs=1884 seconds=0.00719525
+backend=gpu depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=228680 leaves=207501 cutoffs=16219 seconds=1.69201 tree_nodes=5072212 preparation_seconds=1.13177 target_seconds=0.560216 ran_on_device=1
+backend=gpu-chunk depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=431744 leaves=413443 cutoffs=56 seconds=0.503758 tree_nodes=431665 preparation_seconds=0.0807215 target_seconds=0.422604 ran_on_device=1 gpu_chunks=844 gpu_chunk_depth=2
+backend=gpu-chunk depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=119699 leaves=92943 cutoffs=23983 seconds=0.406237 tree_nodes=615039 preparation_seconds=0.0969681 target_seconds=0.309165 ran_on_device=1 gpu_chunks=58 gpu_chunk_depth=3
+trial=3
+backend=serial depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=35970 leaves=33215 cutoffs=1884 seconds=0.004751
+backend=gpu depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=228680 leaves=207501 cutoffs=16219 seconds=1.54177 tree_nodes=5072212 preparation_seconds=1.00386 target_seconds=0.537887 ran_on_device=1
+backend=gpu-chunk depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=431744 leaves=413443 cutoffs=56 seconds=0.451958 tree_nodes=431665 preparation_seconds=0.0505365 target_seconds=0.401104 ran_on_device=1 gpu_chunks=844 gpu_chunk_depth=2
+backend=gpu-chunk depth=5 ranks=1 threads=1 score=100 move=b2b3 split_depth=1 nodes=119699 leaves=92943 cutoffs=23983 seconds=0.430754 tree_nodes=615039 preparation_seconds=0.116294 target_seconds=0.314332 ran_on_device=1 gpu_chunks=58 gpu_chunk_depth=3

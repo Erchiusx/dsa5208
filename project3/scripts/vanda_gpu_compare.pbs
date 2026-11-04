@@ -1,0 +1,32 @@
+#!/bin/bash
+#PBS -N chess-gpu-compare
+#PBS -j oe
+#PBS -V
+#PBS -l select=1:ncpus=4:ngpus=1:mem=8gb
+#PBS -l walltime=00:15:00
+
+set -euo pipefail
+cd "$PBS_O_WORKDIR"
+
+output_dir="results/${PBS_JOBID:-manual}"
+mkdir -p "$output_dir"
+gpu_compiler="${GPU_CXX:-nvc++}"
+test -n "${EBROOTGCCCORE:-}"
+command -v "$gpu_compiler"
+nvidia-smi -L
+make gpu GPU_CXX="$gpu_compiler" \
+  GPU_FLAGS="-O2 -std=c++17 -mp=gpu --gcc-toolchain=$EBROOTGCCCORE"
+export OMP_TARGET_OFFLOAD=MANDATORY
+
+{
+  date -u
+  printf 'job=%s depth=5 repeats=3\n' "${PBS_JOBID:-manual}"
+  sha256sum src/main.cpp scripts/vanda_gpu_compare.pbs
+  for trial in 1 2 3; do
+    printf 'trial=%s\n' "$trial"
+    ./build/chess_search_gpu --backend serial --depth 5
+    ./build/chess_search_gpu --backend gpu --depth 5 --max-tree-nodes 7000000
+    ./build/chess_search_gpu --backend gpu-chunk --depth 5 --gpu-chunk-depth 2
+    ./build/chess_search_gpu --backend gpu-chunk --depth 5 --gpu-chunk-depth 3
+  done
+} 2>&1 | tee "$output_dir/run.txt"

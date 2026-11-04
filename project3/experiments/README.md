@@ -163,3 +163,46 @@ competitive chess-engine GPU design. GPU and serial visit different node
 counts because the GPU root branches use independent full windows. The raw
 GPU run and compiler logs are saved in `raw/`. The depth-5 log is
 `raw/1518429-gpu.txt`; its PBS history records exit status 0.
+
+## On-demand GPU chunks
+
+The `gpu-chunk` backend uses the CPU chess library to generate only reached
+subtrees. CPU alpha-beta retains pruning above a bounded chunk; the GPU
+searches that chunk's immediate child branches. `tree_nodes` counts all
+nodes generated across chunks, not peak resident nodes. `gpu_chunks` counts
+chunk target launches (the device probe adds one more target region). These are single-trial exploratory runs, each paired
+with a serial search in the same PBS job. All recorded jobs exited 0,
+reported `ran_on_device=1`, and matched serial score and move.
+
+| PBS job | Depth | Chunk depth | Generated nodes | GPU launches | GPU total (s) | Serial (s) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1518504 | 5 | 3 | 615,039 | 58 | 0.440220 | 0.004531 |
+| 1518507 | 5 | 2 | 431,665 | 844 | 0.520517 | 0.004526 |
+| 1518510 | 6 | 3 | 11,155,745 | 963 | 4.249360 | 0.144860 |
+| 1518511 | 7 | 3 | 12,920,761 | 1,042 | 5.570290 | 0.196487 |
+| 1518515 | 8 | 3 | 428,791,429 | 30,619 | 154.521000 | 3.940450 |
+
+At depth 5, the original full-tree GPU version generated 5,072,212 nodes.
+The chunk-depth-3 version generated 615,039, but required 58 target launches.
+Chunk depth 2 generated still fewer nodes at the cost of 844 launches and a
+longer target time. These cross-job comparisons remain preliminary because
+the full-tree run and chunk runs used different A40 nodes.
+
+Job `1518527` ran the four backends three times each in one A40 allocation.
+The medians below come from `raw/1518527-gpu-compare.txt`; every run returned
+score 100, move `b2b3`, and GPU runs reported `ran_on_device=1`. PBS exit
+status was 0. These are within-job comparisons, but each backend ran in
+fixed order, so the three trials do not remove possible order effects.
+
+| Depth-5 backend | Generated nodes | Chunk launches | Median total (s) | Median target (s) |
+| --- | ---: | ---: | ---: | ---: |
+| Serial CPU | — | — | 0.007177 | — |
+| Original GPU full tree | 5,072,212 | 1 | 1.656630 | 0.560216 |
+| GPU chunk depth 2 | 431,665 | 844 | 0.501165 | 0.419824 |
+| GPU chunk depth 3 | 615,039 | 58 | 0.427455 | 0.310383 |
+
+Thus chunk depth 3 is about 3.88 times faster than the original GPU backend
+at depth 5, yet about 60 times slower than the serial CPU search. At depth 8,
+the chunked backend generated 428.8 million cumulative tree nodes and spent
+96.669 seconds in target regions; its 154.521-second total was about 39 times
+the paired serial time. The exact source hashes and allocations are in the logs.

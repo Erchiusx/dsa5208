@@ -37,8 +37,10 @@ across three trials, a speedup of 112.95 with 15.7\% efficiency.
 The serial alpha-beta baseline visited only 25.6 million nodes and took a
 median of 5.34 seconds. These contrasting baselines reveal that increasing
 parallelism can lose so much pruning that hardware speedup over the serial
-algorithm remains modest. An A40 GPU executed the offload kernel correctly,
-but the measured depth-3 through depth-5 searches were far slower than serial.
+algorithm remains modest. An A40 GPU executed two offload strategies correctly:
+full-tree construction and on-demand chunks. At depth five, chunking reduced
+the median GPU time from 1.657 to 0.427 seconds, but both remained slower
+than serial; the depth-eight chunked run took 154.5 seconds.
 \end{abstract}
 
 \section{Problem and algorithm}
@@ -154,7 +156,7 @@ The principal hybrid implementation uses MPI between nodes and OpenMP CPU
 threads within each node. Following the instructor's suggestion, we also
 explored OpenMP target offload as an additional experiment.
 Move generation is branch-heavy and uses a complex CPU board type. For the
-GPU experiment, the CPU first expands the legal tree to the chosen shallow
+first GPU experiment, the CPU expands the legal tree to the chosen shallow
 depth and packs nodes and leaf board states into flat arrays. An OpenMP
 \code{target teams distribute parallel for} region gives independent root
 branches to the device \cite{openmp52}. Each device worker runs an iterative
@@ -163,9 +165,14 @@ Pruning on the device cannot recover the cost of nodes already generated on
 the CPU. Generating small batches on the CPU instead would introduce repeated
 device launches and transfers; batching transfers and retaining device data
 are standard GPU performance considerations \cite{nvidia-best-practices}.
-This is a deliberately
-bounded offload study: CPU tree expansion, device transfer, and limited root
-parallelism remain part of the measured GPU path. We require
+To reduce wasted generation, a second backend retains CPU alpha-beta above
+a fixed-depth chunk. Only when the CPU search reaches a chunk does it expand
+that subtree and offload its immediate children. The GPU searches each child
+with its own full window; the CPU combines exact child scores and continues
+pruning above the chunk. This preserves some cross-subtree pruning but adds
+one transfer and target launch per reached chunk. The library still executes
+only on the CPU. These are bounded offload studies: CPU tree expansion,
+device transfer, and limited branch parallelism remain measured costs. We require
 \code{OMP\_TARGET\_OFFLOAD=MANDATORY} and check
 \code{omp\_is\_initial\_device()} to reject silent host fallback.
 
@@ -280,8 +287,8 @@ and the corresponding raw PBS logs.
 
 \subsection{GPU execution and cost}
 
-All three A40 jobs compiled and returned \code{ran\_on\_device=1}; GPU and
-serial scores and selected moves agreed at depths three through five. Table
+All A40 jobs compiled and returned \code{ran\_on\_device=1}; GPU and
+serial scores and selected moves agreed at depths three through eight. Table
 \ref{tab:gpu} separates the CPU tree build plus target path total from
 time measured around the target regions. It does not separate device
 launch, transfer, and kernel execution.
@@ -310,8 +317,41 @@ The default two-million-node tree limit had to be raised to seven million
 for this bounded depth-five pilot. These workloads and the CPU-built full tree
 do not suit the GPU design; a larger GPU-native chess
 representation and a different task strategy would be needed for a useful
-performance comparison. We stop the offload study at this measured
-limitation rather than claiming a GPU speedup.
+performance comparison.
+
+We then ran both GPU methods, with chunk depths two and three, three times
+each in one A40 PBS allocation. Table \ref{tab:gpu-chunks} reports medians.
+The logged tree-node count for chunks is cumulative over all generated
+chunks, not peak memory use. Every trial returned score 100 and move
+\code{b2b3}, matching serial. A chunk depth of three generated more nodes
+than depth two but used only 58 target launches instead of 844. It was
+faster in this comparison. The full-tree method generated 5.07 million
+nodes, while chunk depth three generated 0.62 million.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Initial position, depth 5, same A40 allocation, median of three trials.}
+\label{tab:gpu-chunks}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Method & Generated nodes & Chunk launches & Total (s) & Target (s) \\
+\midrule
+Serial CPU & --- & --- & 0.007177 & --- \\
+GPU full tree & 5,072,212 & 1 & 1.656630 & 0.560216 \\
+GPU chunks, depth 2 & 431,665 & 844 & 0.501165 & 0.419824 \\
+GPU chunks, depth 3 & 615,039 & 58 & 0.427455 & 0.310383 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Chunk depth three also matched serial at depths six, seven, and eight in
+separate single-trial jobs. At depth eight it took 154.521 seconds versus
+3.940 seconds for the paired serial run, generated 428.8 million nodes
+across 30,619 chunks, and spent 96.669 seconds in target regions. The
+CPU retained some pruning, but the repeated construction, transfers, and
+launches still dominated. Neither GPU method is competitive with the serial
+CPU search in these measured cases.
 
 \section{Validation, reproducibility, and limits}
 
@@ -319,10 +359,12 @@ The local smoke suite compares serial alpha-beta with exhaustive minimax,
 OpenMP root, seeded-root OpenMP, deeper OpenMP frontiers, and the GPU kernel
 on its host fallback path at depths one through three on seven FENs.
 These include checkmate, stalemate, promotion, and en-passant positions.
-All 21 position/depth comparisons passed. On Vanda, MPI root/frontier and
+All 21 shallow position/depth comparisons and the added depth-five chunk
+checks passed. On Vanda, MPI root/frontier and
 seeded-root runs matched the serial score on the initial position, the
 seeded-root MPI search also matched serial on Kiwipete, and all three A40 runs
-matched serial at their measured depths. Equal-score moves may legitimately
+matched serial at their measured depths, including the new depth-eight chunk
+run and the three repeated depth-five comparisons. Equal-score moves may legitimately
 differ; in the recorded comparisons the reported move also agreed. The
 selected move is always drawn from the library's legal-move list.
 
@@ -350,8 +392,8 @@ The study illustrates a tension specific to tree search. Splitting more
 deeply creates enough tasks for hundreds of cores, but destroys useful
 alpha-beta dependencies and inflates total work. Searching a promising
 root move first preserves pruning, yet exposes few tasks and suffers from
-static load imbalance. GPU offload is technically possible but not useful
-for this CPU-built, branch-heavy shallow tree. The strongest future
+static load imbalance. GPU offload is technically possible; on-demand chunking
+cuts generated work but remains slower than serial on these tests. The strongest future
 improvement would be a load-aware or dynamic MPI scheduler together with a
 parallel search scheme that shares safe alpha-beta bounds. Additional
 single-worker repetitions would improve the precision of the efficiency baseline.

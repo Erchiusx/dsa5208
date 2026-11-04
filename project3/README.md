@@ -4,8 +4,8 @@ This project studies fixed-depth negamax with alpha-beta pruning. The current
 program provides an exhaustive minimax validation mode, a serial CPU reference,
 root- and second/third-level OpenMP CPU versions, a seeded-root variant that
 searches the first move before parallelizing the others, optional MPI +
-OpenMP versions, and an OpenMP target version of
-alpha-beta search over a legal tree generated on the CPU. All versions use the
+OpenMP versions, and two OpenMP target versions of
+alpha-beta search over legal trees generated on the CPU. All versions use the
 same material evaluation and chess terminal rules. Vanda CPU and GPU results,
 including repeated scaling runs, are in
 [`experiments/`](experiments/README.md). The draft
@@ -116,6 +116,12 @@ standard C++ header `<functional>`. Vanda A40 jobs 1499986, 1499992, and
 1518429 confirmed `ran_on_device=1` at depths 3, 4, and 5, with the same score and move
 as serial. See [`experiments/`](experiments/README.md) for the measured
 overhead and the bounded GPU conclusion.
+
+For on-demand chunks, set `JOB_GPU_BACKEND=gpu-chunk` and
+`JOB_GPU_CHUNK_DEPTH=2` or `3` when submitting `scripts/vanda_gpu.pbs`.
+`scripts/vanda_gpu_compare.pbs` repeats serial, original GPU, and both chunk
+depths three times on one A40 allocation. Its results are recorded in
+`experiments/raw/1518527-gpu-compare.txt`.
 
 The depth-5 A40 pilot used `JOB_DEPTH=5` and
 `JOB_MAX_TREE_NODES=7000000` when submitting `scripts/vanda_gpu.pbs`.
@@ -259,6 +265,7 @@ build/chess_search --backend minimax --depth 3
 build/chess_search --backend omp --threads 4 --depth 4
 build/chess_search --backend omp --threads 4 --split-depth 2 --depth 4
 build/chess_search --backend gpu-host --depth 3
+build/chess_search --backend gpu-chunk-host --depth 5 --gpu-chunk-depth 3
 build/chess_search --backend serial --depth 3 \
   --fen 'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1'
 ```
@@ -273,13 +280,23 @@ silently dropping branches. Fixed depth is currently limited to 12 by the
 device traversal stack; useful GPU tree depths may be much lower due to
 complete host-side expansion.
 
+`gpu-chunk` is an additional OpenMP target backend. CPU alpha-beta descends
+through the tree and builds only reached subtrees with at most
+`--gpu-chunk-depth` remaining plies. Each bounded subtree goes to the GPU,
+whose workers search its immediate child branches. This preserves pruning
+above the chunk but still builds every legal node within each reached chunk.
+`gpu-chunk-host` explicitly permits host fallback for validation. Output
+includes cumulative generated `tree_nodes` and `gpu_chunks` (chunk target
+launches, plus one separate device probe)
+to expose the batch-size tradeoff.
+
 `--split-depth 1` assigns legal root moves as independent tasks. For
 `--backend omp` or `mpi`, values 2 or 3 generate more tasks from a deeper
 frontier and combine exact subtree scores by negamax. This can feed more CPU
-workers but may lose additional pruning. The GPU backend currently offloads
-root subtrees only and rejects larger `--split-depth` values.
+workers but may lose additional pruning. Both GPU backends reject larger
+`--split-depth` values; only `gpu-chunk` uses `--gpu-chunk-depth`.
 
-## What the GPU version actually computes
+## What the original GPU version actually computes
 
 The CPU uses the third-party library to generate the **complete legal game
 tree** to the chosen depth. Each node stores child links; leaves store a
@@ -294,8 +311,8 @@ the full tree construction run on the CPU **before** offload. Consequently it
 may spend far more time and memory than serial alpha-beta, which generates
 only branches it needs. The total reported `seconds` includes CPU tree
 construction, transfer, and target search. `target_seconds` alone is not an
-end-to-end speedup. The current GPU version is limited by the number of root
-moves; it is not yet a many-GPU or deep-frontier implementation.
+end-to-end speedup. The original GPU version is limited by the number of root
+moves; neither GPU version spans multiple devices.
 
 The CPU OpenMP/MPI task splits also lose pruning between independent tasks.
 Compare their node counts with serial alpha-beta before interpreting speedup.

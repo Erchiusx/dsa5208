@@ -7,8 +7,8 @@
 The vendored `third_party/chess-library/chess.hpp` is unmodified. Its SHA-256
 is `905b95c2ac870e488a5262c992e3aed0907a2233eb95b9a2835a3d47d9a3cf5d`.
 
-The serial minimax/alpha-beta search, OpenMP and MPI task scheduling, GPU
-search over a pre-expanded tree, material evaluation, tests, and PBS scripts
+The serial minimax/alpha-beta search, OpenMP and MPI task scheduling, both GPU
+search variants, material evaluation, tests, and PBS scripts
 are this project's code. The instructor explicitly accepted using a credited
 external library for legal moves and FEN parsing. This declaration should be
 included with the source submission and summarized in the PDF report.

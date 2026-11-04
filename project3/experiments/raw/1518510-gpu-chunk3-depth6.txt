@@ -1,0 +1,7 @@
+Wed Nov  4 06:48:32 AM UTC 2026
+job=1518510.stdct-mgmt-02 depth=6 backend=gpu-chunk gpu_chunk_depth=3 max_tree_nodes=2000000
+9a0d32812efa91b01ac3e05e9142bc5c638e9316712ec7a8014d749d13f0aa60  src/main.cpp
+1d34eb02d3c743bece52b66ee7bc6ceb56ea29fee2a914a8e276554e29c792be  scripts/vanda_gpu.pbs
+GCC toolchain: /app1/ebapps/arches/flat-avx2/software/GCCcore/13.2.0
+backend=gpu-chunk depth=6 ranks=1 threads=1 score=-100 move=a2a3 split_depth=1 nodes=2202764 leaves=1704594 cutoffs=453612 seconds=4.24936 tree_nodes=11155745 preparation_seconds=1.51432 target_seconds=2.73437 ran_on_device=1 gpu_chunks=963 gpu_chunk_depth=3
+backend=serial depth=6 ranks=1 threads=1 score=-100 move=a2a3 split_depth=1 nodes=671589 leaves=616104 cutoffs=44635 seconds=0.14486

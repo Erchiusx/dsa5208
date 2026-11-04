@@ -47,6 +47,12 @@ for fen in "${fens[@]}"; do
   done
 done
 
+deep_serial="$($program --backend serial --depth 5 --fen "${fens[0]}")"
+for chunk_depth in 2 3; do
+  deep_chunk="$($program --backend gpu-chunk-host --depth 5 --gpu-chunk-depth "$chunk_depth" --fen "${fens[0]}")"
+  [[ "$(score_of "$deep_chunk")" == "$(score_of "$deep_serial")" ]]
+done
+
 if "$program" --backend gpu --depth 2 >/dev/null 2>&1; then
   echo 'GPU backend unexpectedly accepted CPU fallback' >&2
   exit 1
