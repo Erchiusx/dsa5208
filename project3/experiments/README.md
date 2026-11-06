@@ -1,5 +1,8 @@
 # Vanda CPU and GPU experiments
 
+
+Additional CPU measurements on six chess positions (24 full-node scaling configurations, three trials each) are in [the multi-position archive](multiposition/README.md). It includes raw logs, serial baselines, strategy comparisons and regenerated summary tables.
+
 All rows below use the initial-position FEN, depth 7, GCC 14.2.0,
 OpenMPI 5.0.7, and one MPI rank per node. Times are **single runs**, not
 report-ready medians. The corresponding complete stdout/stderr captures are

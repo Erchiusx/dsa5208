@@ -1,5 +1,8 @@
 # Parallel chess search: C++ implementation and Vanda experiments
 
+
+Additional CPU measurements on six chess positions (24 full-node scaling configurations, three trials each) are in [the multi-position archive](experiments/multiposition/README.md). It includes raw logs, serial baselines, strategy comparisons and regenerated summary tables.
+
 This project studies fixed-depth negamax with alpha-beta pruning. The current
 program provides an exhaustive minimax validation mode, a serial CPU reference,
 root- and second/third-level OpenMP CPU versions, a seeded-root variant that

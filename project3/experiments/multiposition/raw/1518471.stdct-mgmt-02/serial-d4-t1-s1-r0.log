@@ -1,0 +1,7 @@
+[CN-148:527313] pmix_mca_base_component_repository_open: unable to open /app1/ebapps/arches/flat-avx512/software/OpenMPI/5.0.7-GCC-14.2.0/lib/prte/prte_mca_plm_tm: 
+    dlopen error: libpbs.so.0: cannot open shared object file: No such file or directory
+    Perhaps a missing symbol, or compiled for a different version of prte? (ignored)
+Authorized users only. All activity may be monitored and reported.
+hostfile_replace_entries: link /home/svu/e1597929/.ssh/known_hosts to /home/svu/e1597929/.ssh/known_hosts.old: No such file or directory
+update_known_hosts: hostfile_replace_entries failed for /home/svu/e1597929/.ssh/known_hosts: No such file or directory
+backend=serial depth=4 ranks=1 threads=1 score=10 move=e2a6 split_depth=1 nodes=52887 leaves=44999 cutoffs=7418 seconds=0.0235892

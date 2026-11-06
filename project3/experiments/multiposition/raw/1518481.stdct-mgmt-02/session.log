@@ -1,0 +1,103 @@
+Wed Nov  4 06:43:16 AM UTC 2026
+Currently Loaded Modulefiles:
+ 1) shared                         11) libpciaccess/0.18.1-GCCcore-14.2.0  
+ 2) apptainer/1.4.1                12) hwloc/2.11.2-GCCcore-14.2.0         
+ 3) GCCcore/14.2.0                 13) OpenSSL/3                           
+ 4) zlib/1.3.1-GCCcore-14.2.0      14) libevent/2.1.12-GCCcore-14.2.0      
+ 5) binutils/2.42-GCCcore-14.2.0   15) UCX/1.18.0-GCCcore-14.2.0           
+ 6) GCC/14.2.0                     16) libfabric/2.0.0-GCCcore-14.2.0      
+ 7) ncurses/6.5-GCCcore-14.2.0     17) PMIx/5.0.6-GCCcore-14.2.0           
+ 8) numactl/2.0.19-GCCcore-14.2.0  18) UCC/1.3.0-GCCcore-14.2.0            
+ 9) XZ/5.6.3-GCCcore-14.2.0        19) OpenMPI/5.0.7-GCC-14.2.0            
+10) libxml2/2.13.4-GCCcore-14.2.0  
+cn-148.stdct.loc
+Architecture:                         x86_64
+CPU op-mode(s):                       32-bit, 64-bit
+Address sizes:                        46 bits physical, 57 bits virtual
+Byte Order:                           Little Endian
+CPU(s):                               72
+On-line CPU(s) list:                  0-71
+Vendor ID:                            GenuineIntel
+Model name:                           Intel(R) Xeon(R) Platinum 8452Y
+CPU family:                           6
+Model:                                143
+Thread(s) per core:                   1
+Core(s) per socket:                   36
+Socket(s):                            2
+Stepping:                             8
+BogoMIPS:                             4000.00
+Flags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hfi vnmi avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr ibt amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities ibpb_exit_to_user
+Virtualization:                       VT-x
+L1d cache:                            3.4 MiB (72 instances)
+L1i cache:                            2.3 MiB (72 instances)
+L2 cache:                             144 MiB (72 instances)
+L3 cache:                             135 MiB (2 instances)
+NUMA node(s):                         2
+NUMA node0 CPU(s):                    0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70
+NUMA node1 CPU(s):                    1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71
+Vulnerability Gather data sampling:   Not affected
+Vulnerability Itlb multihit:          Not affected
+Vulnerability L1tf:                   Not affected
+Vulnerability Mds:                    Not affected
+Vulnerability Meltdown:               Not affected
+Vulnerability Mmio stale data:        Not affected
+Vulnerability Reg file data sampling: Not affected
+Vulnerability Retbleed:               Not affected
+Vulnerability Spec rstack overflow:   Not affected
+Vulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS SW sequence; BHI BHI_DIS_S
+Vulnerability Srbds:                  Not affected
+Vulnerability Tsx async abort:        Not affected
+Vulnerability Vmscape:                Mitigation; IBPB before exit to userspace
+896b1db9e9af57561914f61a4e1da8644e42304e0ad751f26f66150762153707  src/main.cpp
+8464589dc8e3699d063d92779905e0d2c963d54f0c375948e0b6e7dde7663281  scripts/multiposition.py
+08d8c3a9eb659eb9fa82c8945de6795ce32fe5c47c7a4d8770e7b0f53b13e4ba  scripts/vanda_multiposition.pbs
+RUN serial-d6-t1-s1-r1
+{"backend": "serial", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "3200497", "leaves": "2933121", "cutoffs": "248255", "seconds": "1.29745", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 1, "exit_code": 0, "launch_seconds": 2.732230966008501}
+RUN serial-d6-t1-s1-r2
+{"backend": "serial", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "3200497", "leaves": "2933121", "cutoffs": "248255", "seconds": "1.29508", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 2, "exit_code": 0, "launch_seconds": 2.9317096500017215}
+RUN serial-d6-t1-s1-r3
+{"backend": "serial", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "3200497", "leaves": "2933121", "cutoffs": "248255", "seconds": "1.29189", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 3, "exit_code": 0, "launch_seconds": 2.9805047000118066}
+RUN mpi-d6-t1-s1-r1
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "9932573", "leaves": "9240051", "cutoffs": "628634", "seconds": "3.97582", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 1, "exit_code": 0, "launch_seconds": 5.496392636996461}
+RUN mpi-d6-t1-s1-r2
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "9932573", "leaves": "9240051", "cutoffs": "628634", "seconds": "3.92432", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 2, "exit_code": 0, "launch_seconds": 5.441042958002072}
+RUN mpi-d6-t1-s1-r3
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "9932573", "leaves": "9240051", "cutoffs": "628634", "seconds": "2.63748", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 3, "exit_code": 0, "launch_seconds": 4.140201439004159}
+RUN mpi-d6-t1-s2-r1
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "2", "nodes": "19742320", "leaves": "17755841", "cutoffs": "1829786", "seconds": "5.18629", "frontier_nodes": "271", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 1, "exit_code": 0, "launch_seconds": 6.748517319007078}
+RUN mpi-d6-t1-s2-r2
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "2", "nodes": "19742320", "leaves": "17755841", "cutoffs": "1829786", "seconds": "6.35518", "frontier_nodes": "271", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 2, "exit_code": 0, "launch_seconds": 7.899407415010501}
+RUN mpi-d6-t1-s2-r3
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "2", "nodes": "19742320", "leaves": "17755841", "cutoffs": "1829786", "seconds": "6.63334", "frontier_nodes": "271", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 3, "exit_code": 0, "launch_seconds": 8.150514481007122}
+RUN mpi-d6-t1-s3-r1
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "3", "nodes": "87580382", "leaves": "81970531", "cutoffs": "4643776", "seconds": "23.1358", "frontier_nodes": "9738", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 1, "exit_code": 0, "launch_seconds": 24.658767576998798}
+RUN mpi-d6-t1-s3-r2
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "3", "nodes": "87580382", "leaves": "81970531", "cutoffs": "4643776", "seconds": "22.7984", "frontier_nodes": "9738", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 2, "exit_code": 0, "launch_seconds": 24.211154076008825}
+RUN mpi-d6-t1-s3-r3
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "1", "score": "-660", "move": "g1h1", "split_depth": "3", "nodes": "87580382", "leaves": "81970531", "cutoffs": "4643776", "seconds": "23.451", "frontier_nodes": "9738", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 3, "exit_code": 0, "launch_seconds": 24.8628403559851}
+RUN mpi-d6-t4-s1-r1
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "9932573", "leaves": "9240051", "cutoffs": "628634", "seconds": "1.41519", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 1, "exit_code": 0, "launch_seconds": 2.9818863069813233}
+RUN mpi-d6-t4-s1-r2
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "9932573", "leaves": "9240051", "cutoffs": "628634", "seconds": "1.29942", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 2, "exit_code": 0, "launch_seconds": 2.7823884900135454}
+RUN mpi-d6-t4-s1-r3
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "9932573", "leaves": "9240051", "cutoffs": "628634", "seconds": "1.34104", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 3, "exit_code": 0, "launch_seconds": 2.9329890189983416}
+RUN mpi-d6-t4-s2-r1
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "2", "nodes": "19742320", "leaves": "17755841", "cutoffs": "1829786", "seconds": "2.27409", "frontier_nodes": "271", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 1, "exit_code": 0, "launch_seconds": 3.734163974993862}
+RUN mpi-d6-t4-s2-r2
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "2", "nodes": "19742320", "leaves": "17755841", "cutoffs": "1829786", "seconds": "2.24442", "frontier_nodes": "271", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 2, "exit_code": 0, "launch_seconds": 3.6841283639951143}
+RUN mpi-d6-t4-s2-r3
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "2", "nodes": "19742320", "leaves": "17755841", "cutoffs": "1829786", "seconds": "2.09587", "frontier_nodes": "271", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 3, "exit_code": 0, "launch_seconds": 3.734707741008606}
+RUN mpi-d6-t4-s3-r1
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "3", "nodes": "87580382", "leaves": "81970531", "cutoffs": "4643776", "seconds": "8.71695", "frontier_nodes": "9738", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 1, "exit_code": 0, "launch_seconds": 10.238552894006716}
+RUN mpi-d6-t4-s3-r2
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "3", "nodes": "87580382", "leaves": "81970531", "cutoffs": "4643776", "seconds": "8.37626", "frontier_nodes": "9738", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 2, "exit_code": 0, "launch_seconds": 9.890618567005731}
+RUN mpi-d6-t4-s3-r3
+{"backend": "mpi", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "3", "nodes": "87580382", "leaves": "81970531", "cutoffs": "4643776", "seconds": "8.38967", "frontier_nodes": "9738", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 3, "exit_code": 0, "launch_seconds": 9.840029863000382}
+RUN mpi-pv-d6-t4-s1-r1
+{"backend": "mpi-pv", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "3200497", "leaves": "2933121", "cutoffs": "248255", "seconds": "0.778716", "seed_seconds": "0.700712", "seed_nodes": "2706621", "rank_nodes": "493875", "rank_work_seconds": "0.077965", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 1, "exit_code": 0, "launch_seconds": 2.179756340017775}
+RUN mpi-pv-d6-t4-s1-r2
+{"backend": "mpi-pv", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "3200497", "leaves": "2933121", "cutoffs": "248255", "seconds": "0.77858", "seed_seconds": "0.701209", "seed_nodes": "2706621", "rank_nodes": "493875", "rank_work_seconds": "0.0773163", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 2, "exit_code": 0, "launch_seconds": 2.1775356979924254}
+RUN mpi-pv-d6-t4-s1-r3
+{"backend": "mpi-pv", "depth": "6", "ranks": "1", "threads": "4", "score": "-660", "move": "g1h1", "split_depth": "1", "nodes": "3200497", "leaves": "2933121", "cutoffs": "248255", "seconds": "0.779541", "seed_seconds": "0.700868", "seed_nodes": "2706621", "rank_nodes": "493875", "rank_work_seconds": "0.0786219", "position": "tactical", "job": "1518481.stdct-mgmt-02", "phase": "full", "trial": 3, "exit_code": 0, "launch_seconds": 2.2290759260067716}

@@ -1,0 +1,5 @@
+[CN-148:535444] pmix_mca_base_component_repository_open: unable to open /app1/ebapps/arches/flat-avx512/software/OpenMPI/5.0.7-GCC-14.2.0/lib/prte/prte_mca_plm_tm: 
+    dlopen error: libpbs.so.0: cannot open shared object file: No such file or directory
+    Perhaps a missing symbol, or compiled for a different version of prte? (ignored)
+Authorized users only. All activity may be monitored and reported.
+backend=mpi depth=9 ranks=1 threads=1 score=100 move=e2e3 split_depth=3 nodes=351266409 leaves=289423742 cutoffs=53933614 seconds=59.9262 frontier_nodes=3018

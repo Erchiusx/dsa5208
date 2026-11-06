@@ -1,0 +1,30 @@
+#!/bin/bash
+#PBS -N chess-positions
+#PBS -j oe
+#PBS -l select=1:ncpus=4:mpiprocs=1:ompthreads=4:mem=8gb
+#PBS -l walltime=00:45:00
+set -euo pipefail
+cd "$PBS_O_WORKDIR"
+module load GCC/14.2.0 OpenMPI/5.0.7-GCC-14.2.0
+export LD_LIBRARY_PATH="$(dirname "$(g++ -print-file-name=libstdc++.so.6)"):$(dirname "$(g++ -print-file-name=libgomp.so.1)"):${LD_LIBRARY_PATH:-}"
+export OMP_DYNAMIC=FALSE
+mkdir -p "results/$PBS_JOBID"
+{
+  date -u
+  module list 2>&1
+  sort -u "$PBS_NODEFILE"
+  lscpu
+  sha256sum src/main.cpp scripts/multiposition.py scripts/vanda_multiposition.pbs
+  # Serialize compilation; each allocation runs its own immutable executable.
+  (
+    flock -x 9
+    if [[ ! -x build/chess_search_mpi || src/main.cpp -nt build/chess_search_mpi ]]; then
+      make mpi
+    fi
+    cp build/chess_search_mpi "results/$PBS_JOBID/chess_search_mpi"
+  ) 9>build.lock
+  export CHESS_BINARY="$PWD/results/$PBS_JOBID/chess_search_mpi"
+  cp scripts/multiposition.py "results/$PBS_JOBID/runner.py"
+  cp scripts/vanda_multiposition.pbs "results/$PBS_JOBID/job.pbs"
+  python3 "results/$PBS_JOBID/runner.py"
+} 2>&1 | tee "results/$PBS_JOBID/session.log"

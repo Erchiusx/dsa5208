@@ -1,0 +1,57 @@
+1518475.stdct-mgmt-02 kiwipete 6 1
+1518476.stdct-mgmt-02 kiwipete 6 2
+1518477.stdct-mgmt-02 kiwipete 6 4
+1518478.stdct-mgmt-02 rook_endgame 9 1
+1518479.stdct-mgmt-02 rook_endgame 9 2
+1518480.stdct-mgmt-02 rook_endgame 9 4
+1518481.stdct-mgmt-02 tactical 6 1
+1518482.stdct-mgmt-02 tactical 6 2
+1518483.stdct-mgmt-02 tactical 6 4
+1518490.stdct-mgmt-02 kiwipete 6 1 72
+1518491.stdct-mgmt-02 kiwipete 6 2 72
+1518493.stdct-mgmt-02 kiwipete 6 4 72
+1518494.stdct-mgmt-02 kiwipete 6 10 72
+1518495.stdct-mgmt-02 rook_endgame 9 1 72
+1518496.stdct-mgmt-02 rook_endgame 9 2 72
+1518497.stdct-mgmt-02 rook_endgame 9 4 72
+1518498.stdct-mgmt-02 rook_endgame 9 10 72
+1518499.stdct-mgmt-02 tactical 6 1 72
+1518500.stdct-mgmt-02 tactical 6 2 72
+1518501.stdct-mgmt-02 tactical 6 4 72
+1518502.stdct-mgmt-02 tactical 6 10 72
+1518523.stdct-mgmt-02 ruy_lopez pilot
+1518524.stdct-mgmt-02 queens_gambit pilot
+1518525.stdct-mgmt-02 minor_endgame pilot
+1518526.stdct-mgmt-02 kiwipete baseline-retry
+1518530.stdct-mgmt-02 ruy_lopez auto 1 4
+1518531.stdct-mgmt-02 ruy_lopez auto 2 4
+1518532.stdct-mgmt-02 ruy_lopez auto 4 4
+1518533.stdct-mgmt-02 ruy_lopez auto 1 72
+1518534.stdct-mgmt-02 ruy_lopez auto 2 72
+1518535.stdct-mgmt-02 ruy_lopez auto 4 72
+1518536.stdct-mgmt-02 ruy_lopez auto 10 72
+1518537.stdct-mgmt-02 queens_gambit auto 1 4
+1518538.stdct-mgmt-02 queens_gambit auto 2 4
+1518539.stdct-mgmt-02 queens_gambit auto 4 4
+1518540.stdct-mgmt-02 queens_gambit auto 1 72
+1518541.stdct-mgmt-02 queens_gambit auto 2 72
+1518542.stdct-mgmt-02 queens_gambit auto 4 72
+1518543.stdct-mgmt-02 queens_gambit auto 10 72
+1518544.stdct-mgmt-02 minor_endgame auto 1 4
+1518545.stdct-mgmt-02 minor_endgame auto 2 4
+1518546.stdct-mgmt-02 minor_endgame auto 4 4
+1518547.stdct-mgmt-02 minor_endgame auto 1 72
+1518548.stdct-mgmt-02 minor_endgame auto 2 72
+1518549.stdct-mgmt-02 minor_endgame auto 4 72
+1518550.stdct-mgmt-02 minor_endgame auto 10 72
+1518559.stdct-mgmt-02 minor_endgame pilot-retry
+1518560.stdct-mgmt-02 minor_endgame retry 1 4
+1518561.stdct-mgmt-02 minor_endgame retry 2 4
+1518562.stdct-mgmt-02 minor_endgame retry 4 4
+1518564.stdct-mgmt-02 minor_endgame retry 1 72
+1518565.stdct-mgmt-02 minor_endgame retry 2 72
+1518566.stdct-mgmt-02 minor_endgame retry 4 72
+1518567.stdct-mgmt-02 minor_endgame retry 10 72
+1520768.stdct-mgmt-02 queens_gambit replacement-of-1518543 10 72
+1523620.stdct-mgmt-02 queens_gambit replacement-of-1520768 10 72
+1525334.stdct-mgmt-02 queens_gambit replacement-of-1518542 4 72
