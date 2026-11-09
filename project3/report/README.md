@@ -6,7 +6,7 @@ The named delivery copy is `../output/pdf/DSA5208_Project3_Report.pdf`.
 Both PDF copies contain the same 16-page document.
 
 The report introduces game-tree search with a two-ply pruning example and
-shows all seven benchmark boards beside their exact FEN inputs. The argument
+shows all seven benchmark boards with their exact FEN inputs directly below. The argument
 distinguishes original-algorithm acceleration from fixed-task
 scaling, measures pruning inflation, compares split-depth and seeded-root
 strategies, and uses GPU phase profiling to evaluate a transfer-only explanation. The 9 November

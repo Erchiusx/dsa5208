@@ -100,22 +100,54 @@ def draw_board(ax, fen, title, depth):
                  color="#173C52", fontweight="bold", pad=9)
 
 
+def fen_lines(fen, width=43):
+    """Break at rank separators where possible without omitting FEN characters."""
+    placement, fields = fen.split(" ", 1)
+    rank_tokens = [rank + ("/" if i < 7 else "") for i, rank in enumerate(placement.split("/"))]
+    lines = []
+    current = ""
+    for token in rank_tokens:
+        if current and len(current + token) > width:
+            lines.append(current)
+            current = ""
+        current += token
+    if len(current) + 1 + len(fields) <= width:
+        current += " " + fields
+    else:
+        lines.append(current)
+        current = fields
+    lines.append(current)
+    rebuilt = "".join(lines[:-1]) + " " + fields if lines[-1] == fields else "".join(lines)
+    assert rebuilt == fen
+    return lines
+
+
 def make_page(cases, fens, path):
-    fig, axes = plt.subplots(2, 2, figsize=(8.0, 8.4), layout="constrained")
-    for ax, (key, title, depth) in zip(axes.flat, cases):
+    fig = plt.figure(figsize=(8.0, 9.2), layout="constrained")
+    grid = fig.add_gridspec(2, 2, wspace=.13, hspace=.12)
+    for index, (key, title, depth) in enumerate(cases):
+        cell = grid[index // 2, index % 2].subgridspec(2, 1, height_ratios=[8.4, 1.2], hspace=.04)
+        ax = fig.add_subplot(cell[0])
         draw_board(ax, fens[key], title, depth)
+        label = fig.add_subplot(cell[1])
+        label.axis("off")
+        lines = fen_lines(fens[key])
+        label.text(.015, .98, "FEN: " + lines[0] + "\n" + "\n".join("        " + line for line in lines[1:]),
+                   transform=label.transAxes, ha="left", va="top", fontsize=8.5,
+                   fontfamily="DejaVu Sans Mono", color="#253342", linespacing=1.25)
     if len(cases) == 3:
-        ax = axes[1, 1]
+        ax = fig.add_subplot(grid[1, 1])
         ax.axis("off")
-        ax.text(.08, .8, "How to read these boards", transform=ax.transAxes,
+        ax.text(.08, .85, "How to read these boards", transform=ax.transAxes,
                 fontsize=13, fontweight="bold", color="#173C52")
-        ax.text(.08, .58,
+        ax.text(.08, .66,
                 "White is at the bottom in every diagram.\n"
                 "Files a-h run from left to right; ranks\n"
                 "1-8 run from bottom to top.\n\n"
                 "The label gives the side to move and the\n"
-                "fixed search depth. Each diagram is the\n"
-                "input position, not a selected best move.",
+                "fixed search depth. FEN line breaks are\n"
+                "typographic; join the lines to recover the\n"
+                "exact input. No diagram is a best move.",
                 transform=ax.transAxes, fontsize=10.5, va="top", linespacing=1.5,
                 color="#344E5E")
     fig.savefig(path, bbox_inches="tight", pad_inches=.08)

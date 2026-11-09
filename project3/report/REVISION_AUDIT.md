@@ -51,6 +51,7 @@ recorded rank/thread layouts for each position and split depth.
     engines. A two-ply example shows why alpha-beta can skip a competing move.
     Added seven board diagrams in two vector plates; the board generator parses
     the benchmark FEN definitions and checks every appendix FEN for agreement.
+    Each diagram also repeats its exact FEN directly beneath the board.
 
 ## What was not inferred
 
