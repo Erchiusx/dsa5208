@@ -1,467 +1,745 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern}
-\usepackage{amsmath}
-\usepackage{booktabs}
-\usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{geometry}
-\usepackage{microtype}
-\usepackage{hyperref}
-\usepackage{array}
-\geometry{margin=24mm}
-\hypersetup{colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,
-  pdftitle={Parallel Chess Search with MPI, OpenMP, and GPU Offload},
-  pdfauthor={Jia Siqi and Jia Zeyue}}
-\setlength{\parskip}{0.35em}
+\usepackage{lmodern,amsmath,amssymb,booktabs,graphicx,xcolor,geometry,microtype,hyperref,array,tabularx,float}
+\geometry{left=23mm,right=23mm,top=22mm,bottom=23mm}
+\definecolor{ink}{HTML}{135A7A}
+\hypersetup{hypertexnames=false,colorlinks=true,linkcolor=ink,urlcolor=ink,citecolor=ink,pdftitle={When More Parallelism Means More Work: Chess Search with MPI and OpenMP},pdfauthor={Jia Siqi and Jia Zeyue}}
+\setlength{\parskip}{.25em}
 \setlength{\parindent}{1.2em}
+\setlength{\emergencystretch}{2em}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.8}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{16pt}
+\makeatother
 \newcommand{\code}[1]{\texttt{#1}}
-
-\title{Parallel Chess Search with MPI, OpenMP, and GPU Offload}
+\graphicspath{{report/assets/}{assets/}}
+\newcommand{\assetdir}{assets/}
+\IfFileExists{report/assets/scaling.pdf}{\renewcommand{\assetdir}{report/assets/}}{}
+\title{When More Parallelism Means More Work\\[3pt]\large Chess Search with MPI, OpenMP, and GPU Offload}
 \author{Jia Siqi (A0333724H) \and Jia Zeyue (A0326500U)}
-\date{DSA5208 Project 3 --- draft, 4 November 2026}
-
+\date{DSA5208 Project 3 \quad 9 November 2026}
 \begin{document}
 \maketitle
-
 \begin{abstract}
-We study fixed-depth chess search as an irregular parallel workload. A serial
-negamax implementation with alpha-beta pruning is compared with OpenMP root
-splitting, deeper MPI+OpenMP task frontiers, a seeded-root variant that
-retains more pruning, and OpenMP GPU offload. The same legal-move library and
-simple material evaluation are used throughout. On Vanda, a depth-8,
-split-depth-3 task search visited 929.9 million nodes. A one-worker run took
-198.1 seconds; the ten-node, 720-core run took a median of 1.754 seconds
-across three trials, a speedup of 112.95 with 15.7\% efficiency.
-The serial alpha-beta baseline visited only 25.6 million nodes and took a
-median of 5.34 seconds. These contrasting baselines reveal that increasing
-parallelism can lose so much pruning that hardware speedup over the serial
-algorithm remains modest. An A40 GPU executed two offload strategies correctly:
-full-tree construction and on-demand chunks. At depth five, chunking reduced
-the median GPU time from 1.657 to 0.427 seconds, but both remained slower
-than serial; the depth-eight chunked run took 154.5 seconds.
+Parallel chess search creates a conflict between exposing work and avoiding it:
+independent subtrees are easy to distribute, but they cannot exploit the same
+alpha--beta bounds as a sequential search. We implement serial negamax,
+MPI+OpenMP frontier decomposition, a seeded-root alternative, and two OpenMP GPU
+offload strategies. On NUS Vanda, six additional positions yield 120 complete
+three-trial CPU configuration groups, including 24 strong-scaling points from
+72 to 720 allocated cores. At 720 cores, the recorded search-region medians for four longer workloads are
+5.57--21.84 times as fast as serial alpha--beta, while two shallow middlegames
+remain slower. These are allocation-dependent observations, not population
+estimates or end-to-end speedups. A pair of baselines separates scaling of a fixed
+task graph from acceleration of the original algorithm. On the initial
+position, 112.95-fold fixed-task speedup becomes only 3.04-fold speedup over
+serial alpha--beta because decomposition expands search work by 36.3 times.
+Seeded-root search reduces wasted work but exposes load imbalance; deeper
+splitting helps large allocations while often hurting a 16-core run. GPU
+chunking reduces speculative tree construction, yet remains slower than the
+paired serial CPU search. Explicit profiling shows that raw data copies account
+for only 2.9\% of a depth-eight GPU run: CPU tree generation and the combined
+launch/search phase dominate. These observations motivate workload-aware splitting and bound-preserving
+scheduling; their benefits require controlled follow-up rather than a universal
+preference for more cores.
 \end{abstract}
 
-\section{Problem and algorithm}
+\section{Problem, scope, and research questions}
+A chess engine chooses a move by considering its own continuations and its
+opponent's best replies. A position contains the pieces, side to move, castling
+rights, en-passant square and move counters. Legal moves are edges of a game
+tree, whose shape changes with checks, captures and terminal outcomes. One
+\emph{ply} is one player's move; depth eight is eight plies, not eight full turns.
 
-\subsection{What a chess search computes}
+Our task is to compute a deterministic fixed-depth score and a maximizing legal
+root move. This isolates search and scheduling from playing-strength engineering.
+Leaves use material values of 100, 320, 330, 500 and 900 for pawn, knight,
+bishop, rook and queen. Scores are in centipawns from the root side's perspective.
+Checkmate receives a large score adjusted for distance; stalemate and supported
+draw conditions receive zero. There is no learned evaluation, transposition
+table, quiescence search, iterative deepening or heuristic move ordering.
+A reported move is best under this model and depth; it need not be a strong
+move according to a competitive chess engine.
 
-A chess position records the pieces on 64 squares, the player to move,
-castling rights, an en-passant square, and counters needed for the draw
-rules. At each position the player has a set of legal moves. Applying a move
-changes the position and hands the turn to the opponent. Repeating this
-process yields a game tree: a node is a position and an edge is a legal move.
-The branching factor varies greatly with the position. Moves may also create
-checkmate, stalemate, or a draw. We use Forsyth--Edwards notation (FEN) to
-specify reproducible starting positions.
+The study asks three questions. First, how does frontier depth trade parallel
+capacity against lost pruning? Second, does preserving an initial root bound
+improve runtime when static MPI assignment remains unbalanced? Third, can GPU
+offload repay CPU preparation and device execution costs for this irregular
+search? We evaluate multiple positions to identify both useful scaling and
+small-workload failure cases. The positions are fixed benchmarks, including
+synthetic states, rather than a representative sample of human games.
 
-Our program does not aim to play competitive chess. It searches to a fixed
-ply depth $d$, where one ply is one move by one player. At a nonterminal
-depth-zero leaf, it scores the material balance using pawn = 100, knight =
-320, bishop = 330, rook = 500, and queen = 900. The king is not assigned a
-material value because it cannot be captured. Positive scores favor the side
-to move. Checkmate has a large negative score adjusted by distance to mate;
-stalemate and supported draw conditions score zero. A one-pawn advantage is
-thus roughly 100 score units. The leaf evaluation ignores king safety,
-positional value, quiescence, and opening knowledge. A score or selected move
-should therefore be read as a result of this experimental search, not as a
-claim about the best move in chess.
-
-\subsection{Minimax, negamax, and alpha-beta pruning}
-
-Chess is a two-player zero-sum game: a gain for the player to move is a loss
-for the opponent. A minimax search assumes that both players choose the best
-available continuation. Negamax writes the same recurrence with one sign
-change at each turn:
+\section{Algorithm and sources of parallel dependence}
+\subsection{Negamax and alpha--beta pruning}
+For legal moves $M(s)$ and the state $s_m$ after move $m$, negamax writes minimax as
 \begin{equation}
-  V(s,d)=\begin{cases}
-    E(s), & d=0\text{ or }s\text{ is terminal},\\
-    \displaystyle\max_{m\in M(s)} -V(s_m,d-1), & \text{otherwise},
-  \end{cases}
+ V(s,d)=\begin{cases}
+ E(s),&d=0\text{ or }s\text{ is terminal},\\
+ \max_{m\in M(s)}[-V(s_m,d-1)],&\text{otherwise}.
+ \end{cases}
 \end{equation}
-where $s_m$ is the position after legal move $m$. Terminal outcomes are
-handled before the material evaluation. The root returns a score and the
-first legal move attaining the maximum. A simple exhaustive minimax backend
-serves as an independent search-control reference at shallow depth: it uses
-the same legal moves and evaluation but disables pruning.
+Terminal rules are applied before the material cutoff. The implementation
+negates the evaluation perspective after each move and reverses board changes
+when returning. An exhaustive minimax backend disables pruning and provides a
+shallow search-control reference.
 
-Alpha-beta pruning avoids searching continuations that cannot affect the
-choice above them \cite{knuth1975}. The search carries a lower bound
-$\alpha$ and an upper bound $\beta$. A child is searched with the negated
-window $[-\beta,-\alpha]$; if $\alpha\geq\beta$, later siblings cannot
-improve the relevant ancestor and are skipped. The returned value may be a
-bound when a cutoff occurs. Move order matters: a strong move discovered
-early can make many later branches cheap, while a poor first move leaves a
-wide window. Our baseline uses the legal-move order supplied by the library,
-without a transposition table or learned ordering. This makes the
-dependency between sibling searches visible in the parallel experiments.
+Alpha--beta carries bounds $(\alpha,\beta)$ and searches a child with
+$(-\beta,-\alpha)$. Once $\alpha\geq\beta$, further continuations cannot change
+the relevant decision and may be omitted \cite{knuth}. For example, suppose a
+root move already guarantees $+100$. In a competing root branch, one opponent
+reply that limits the root player to $0$ is sufficient to reject that branch;
+its remaining replies need not be explored. Searching both branches from scratch
+in parallel can lose this shortcut. Move order therefore changes how much work
+is necessary even though it does not change the exact fixed-depth minimax value.
 
-\section{Implementation and design decisions}
+This dependency makes the algorithm a meaningful parallelization problem.
+Within a subtree, recursive choices and cutoffs remain dependent; across
+subtrees, a shared search bound could eliminate work. Our basic parallel
+implementation deliberately removes some of that dependency to expose tasks.
+It must then pay for the resulting additional node visits and merge exact
+scores. Running unrelated chess positions on different nodes would not expose
+this particular tradeoff.
 
-\subsection{Serial reference and third-party boundary}
+\subsection{Implementation boundary}
+Project C++17 code implements search, evaluation, frontier construction,
+MPI/OpenMP scheduling, GPU traversal and instrumentation. The unmodified
+MIT-licensed Disservin \code{chess-library}, revision
+\code{2a608d58f44776909bb6e2c09505e97ba1451319}, supplies board state, FEN parsing,
+legal moves, move application/reversal, draw helpers and UCI formatting
+\cite{chesslib}. Its license and provenance are included. All calls to that
+host-oriented library execute on the CPU. It does not supply our search or
+parallel scheduler. The documented instructor guidance accepted this credited
+dependency.
 
-The project implements search, evaluation, task construction, MPI/OpenMP
-scheduling, GPU tree traversal, and counters in C++17. It vendors the
-unmodified, MIT-licensed single-header \code{Disservin/chess-library}
-revision \code{2a608d58f44776909bb6e2c09505e97ba1451319}
-\cite{chesslib}. That library supplies board representation, FEN parsing,
-legal move generation, move application and reversal, draw helpers, and UCI
-move formatting; it does not supply our search algorithm. The instructor
-approved this credited external dependency. The header and license are in
-\code{third\_party/chess-library/}, with provenance in
-\code{THIRD\_PARTY.md}.
-All calls to this host-oriented library, including legal move generation,
-occur on the CPU. The OpenMP device code is project code and contains no
-third-party chess-library calls.
+\section{Parallel designs and correctness arguments}
+\subsection{Root splitting and deeper frontiers}
+The basic hybrid design assigns legal root moves to ranks by task index modulo
+rank count. OpenMP uses a dynamic loop within each rank. Every task owns its
+board and counters and searches with a full window. MPI combines scores with
+\code{MPI\_Allreduce}; unowned scores use a negative-infinity sentinel.
+MPI calls occur on the main thread, using \code{MPI\_THREAD\_FUNNELED}.
 
-\subsection{Independent root and deeper-frontier tasks}
+A root often supplies only tens of tasks. To use hundreds of workers, split
+depth $k=2$ or $3$ constructs a larger CPU frontier. Each frontier board is
+searched independently for the remaining depth; exact results are combined
+bottom-up with the negamax recurrence, including the appropriate sign change
+at every ply. Correctness follows by induction: a frontier search returns the
+exact value of its remaining subtree, and maximizing negated exact child values
+recovers the parent value. Early terminal nodes remain frontier leaves. This
+argument relies on full-window task values; merging arbitrary cutoff bounds as
+exact scores would be incorrect.
 
-The simplest CPU parallel method gives each legal root move an independent
-full-window search. An OpenMP dynamic loop schedules the root moves among
-threads; for MPI, moves are assigned to ranks by their index modulo the rank
-count. Each task owns a board copy and private search counters. Afterward,
-MPI combines candidate scores with \code{MPI\_Allreduce} and sums counters.
-The search time reported for an MPI job is the maximum rank elapsed time,
-including the local frontier construction, search, and reductions, but not
-process launch or compilation.
+Ranks currently build the same frontier and each scans the task loop, skipping
+unassigned indices. MPI ownership is static; OpenMP dynamic scheduling cannot
+move an expensive task to another rank. Deeper frontiers increase board-storage
+and construction costs, replicated rank-local work, reductions and merge work,
+as well as the number of available tasks. The node counter counts frontier
+construction once logically, not once per rank; it consequently understates
+physical duplicated preparation work at larger rank counts.
 
-A root may have only tens of moves, so root splitting cannot fill hundreds
-of cores. We also materialize the game tree to split depth two or three.
-Each frontier board becomes a task and performs an independent full-window
-negamax search for the remaining depth. At the initial position, split depth
-three produced 9,323 frontier nodes, enough tasks to distribute across 720
-requested workers. The internal frontier nodes are combined bottom-up to
-recover the exact minimax root result. This exposes more parallelism at a
-cost: sibling tasks do not share alpha-beta bounds, so they can visit many
-nodes that serial alpha-beta would prune. Each MPI rank currently builds the
-same frontier. The assignment of tasks to ranks is static; OpenMP schedules
-the rank's tasks dynamically.
+\subsection{Seeded-root search}
+The \code{mpi-pv} and \code{omp-pv} backends first search the first legal root
+move exactly. Its score $a$ is broadcast and used as a fixed lower bound for the
+remaining root choices. In the negated child search, the window is
+$(-\infty,-a)$. If a child search cuts off, its root-side result cannot improve
+$a$; if it proves an improvement, the required value is recovered. Keeping the
+exact seed and taking the root maximum thus preserves the root value, although
+individual rejected branches may return bounds rather than exact scores.
+Stable root ordering resolves equal scores.
 
-\subsection{Seeded-root alternative}
+This is inspired by the principle of searching a first child before releasing
+siblings, as in Young Brothers Wait \cite{feldmann}. Our implementation is a
+\emph{root-only fixed-bound variant}; it is not a complete recursive YBWC
+scheduler. It neither refreshes $a$ after each improvement nor dynamically
+balances work between MPI ranks. These restrictions let us examine the benefits
+of retaining pruning separately from scheduling quality.
 
-To retain more pruning, a second root method first searches the initial
-legal move with a full window. Its score $a$ is broadcast to the MPI ranks.
-The remaining root moves use $a$ as a fixed bound. A task that fails to beat
-$a$ may return an inexact bound, but it cannot change the root maximum; a
-task that beats it supplies the needed value. This variant is implemented as
-\code{omp-pv} and \code{mpi-pv}. It exposes only the remaining root moves,
-and its static modulo rank assignment can be badly unbalanced. We measure
-the seed time, seed node count, and per-rank parallel work to examine this
-tradeoff.
+\subsection{OpenMP GPU offload}
+The first GPU design expands the entire legal tree on the CPU, packs flat node
+and leaf arrays, then uses \code{target teams distribute parallel for} over
+root subtrees. Each device worker performs explicit-stack alpha--beta traversal
+and leaf evaluation. Device-side pruning cannot undo CPU work already spent
+constructing the full tree.
 
-\subsection{OpenMP target feasibility study}
+The chunked design preserves CPU alpha--beta above a fixed chunk depth. When a
+chunk is reached, the CPU expands that local tree and sends its child branches
+to the device with independent full windows. Exact child results are merged on
+the CPU and search continues. This reduces speculative construction but increases
+the number of target launches. Chunk depth controls the balance between fewer,
+larger transfers/launches and extra generated nodes. Neither backend is a
+multi-GPU MPI implementation: MPI+OpenMP CPU search is the principal hybrid
+solution, and GPU offload is an additional design comparison.
 
-The principal hybrid implementation uses MPI between nodes and OpenMP CPU
-threads within each node. Following the instructor's suggestion, we also
-explored OpenMP target offload as an additional experiment.
-Move generation is branch-heavy and uses a complex CPU board type. For the
-first GPU experiment, the CPU expands the legal tree to the chosen shallow
-depth and packs nodes and leaf board states into flat arrays. An OpenMP
-\code{target teams distribute parallel for} region gives independent root
-branches to the device \cite{openmp52}. Each device worker runs an iterative
-stack-based alpha-beta traversal of its branch and evaluates visited leaves.
-Pruning on the device cannot recover the cost of nodes already generated on
-the CPU. Generating small batches on the CPU instead would introduce repeated
-device launches and transfers; batching transfers and retaining device data
-are standard GPU performance considerations \cite{nvidia-best-practices}.
-To reduce wasted generation, a second backend retains CPU alpha-beta above
-a fixed-depth chunk. Only when the CPU search reaches a chunk does it expand
-that subtree and offload its immediate children. The GPU searches each child
-with its own full window; the CPU combines exact child scores and continues
-pruning above the chunk. This preserves some cross-subtree pruning but adds
-one transfer and target launch per reached chunk. The library still executes
-only on the CPU. These are bounded offload studies: CPU tree expansion,
-device transfer, and limited branch parallelism remain measured costs. We require
-\code{OMP\_TARGET\_OFFLOAD=MANDATORY} and check
-\code{omp\_is\_initial\_device()} to reject silent host fallback.
+Both designs preserve the same evaluation and terminal semantics. Actual A40
+runs require \code{OMP\_TARGET\_OFFLOAD=MANDATORY} and check
+\code{omp\_is\_initial\_device()} to reject silent CPU fallback. Profiling variants
+use explicit allocation and \code{omp\_target\_memcpy} to distinguish copies from
+target-region execution \cite{openmp}.
 
-\section{Experimental method}
+\section{Experimental protocol and metrics}
+\subsection{Vanda workloads and resource layouts}
+CPU experiments ran on NUS Vanda using PBS, GCC 14.2.0, Open MPI 5.0.7, C++17,
+\code{-O2} and OpenMP. The 53 captured multi-position session logs identify the
+launch node CPU as Intel Xeon Platinum 8452Y, 72 visible CPUs, two sockets and
+one hardware thread per visible core. This is not independent verification of
+every remote rank's CPU or clock. Hostnames, code hashes and allocation details
+are retained to disclose differences between jobs.
 
-Runs used NUS Vanda PBS allocations, GCC 14.2.0 and Open MPI 5.0.7 for
-CPU jobs, and NVHPC 24.7 with an A40 device for GPU jobs. The CPU script
-requests one MPI rank per node and sets the indicated number of OpenMP
-threads per rank. We initially discovered that Open MPI's default policy
-bound a four-thread rank to one core. A controlled depth-7 rerun on the
-same node fell from 6.23 to 2.43 seconds when \code{--bind-to none} was used
-\cite{openmpi507}. A separate PBS affinity probe showed that the unbound
-rank remained inside the four-CPU PBS cgroup. All corrected scaling runs use
-this launcher setting. PBS \code{place=scatter} and logged hostnames verify
-distinct nodes for multi-node jobs.
+The original initial-position depth-eight experiment is extended with six
+positions (Table~\ref{tab:inputs}). Strategy comparisons use 1/2/4 nodes and
+four threads per rank, testing split depths 1/2/3 and seeded root. Scaling uses
+1/2/4/10 nodes, one rank per node and 72 requested threads per rank, at fixed
+split depth three. Each new position also has three-trial serial and one-worker
+task baselines. There are 120 complete configuration groups, including 24
+full-node scaling points, and 360 successful formal runs. The 384 archived run
+records also include pilots and one unsuccessful formal timeout.
 
-The main strong-scaling workload is the initial-position FEN, depth eight,
-split depth three. It visits exactly 929,868,807 nodes in every measured
-task-decomposition run. We repeat each 72-, 144-, and 288-core allocation
-three times inside one PBS job and use the median internal search time.
-The one-worker decomposition run has one trial; the 720-core configuration
-has three trials in a single PBS allocation. Source SHA-256, PBS job IDs, nodes,
-toolchain libraries, scores, and raw output are preserved in
-\code{experiments/raw/}. The independent serial alpha-beta baseline uses the
-same initial position and depth but performs less work because it prunes
-across siblings. We report both baselines rather than interpreting them as
-the same scaling reference.
-The exact main input is
-\begin{quote}\small\ttfamily
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-\end{quote}
-
-\section{Results and interpretation}
-
-\subsection{Strong scaling of the fixed task search}
-
-For $p$ allocated CPU cores, we define speedup against a one-worker run of
-the \emph{same task-decomposition algorithm} as
-$S(p)=T_{\mathrm{task}}(1)/T_{\mathrm{task}}(p)$ and efficiency
-$E(p)=S(p)/p$. Table~\ref{tab:scaling} and Figure~\ref{fig:scaling}
-show internal search time, excluding MPI startup. The one-worker baseline
-has only one trial, which limits the precision of the derived speedups.
-
-\begin{table}[ht]
-\centering
-\small
-\caption{Initial position, depth 8, split depth 3. Search work is
-929,868,807 nodes for every row. One worker has one trial; all other rows
-show medians of three trials in one allocation.}
-\label{tab:scaling}
-\begin{tabular}{@{}rrrrr@{}}
-\toprule
-Cores & Hosts & Time (s) & $S(p)$ & $E(p)$ \\
-\midrule
-1   & 1  & 198.129 & 1.00   & 100.0\% \\
-72  & 1  & 9.094   & 21.79  & 30.3\% \\
-144 & 2  & 3.048   & 65.01  & 45.1\% \\
-288 & 4  & 1.945   & 101.86 & 35.4\% \\
-720 & 10 & 1.754   & 112.95 & 15.7\% \\
-\bottomrule
+\begin{table}[!htbp]\centering\small
+\caption{Additional workloads. Depth is fixed within each position's curve.
+The two depth-four middlegames are explicitly retained as small-workload cases.}
+\label{tab:inputs}
+\begin{tabular}{@{}lrrl@{}}\toprule
+Position & Depth & Serial score & Interpretation \\\midrule
+Kiwipete & 6 & $-90$ & Move-rich middlegame \\
+Rook/pawn & 9 & $100$ & Reduced-piece endgame \\
+Tactical & 6 & $-660$ & Tactical benchmark state \\
+Minor pieces & 9 & $190$ & Synthetic bishop/knight/pawn endgame \\
+Ruy Lopez & 4 & $-100$ & Short middlegame workload \\
+Queen's Gambit & 4 & $-100$ & Short middlegame workload \\\bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=\linewidth]{figures/scaling.pdf}
-\caption{Vanda internal search time and efficiency. The dashed time curve is
-ideal scaling from the one-worker task search; the dotted line is the serial
-alpha-beta median. The 720-core point is the median of three trials.}
-\label{fig:scaling}
-\end{figure}
+Pilots increased depth to obtain measurable serial work. For the two shallow
+middlegames, depth-five attempts exceeded an outer launcher-inclusive timeout;
+the last successful depth, four, was used. The failed logs contain launcher
+messages but no search result, so they do not establish that chess search itself
+needed 45 seconds or that depth five was computationally infeasible. This
+is a workload-selection limitation, not evidence that those chess positions are
+inherently easy. Their millisecond runtimes are unsuitable for strong throughput
+claims. New CPU runs used source revision \code{237f06f}; the original scaling
+source was \code{efef92e}. Their serial and deeper-frontier implementations are
+unchanged. Newer GPU source hashes differ and are recorded separately. The
+artifact archive pins the measured sources instead of assuming all results
+came from the current repository head.
 
-The 72-to-144-core median ratio is 2.98 and the 72-to-288-core ratio is
-4.68, both above ideal ratios. We do not attribute this to a particular
-mechanism: allocation-specific node performance, cache effects, and the
-static rank distribution are plausible contributors and were not isolated
-in this series. Efficiency relative to the one-worker task search is only
-15.7\% at 720 cores. An earlier single-trial 720-core PBS feasibility job
-consumed 53 seconds of walltime although its internal search reported 1.593 seconds;
-process launch, setup, and teardown matter for a complete end-to-end cost.
+All corrected launches use \code{--bind-to none}. An earlier controlled
+four-thread experiment on the same node took 6.229 seconds under default
+one-core binding versus 2.432 seconds unbound, with identical search work.
+A separate affinity probe confirmed that the unbound rank remained within the
+PBS allocation on the tested node. Open MPI explicitly recommends either no
+binding or enough processing elements for threaded processes \cite{mpi}.
+The measured affinity correction addresses that particular confinement;
+\code{--bind-to none} alone is not a verified placement policy for every run.
+It does not optimize NUMA locality;
+thread placement and per-rank memory access remain uncontrolled factors.
 
-The serial alpha-beta search visited 25,604,258 nodes and took 5.33762,
-5.34012, and 5.34224 seconds (median 5.34012). The task decomposition
-visits about 36.3 times as many nodes. Thus the 720-core median is
-only 3.04 times faster than serial alpha-beta, despite using 720 allocated
-cores. This is the central algorithmic cost of parallelizing branches
-without their shared bounds.
+\subsection{Timing, repetition, and validation}
+We report medians of three fresh process invocations in each allocation, without
+removing a warmup. Observed ranges show repeat variability, not confidence
+intervals. Three trials on one allocation do not quantify variability across
+independent allocations. The older initial-position one-worker task baseline
+has only one trial; its derived efficiencies carry that limitation.
 
-\subsection{Root bounds versus exposed parallelism}
+The program's MPI time is the maximum rank search-region time: frontier
+construction, local search, score/counter reductions and merging are included;
+process startup and the final timing reduction are excluded. There is no
+explicit pre-search MPI barrier in this path; the maximum of rank-local
+durations is therefore not a synchronized global start-to-finish measurement. The added Python
+runner separately records walltime around the launcher as \code{launch\_seconds}.
+GPU total time includes preparation and offload. The original implicit-map
+target timer includes copies and synchronization; explicit-copy profiling
+separates H2D and D2H, but its target-search region still includes launch and
+synchronization rather than pure device arithmetic.
 
-On the initial position at depth eight, the seeded-root method visited the
-same 25,604,258 nodes as serial alpha-beta. Its medians were 3.010, 2.853,
-and 4.205 seconds on one, two, and four four-thread nodes. Different node
-types were assigned to these allocations, so the times are exploratory.
-The instrumented four-node rerun on the same four CN hosts as the earlier
-four-node job spent only 0.347 seconds on the seed move; afterward rank 0
-searched 14.14 million nodes for 3.459 seconds, while the other ranks
-searched 2.64--3.88 million nodes for 0.333--0.444 seconds. Static rank
-assignment, rather than the seed search alone, dominated that critical path.
-The comparison demonstrates that retaining pruning can reduce total work
-while too few or poorly distributed tasks limit scaling.
+Every complete new CPU group has three distinct successful trials whose scores
+match the corresponding serial reference. Shallow tests recorded in the project
+compare alpha--beta with exhaustive minimax across seven FENs and depths 1--3,
+including checkmate, stalemate, promotion and en passant. Target-host checks
+exercise device traversal logic on the CPU; real GPU logs additionally show
+\code{ran\_on\_device=1}. Agreement under shared chess rules validates the
+search-control paths; it is not an independent proof of all chess rules.
+Equal-score legal moves may differ, so score agreement is the automated archive
+criterion. It should not be confused with independent verification of each
+chosen move's optimal value in every deep run.
 
-A second, move-rich Kiwipete FEN at depth six checks whether the initial
-position's result generalizes. Both serial and two-node seeded-root runs
-selected \code{e2a6} with score $-90$. Their respective node counts were
-19.23 and 26.89 million and median times 5.359 and 4.670 seconds. The
-seeded-root method did more work here because its fixed initial bound was
-weaker than the serial search's evolving root bound. Its two ranks received
-6.90 and 19.39 million parallel nodes, another example of imbalance.
-The exact Kiwipete input is recorded in \code{experiments/pv/README.md}
-and the corresponding raw PBS logs.
+\subsection{Two baselines and a work-inflation model}
+Let $T_s$ be serial alpha--beta time, $T_{k,1}$ one-worker time for the same
+split-depth-$k$ task algorithm and $T_{k,p}$ its time on $p$ allocated cores.
+We distinguish
+\begin{align}
+ S_{\mathrm{alg}}(p)&=T_s/T_{k,p},&
+ S_{\mathrm{task}}(p)&=T_{k,1}/T_{k,p},&
+ E_{\mathrm{task}}(p)&=S_{\mathrm{task}}(p)/p.\label{eq:metrics}
+\end{align}
+Define time inflation $H_k=T_{k,1}/T_s$ and node inflation
+$A_k=N_{k}/N_s$. They are different quantities: node costs, scheduling,
+construction and hardware differences prevent treating node visits as a uniform
+unit of time. By definition,
+\begin{equation}
+ \boxed{S_{\mathrm{alg}}(p)=\frac{pE_{\mathrm{task}}(p)}{H_k}}.
+ \label{eq:identity}
+\end{equation}
+Thus useful acceleration over serial requires $E_{\mathrm{task}}>H_k/p$.
+This identity is an accounting device, not a fitted performance law. It explains
+why impressive fixed-task speedup can coexist with modest algorithm speedup.
+We additionally use $pT_{k,p}/T_s=p/S_{\mathrm{alg}}$ as a rough allocated
+core-time ratio. It is not measured energy or billing cost, and baseline
+hardware differences limit causal interpretation.
 
-\subsection{GPU execution and cost}
+\section{CPU results: measured gains and limits}
+\subsection{Reinterpreting the original initial-position result}
+At depth eight, serial alpha--beta visits 25,604,258 nodes in a median
+5.34012 seconds. Split depth three visits 929,868,807 nodes: $A_3=36.32$.
+Its one-worker time is 198.129 seconds ($H_3=37.10$); the 720-core median is
+1.75406 seconds. Consequently $S_{\mathrm{task}}=112.95$ and
+$E_{\mathrm{task}}=15.7\%$, but $S_{\mathrm{alg}}=3.04$.
+Equation~\ref{eq:identity} explains the difference without selecting a convenient
+baseline. An earlier feasibility job had 53 seconds of PBS walltime despite
+1.593 seconds of internal search, illustrating the importance of scope.
 
-All A40 jobs compiled and returned \code{ran\_on\_device=1}; GPU and
-serial scores and selected moves agreed at depths three through eight. Table
-\ref{tab:gpu} separates the CPU tree build plus target path total from
-time measured around the target regions. It does not separate device
-launch, transfer, and kernel execution.
+The 72/144/288/720-core medians were 9.094/3.048/1.945/1.754 seconds. The
+72-to-144-core ratio exceeds two, as do some new workload segments. We report
+these observations without attributing them to caching or scheduling: rank
+assignment changes, NUMA behavior, processor frequency and allocation effects
+were not isolated. Strong scaling of an application region does not establish
+an end-to-end superlinear algorithmic benefit.
 
-\begin{table}[ht]
-\centering
-\small
-\caption{Initial-position A40 offload pilots, one trial each.}
+\subsection{Six additional positions}
+Table~\ref{tab:scale} and Figure~\ref{fig:scale} show that neither uniformly good
+nor uniformly poor scaling describes these workloads. At 720 cores, Kiwipete,
+rook/pawn, tactical and minor-piece positions are 10.31, 5.57, 11.84 and
+21.84 times as fast as their serial references. All four improve in median
+search time as resources increase through the measured configurations.
+The minor-piece case has substantially lower split-three work inflation
+than Kiwipete (Table~\ref{tab:work}); less destroyed pruning is one plausible
+contributor to its higher algorithm speedup, but the observations do not isolate
+it from task balance or hardware effects.
+
+\begin{table}[!htbp]\centering\scriptsize
+\caption{Median search times (seconds), split depth three. $S_{\rm alg}$ and
+$E_{\rm task}$ are for 720 cores. Each new entry uses three trials.}
+\label{tab:scale}
+\begin{tabular}{@{}lrrrrrrrr@{}}\toprule
+Position & $d$ & Serial & 72 & 144 & 288 & 720 & $S_{\rm alg}$ & $E_{\rm task}$ (\%)\\\midrule
+% BEGIN GENERATED scaling
+Kiwipete & 6 & 5.142 & 7.153 & 2.351 & 0.978 & 0.499 & 10.31 & 52.6\\
+Rook/pawn & 9 & 3.188 & 3.432 & 1.196 & 0.831 & 0.572 & 5.57 & 14.5\\
+Tactical & 6 & 1.295 & 0.905 & 0.375 & 0.172 & 0.109 & 11.84 & 29.4\\
+Minor pieces & 9 & 10.557 & 3.789 & 1.284 & 0.647 & 0.483 & 21.84 & 20.4\\
+Ruy Lopez & 4 & 0.006 & 0.027 & 0.046 & 0.058 & 0.067 & 0.09 & 0.4\\
+Queen's Gambit & 4 & 0.022 & 0.088 & 0.077 & 0.072 & 0.080 & 0.28 & 1.2\\
+% END GENERATED scaling
+\bottomrule\end{tabular}\end{table}
+
+\begin{figure}[!htbp]\centering
+\includegraphics[width=\linewidth]{scaling.pdf}
+\caption{Search-region speedup with common axes within each workload group.
+Panel (a) contains four longer workloads; panel (b) contains two shallow fallback
+workloads and uses a separately labeled range. Dashed lines mark serial parity.
+Whiskers span $[T_{s,\min}/T_{p,\max},T_{s,\max}/T_{p,\min}]$, so both baseline
+and parallel observed variation are included. These are unpaired descriptive
+extreme-ratio envelopes from three trials, not confidence or prediction intervals.
+The final point is labeled with its ratio of medians.}
+\label{fig:scale}\end{figure}
+
+The two shallow middlegames show the opposite regime. Ruy Lopez slows as cores
+increase, while Queen's Gambit stays near 0.07--0.09 seconds and remains slower
+than its 0.022-second serial run. With depth four and split depth three, each
+ordinary frontier task has at most one ply left; in the logged full-frontier
+runs these positions record zero cutoffs. The observed slowdown is consistent with inadequate work per task relative
+to setup and synchronization. However, CPU phase timing was not collected, so
+these data do not identify construction, collectives or another component as
+the dominant cause. A larger-task controlled sweep would be needed to test that
+explanation. The correct conclusion is about these small workloads, not
+about the scalability of all positions arising from those openings.
+
+\begin{figure}[!htbp]\centering
+\includegraphics[width=\linewidth]{baselines.pdf}
+\caption{Two reference times divided by the same 720-core parallel search time.
+A blue circle uses serial alpha--beta; an orange square uses a one-worker run of
+the same split-three task algorithm. Each connector changes only the reference-time numerator; the parallel-time
+denominator and execution remain fixed. Points are ratios of medians; the original initial
+position's task baseline has one trial. A task speedup above one can coexist
+with a slowdown versus serial (bottom two rows).}
+\label{fig:baselines}\end{figure}
+
+\subsection{Efficiency and resource cost}
+At 720 cores, Kiwipete has 52.6\% fixed-task efficiency and 10.31-fold algorithm
+speedup; minor pieces has 20.4\% efficiency but 21.84-fold algorithm speedup.
+The ordering by task efficiency differs from the ordering by speedup over
+each position's own serial reference; it is not a direct comparison of
+absolute usefulness across different chess workloads. Their time-inflation factors are about 36.78 and 6.72,
+respectively. Holding a measured parallel time fixed, a larger one-worker reference time in the numerator
+raises the reported task speedup by definition. The reference choice itself does not
+improve execution time. This arithmetic relation cannot diagnose the cause of
+a measured slowdown.
+
+The longer workloads still consume roughly 33--129 times the serial
+\emph{allocated search-region core-time} at 720 cores. More cores buy latency,
+not automatically economical resource use. For the minor-piece case, going
+from 288 to 720 cores reduces median time from 0.647 to 0.483 seconds, while
+increasing core-time from about 186 to 348 core-seconds. This gives a concrete
+basis for selecting a configuration by either latency or resource budget.
+It does not include launcher costs or measure energy.
+
+\subsection{Search time is not launcher-inclusive response time}
+The added runner also records elapsed time around each \code{mpirun} invocation.
+Using those recorded medians changes the speedup substantially
+(Table~\ref{tab:scope}). Both the serial and parallel paths use the MPI executable
+and launcher; the serial-wrapper measurement is not a standalone serial program's
+response time. Startup, shell/network delays, MPI initialization, output and
+other non-search work remain in this measure. The difference from search time
+cannot be assigned solely to communication overhead, and the difference between
+medians is not a median per-run overhead. For example, Kiwipete's launcher-inclusive
+serial median is 19.462 seconds although its serial search median is 5.142 seconds.
+The wrapper noise is substantial and cannot be ignored or cleanly subtracted.
+
+\begin{table}[!htbp]\centering\small
+\caption{Ratios of medians under two timing scopes, using three invocations
+per configuration. Wrapper time is a directly measured elapsed time, but the
+serial wrapper includes MPI launch and allocation effects. It is not a clean
+hardware-independent application response benchmark.}
+\label{tab:scope}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Position & Serial wrapper (s) & 720-core wrapper (s) & Search ratio & Wrapper ratio\\\midrule
+% BEGIN GENERATED scope
+Kiwipete & 19.462 & 2.136 & 10.31 & 9.11\\
+Rook/pawn & 4.844 & 2.376 & 5.57 & 2.04\\
+Tactical & 2.932 & 1.982 & 11.84 & 1.48\\
+Minor pieces & 11.798 & 2.230 & 21.84 & 5.29\\
+Ruy Lopez & 1.171 & 2.787 & 0.09 & 0.42\\
+Queen's Gambit & 1.777 & 2.135 & 0.28 & 0.83\\
+% END GENERATED scope
+\bottomrule\end{tabular}\end{table}
+
+The minor-piece speedup falls from 21.84 in the search region to 5.29 in the
+wrapper record; tactical falls from 11.84 to 1.48. We therefore restrict the
+main claim to measured search-region acceleration. A production latency claim
+would require a controlled end-to-end protocol, for example persistent workers
+or matched process-start conditions, with more independent allocations.
+
+\subsection{What deeper splitting actually costs}
+\begin{table}[!htbp]\centering\small
+\caption{Search-work inflation versus serial. $N_s$ is in millions;
+$A_k=N_k/N_s$ uses node counts, while $H_3$ uses measured one-worker times.}
+\label{tab:work}
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+Position & $N_s$ & $A_1$ & $A_2$ & $A_3$ & $H_3$\\\midrule
+% BEGIN GENERATED work
+Kiwipete & 19.227 & 2.65 & 8.13 & 38.55 & 36.78\\
+Rook/pawn & 11.798 & 3.31 & 13.14 & 29.77 & 18.80\\
+Tactical & 3.200 & 3.10 & 6.17 & 27.36 & 17.86\\
+Minor pieces & 66.944 & 1.66 & 4.24 & 6.60 & 6.72\\
+Ruy Lopez & 0.024 & 2.72 & 10.20 & 32.80 & 33.71\\
+Queen's Gambit & 0.060 & 5.22 & 10.48 & 28.71 & 29.87\\
+% END GENERATED work
+\bottomrule\end{tabular}\end{table}
+
+Kiwipete's split-three frontier has 99,950 stored frontier nodes, compared with
+9,323 in the original initial position. It offers many tasks but increases
+search work to 741 million node visits, 38.55 times serial. The minor-piece
+case has only 3,566 stored frontier nodes and 6.60-fold node inflation.
+Stored frontier nodes include internal frontier structure; this is not exactly
+the number of leaf tasks. Task counts and task sizes both matter. A count-only
+argument that there are ``enough tasks for 720 cores'' cannot establish balance,
+pruning efficiency or useful speedup.
+
+At 16 allocated cores, no position's split-three configuration is the fastest
+of the four compared designs (Table~\ref{tab:strategy}). On Kiwipete and the
+minor-piece workload, split two has the lowest recorded median; seeded root has the lowest median
+on rook/pawn and Queen's Gambit; split two has the lowest median on tactical,
+while root splitting has the lowest median on Ruy Lopez. The small-case rankings require caution because millisecond differences
+and serial-baseline allocation differences can dominate. Within each new
+position/rank-count job, the strategy variants share an allocation, but run in
+a fixed, non-randomized order. This controls host identity within that job, not
+order effects, clocks or baseline placement. Nevertheless, the substantial
+Kiwipete gap---3.282 seconds for split two versus 13.008 for split three---is evidence against selecting a split depth solely because it fills a large
+allocation. It does not establish a universally optimal split-depth policy.
+
+\begin{table}[!htbp]\centering\small
+\caption{Four nodes, one rank and four threads per node (16 cores). Times in
+seconds; bold is the smallest observed median within the row, not a statistical
+claim of superiority. Same depth and position are retained across methods.}
+\label{tab:strategy}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Position & Root & Split 2 & Split 3 & Seeded root\\\midrule
+% BEGIN GENERATED strategy
+Kiwipete & 5.5134 & \textbf{3.2820} & 13.0077 & 4.7151\\
+Rook/pawn & 1.1277 & 3.3670 & 4.4989 & \textbf{1.0286}\\
+Tactical & 1.1239 & \textbf{0.5567} & 2.2747 & 1.2260\\
+Minor pieces & 9.9059 & \textbf{3.4022} & 4.5558 & 10.8523\\
+Ruy Lopez & \textbf{0.0180} & 0.0245 & 0.0561 & 0.0206\\
+Queen's Gambit & 0.0269 & 0.0350 & 0.0967 & \textbf{0.0256}\\
+% END GENERATED strategy
+\bottomrule\end{tabular}\end{table}
+
+\begin{figure}[!htbp]\centering
+\includegraphics[width=\linewidth]{work.pdf}
+\caption{Logical search-work inflation from splitting. All positions share
+one vertical scale. Dark bars show split depth three; labels give its node ratio.
+Counts are constant across the recorded ordinary-task configurations for a given
+position and split depth. Replicated rank-local frontier preparation is counted
+once logically, so this is not total physical CPU work or elapsed overhead.}
+\label{fig:work}\end{figure}
+
+\begin{figure}[!htbp]\centering
+\includegraphics[width=\linewidth]{strategy.pdf}
+\caption{At 16 allocated cores, numbers show each method's median search time
+divided by the same position's serial median. Blue means faster than serial,
+red slower; one is parity. The color scale covers all displayed values. Columns
+are tested strategies rather than a claim of exhaustive optimization. No
+statistical significance is established by the smallest cell in a row.}
+\label{fig:strategy}\end{figure}
+
+\subsection{Preserving pruning does not resolve load imbalance}
+The original seeded-root initial-position study visits exactly the same
+25,604,258 nodes as serial at depth eight, yet medians on one/two/four
+four-thread nodes are 3.010/2.853/4.205 seconds. An instrumented four-node run
+attributes only 0.347 seconds to the seed. Afterwards rank zero searches
+14.14 million nodes for 3.459 seconds, whereas other ranks search
+2.64--3.88 million nodes in 0.333--0.444 seconds. The longest observed rank
+search is approximately three times the mean of the four rank work times.
+These timers cover local search regions rather than a measured idle-time trace,
+but directly expose a severe static-assignment imbalance. The seed alone is
+not an adequate explanation of the slow critical path.
+
+In the new rook/pawn workload, seeded root improves from 1.448 seconds on one
+four-thread node to 1.029 on four, compared with 3.188 seconds serial. In the
+minor-piece workload, it remains near 11 seconds despite more nodes. A good
+bound and a balanced schedule are distinct requirements. The initial legal
+move is not guaranteed to be a good seed; the fixed bound also misses later
+improvements available to serial alpha--beta. We therefore avoid claiming a
+universal seeded-root advantage or equating this implementation with a mature
+parallel chess engine.
+
+\section{GPU results: what phase timings establish}
+\subsection{Full trees versus on-demand chunks}
+On an A40 node with NVHPC 24.7 and the GCC 13.2 toolchain, the full-tree
+backend returns serial-matching scores at depths three through five. Its
+CPU-built tree grows from 9,322 to 5,072,212 nodes; at depth five its initial
+pilot total is 1.798 seconds versus 0.007303 seconds for paired serial search.
+That pilot establishes correct offload, not useful acceleration.
+
+A later same-allocation comparison repeats each design three times
+(Table~\ref{tab:gpu}). Chunk depth three generates more nodes than chunk depth
+two, but reduces chunk launches from 844 to 58 and is faster. Thus fewer
+generated nodes alone do not minimize GPU runtime; launch granularity also
+matters. Relative to full-tree offload, chunk depth three reduces the measured
+median by 3.88 times, yet remains about 59.6 times slower than paired serial.
+This is a reduction within the measured offload family. It does not establish
+a GPU advantage over the CPU reference, nor isolate launch count as its cause: CPU
+generated work, transfers and device traversal also change with chunk depth.
+
+\begin{table}[!htbp]\centering\small
+\caption{Initial position, depth five, same A40 allocation, medians of three
+trials. Generated chunk nodes are cumulative, not peak memory footprint.}
 \label{tab:gpu}
-\begin{tabular}{@{}rrrrr@{}}
-\toprule
-Depth & CPU-built tree nodes & GPU total (s) & Target (s) & Serial (s) \\
-\midrule
-3 & 9,322   & 0.246888 & 0.244381 & 0.000125 \\
-4 & 206,603 & 0.270310 & 0.238880 & 0.000237 \\
-5 & 5,072,212 & 1.798000 & 0.660136 & 0.007303 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Method & Generated nodes & Chunk launches & Total (s) & Target (s)\\\midrule
+Serial CPU & --- & --- & 0.007177 & ---\\
+Full-tree GPU & 5,072,212 & 1 & 1.656630 & 0.560216\\
+Chunks, depth 2 & 431,665 & 844 & 0.501165 & 0.419824\\
+Chunks, depth 3 & 615,039 & 58 & 0.427455 & 0.310383\\\bottomrule
+\end{tabular}\end{table}
 
-The combined target-region time stayed near 0.24 seconds from depths three
-to four, then rose to 0.66 seconds at depth five. At depth five, CPU
-preparation alone took 1.138 seconds, about 156 times the serial search's
-0.007303 seconds. The full GPU path took about 246 times as long as serial.
-The default two-million-node tree limit had to be raised to seven million
-for this bounded depth-five pilot. These workloads and the CPU-built full tree
-do not suit the GPU design; a larger GPU-native chess
-representation and a different task strategy would be needed for a useful
-performance comparison.
+At depth eight, one chunk-depth-three pilot takes 154.521 seconds, versus
+3.940 seconds for its paired serial search, generating 428.8 million nodes
+across 30,619 chunks. Deeper search amortizes one-time setup but exposes the
+large cumulative cost of repeated construction and target work. We do not
+combine GPU and CPU medians from different compiler paths as if hardware were
+the only changed variable.
 
-We then ran both GPU methods, with chunk depths two and three, three times
-each in one A40 PBS allocation. Table \ref{tab:gpu-chunks} reports medians.
-The logged tree-node count for chunks is cumulative over all generated
-chunks, not peak memory use. Every trial returned score 100 and move
-\code{b2b3}, matching serial. A chunk depth of three generated more nodes
-than depth two but used only 58 target launches instead of 844. It was
-faster in this comparison. The full-tree method generated 5.07 million
-nodes, while chunk depth three generated 0.62 million.
+\subsection{Explicit profiling challenges the transfer-only explanation}
+The explicit-copy depth-eight profile takes 154.620 seconds, with 57.525
+seconds CPU preparation, 3.563 H2D, 0.853 D2H, 0.243 device probe and 92.313
+seconds in target-search regions. Copies total 4.417 seconds, or 2.86\% of
+end-to-end time; CPU preparation is 37.20\%, and target launch/search is
+59.70\%. Allocation and residual bookkeeping account for the remainder.
+The run uploads 33.54 GB cumulatively, but volume alone does not identify the
+dominant cost. Reducing that measured copy time to zero while leaving other
+phases unchanged would yield only
+\begin{equation}
+  \frac{154.620}{154.620-4.416629}\approx 1.029
+\end{equation}
+fold total speedup. This counterfactual holds the recorded non-copy phases fixed. It is not a
+bound on a redesigned implementation that also changes computation, overlap or
+CPU preparation, and the single profile does not estimate run-to-run uncertainty. Even eliminating the measured
+CPU preparation alone would leave roughly 97 seconds, far above the paired
+3.689-second serial search in this profiling job.
 
-\begin{table}[ht]
-\centering
-\small
-\caption{Initial position, depth 5, same A40 allocation, median of three trials.}
-\label{tab:gpu-chunks}
-\begin{tabular}{@{}lrrrr@{}}
-\toprule
-Method & Generated nodes & Chunk launches & Total (s) & Target (s) \\
-\midrule
-Serial CPU & --- & --- & 0.007177 & --- \\
-GPU full tree & 5,072,212 & 1 & 1.656630 & 0.560216 \\
-GPU chunks, depth 2 & 431,665 & 844 & 0.501165 & 0.419824 \\
-GPU chunks, depth 3 & 615,039 & 58 & 0.427455 & 0.310383 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{figure}[!htbp]\centering
+\includegraphics[width=\linewidth]{gpu_phases.pdf}
+\caption{One explicit-copy A40 depth-eight profile, partitioning its measured
+154.620-second total. Large segments are labeled with fractions of total;
+the legend preserves small phases instead of visually hiding them. ``Other''
+includes the device probe, allocation and residual host work. Target time
+includes launch and synchronization; it is not a pure arithmetic kernel timer.
+These single-run fractions do not prove a hardware-general bottleneck.}
+\label{fig:gpu-phases}\end{figure}
 
-Chunk depth three also matched serial at depths six, seven, and eight in
-separate single-trial jobs. At depth eight it took 154.521 seconds versus
-3.940 seconds for the paired serial run, generated 428.8 million nodes
-across 30,619 chunks, and spent 96.669 seconds in target regions. The
-CPU retained some pruning, but the repeated construction, transfers, and
-launches still dominated. Neither GPU method is competitive with the serial
-CPU search in these measured cases.
+The correct next target is therefore the search representation and granularity,
+not only raw transfer bandwidth. CPU-native move generation forces speculative
+preparation, while branch divergence, limited branch-level parallelism and
+many launches are plausible contributors to target-region time. These latter
+mechanisms were not separately profiled, so the data do not establish their
+individual contributions. Profiling has narrowed the design question without
+answering it completely. Persistent device data, GPU-native move generation
+or larger batched frontiers would change the design and require new validation;
+they are future work, not demonstrated optimizations.
 
-\subsection{Separating data transfer from target execution}
+\section{Limitations, design lessons, and reproducibility}
+\subsection{What the evidence can and cannot support}
+First, these are fixed-position strong-scaling experiments. Depth and position
+are held fixed within each curve; depths differ across workloads. Increasing
+chess depth is not a weak-scaling protocol because branching and pruning change
+nonlinearly. We make no weak-scaling claim and do not infer population-wide
+chess performance from six selected additional positions.
 
-The original target-region timer includes transfers, launch, synchronization,
-and device traversal. We added separate profiling backends that use OpenMP
-device allocation and explicit \code{omp\_target\_memcpy} calls \cite{openmp52}.
-They time host-to-device (H2D) copies, the search target region, and
-device-to-host (D2H) copies separately. They also time CPU tree preparation
-and an initial device probe. The target-region timer still includes kernel
-launch and synchronization, so it is an \emph{upper bound} on GPU computation
-time, not a pure arithmetic measurement. The explicit-copy path is a separate
-measurement from the implicit-map path above.
+Second, the source and numerical workload are controlled more tightly than the
+physical execution. Jobs use different allocations; the logs do not establish
+uniform clocks, NUMA locality or background load. New CPU runs use three
+repetitions in one allocation, not three independently randomized allocations.
+Displayed ranges are descriptive envelopes, not inferential intervals. Claims of superlinear speedup, small performance
+differences or universal strategy superiority would exceed this evidence.
 
-\begin{table}[ht]
-\centering
-\scriptsize
-\caption{A40 profiling phases in seconds. Depth-5 rows are medians of three trials in one allocation; depth 8 is one trial.}
-\label{tab:gpu-profile}
-\begin{tabular}{@{}lrrrrrr@{}}
-\toprule
-Method & Total & CPU build & Probe & H2D & Target search & D2H \\
-\midrule
-Depth 5, full tree & 1.304 & 0.762 & 0.149 & 0.035 & 0.358 & $<$0.001 \\
-Depth 5, chunks 2 & 0.458 & 0.051 & 0.150 & 0.014 & 0.218 & 0.022 \\
-Depth 5, chunks 3 & 0.361 & 0.073 & 0.144 & 0.005 & 0.136 & 0.002 \\
-Depth 8, chunks 3 & 154.620 & 57.525 & 0.243 & 3.563 & 92.313 & 0.853 \\
-\bottomrule
-\end{tabular}
-\end{table}
+The workload groups also differ in position and depth; duration is not an
+independently manipulated factor. The shorter cases cannot establish a causal
+work-size threshold. A same-position depth sweep would be required. All full-node
+runs fix one rank per node, so this study cannot identify an optimal rank/thread
+layout or separately quantify an MPI tax against a standalone OpenMP build.
 
-At depth eight, explicit transfers took 4.417 seconds, or 2.9\% of total;
-CPU tree construction took 37.2\%, and the search target regions took 59.7\%.
-The 30,619 chunks uploaded 33.54 GB cumulatively and downloaded 17.8 MB.
-At depth five, the chunk-depth-three median spent 0.007 seconds on explicit
-copies, or 2.0\% of total. Its 0.144-second device probe is a substantial
-one-time cost for this short process; the depth-eight run amortized it.
-The paired depth-five serial median was 0.004981 seconds: CPU tree
-construction alone was about 153 times that for the full-tree method and
-15 times that for chunk depth three. At depth eight, CPU construction alone
-took 57.525 seconds versus 3.689 seconds for the complete serial search.
-CPU tree generation and the combined launch/search phase therefore dominate
-raw transfer time in these measured configurations. Device allocation
-and remaining host bookkeeping account for the small difference between
-the listed phases and total time.
+Third, serial baselines and MPI allocations differ in resource environment.
+The one-worker task baseline includes the hybrid path's bookkeeping; node
+inflation, time inflation and core-time are complementary measurements, not
+interchangeable. Frontier construction is replicated at each rank but counted
+once logically. Timing scopes must remain explicit, especially for subsecond
+searches and GPU target timers.
 
-\section{Validation, reproducibility, and limits}
+Fourth, the evaluation is intentionally limited. Material-only search can
+prefer unrealistic quiet moves or fluctuate between odd and even depths.
+A correct score under this model does not validate tactical quality. All
+implementations share the same move library, so agreement can miss a common
+rule or evaluation defect. The archive checks score agreement; stronger
+validation would independently evaluate selected best moves and add perft
+move-count checks without changing the measured algorithm.
 
-The local smoke suite compares serial alpha-beta with exhaustive minimax,
-OpenMP root, seeded-root OpenMP, deeper OpenMP frontiers, and the GPU kernel
-on its host fallback path at depths one through three on seven FENs.
-These include checkmate, stalemate, promotion, and en-passant positions.
-All 21 shallow position/depth comparisons, the added depth-five chunk checks,
-and the profiling host-fallback checks passed. On Vanda, MPI root/frontier and
-seeded-root runs matched the serial score on the initial position, the
-seeded-root MPI search also matched serial on Kiwipete, and all three A40 runs
-matched serial at their measured depths, including the new depth-eight chunk
-run, the three repeated depth-five comparisons, and the instrumented GPU
-profiles. Equal-score moves may legitimately
-differ; in the recorded comparisons the reported move also agreed. The
-selected move is always drawn from the library's legal-move list.
+Finally, the first Kiwipete one-worker split-three trial exceeded a 180-second
+limit; a later job repeated the same workload successfully three times with an
+800-second allowance. An endgame pilot also required retrying. These attempts
+are preserved and excluded from successful medians. Retry policy and shallow
+fallback workload selection can bias what is easy to run, so the two short
+middlegames remain visible rather than disappearing from the report.
 
-These checks validate search-control agreement under the shared move
-generator and evaluation; they are not an independent proof of full chess
-rules or of deep tactical strength. The source, vendored library and license,
-PBS scripts, raw logs, summary CSV, and figure source are shipped with this
-report. Run \code{make test} locally, or submit the documented PBS scripts
-after loading the recorded compiler modules. Logs identify source hashes and
-job allocations. GPU compilation needs NVHPC plus the GCC 13.2 toolchain;
-an initial failed compiler job is retained in the raw logs along with the
-successful reruns.
+\subsection{Recommendations tied to observed evidence}
+The measurements motivate testing decomposition as a function of workload and
+available workers; they do not validate an automatic selection rule. The 16-core comparisons motivate testing a shallower frontier
+before choosing split three. For large allocations, task size estimates or
+demand-driven distribution could address the measured rank imbalance, while
+bounded batches can control scheduling overhead. A coordinator consumes real
+resources and should be included in efficiency accounting.
 
-\section{AI assistance and conclusion}
+Bound sharing is the next algorithmic priority: finding a useful child early
+and propagating safe bounds can reduce work inflation. It also introduces
+synchronization, stale bounds and cutoff cancellation, so a dynamic scheduler
+alone is not sufficient. Correctness must distinguish exact scores, lower
+bounds and upper bounds, including re-search when necessary. A sensible
+experiment would add one mechanism at a time and measure changed node counts,
+rank balance and total time under the same inputs.
 
-OpenAI Codex assisted with design discussion, C++ implementation, MPI and
-OpenMP variants, GPU offload code, PBS scripts, SSH experiment execution,
-diagnosis, result summaries, documentation, and drafting this report and
-figure. The students chose the chess-search topic, supplied the assignment
-and instructor guidance, requested cluster experiments, and must review the
-code, measurements, interpretations, and final submission. We preserve raw
-Vanda outputs so reported measurements can be checked against actual jobs.
+For reducing the measured search region, the longer workloads show gains at
+high core counts; the wrapper results require a more qualified latency claim; for
+resource-sensitive use, the incremental time reduction may not justify the
+allocated core-time. The two short cases show no full-node advantage in this protocol; identifying
+a general size threshold requires a matched workload-size sweep. GPU
+redesign should first avoid CPU generation of branches that serial search
+would prune, then measure launch and device utilization separately. None of
+these proposed mechanisms is claimed as implemented here.
 
-The study illustrates a tension specific to tree search. Splitting more
-deeply creates enough tasks for hundreds of cores, but destroys useful
-alpha-beta dependencies and inflates total work. Searching a promising
-root move first preserves pruning, yet exposes few tasks and suffers from
-static load imbalance. GPU offload is technically possible; on-demand chunking
-cuts generated work but remains slower than serial on these tests. The strongest future
-improvement would be a load-aware or dynamic MPI scheduler together with a
-parallel search scheme that shares safe alpha-beta bounds. Additional
-single-worker repetitions would improve the precision of the efficiency baseline.
+\subsection{Artifact map and rebuilding}
+Source and README are supplied under \code{project3/}. New CPU raw logs,
+per-trial records and summary tables are under
+\code{experiments/multiposition/}; \code{strong\_scaling.csv} preserves both
+baseline definitions. Original CPU and GPU logs are in \code{experiments/raw/},
+and original seeded-root diagnostics in \code{experiments/pv/}.
+The source revision and SHA-256 are stated in each archive; execution scripts
+and full FEN inputs allow reproducing each configuration on Vanda after loading
+the documented toolchain. No raw dataset download is required.
 
+From the repository root, regenerate CPU summaries with:
+\begin{quote}\small\ttfamily
+python3 project3/scripts/summarize\_multiposition.py
+\end{quote}
+From \code{project3/}, run \code{make cpu} or \code{make mpi}; the README documents
+GPU compiler flags and PBS resource requests. NumPy and Matplotlib regenerate
+report plots and tables using \code{report/build\_analysis.py}. Compile
+\code{report/main.tex} from that directory. The final PDF and editable source
+accompany this report. Queue waiting is excluded from all performance measurements.
+
+\section{Conclusion and AI-use declaration}
+The experiments show that scaling a task graph and accelerating a search
+algorithm are different achievements. Deep frontiers fill many cores but
+increase the amount of search; a first-child bound preserves pruning but leaves
+load balance unresolved. Across the recorded new allocations, 720-core median search time is shorter
+than its serial reference on four longer positions and longer on two shallow
+ones. This is a descriptive comparison under the stated timing scope. The GPU experiments further show that reducing generated work helps,
+yet eliminating raw transfers would barely affect the measured depth-eight
+runtime. The causal contributions of cache locality, dynamic imbalance, collectives and
+GPU divergence remain unresolved. Useful optimization requires controlled
+changes and independent repeated allocations, not an attractive speedup curve alone.
+
+The authors developed the algorithmic ideas, implementations, experimental
+design and Vanda measurements. OpenAI Codex assisted with preparing the
+figures and drafting and editing this report. The authors checked the figures,
+analysis and final text against the archived results and take responsibility
+for the submitted work. Third-party library use is credited separately above.
+
+\begingroup\raggedright
 \begin{thebibliography}{9}
-\bibitem{knuth1975}
-D. E. Knuth and R. W. Moore, ``An Analysis of Alpha-Beta Pruning,''
-\emph{Artificial Intelligence}, vol. 6, no. 4, pp. 293--326, 1975.
+\bibitem{knuth}D. E. Knuth and R. W. Moore. An analysis of alpha--beta pruning.
+\emph{Artificial Intelligence}, 6(4):293--326, 1975.
 \url{https://doi.org/10.1016/0004-3702(75)90019-3}.
-\bibitem{chesslib}
-Disservin, \emph{chess-library}, MIT-licensed C++ chess library, commit
+\bibitem{feldmann}R. Feldmann, B. Monien, P. Mysliwietz and O. Vornberger.
+Distributed game-tree search. \emph{ICCA Journal}, 12(2):65--73, 1989.
+\url{https://doi.org/10.3233/ICG-1989-12203}.
+\bibitem{chesslib}Disservin. \emph{chess-library}, MIT-licensed C++ library,
+revision\\
 \code{2a608d58f44776909bb6e2c09505e97ba1451319}.
 \url{https://github.com/Disservin/chess-library}.
-\bibitem{openmpi507}
-Open MPI, \emph{mpirun / mpiexec}, version 5.0.7 documentation.
+\bibitem{mpi}Open MPI. \emph{mpirun/mpiexec documentation}, version 5.0.7.
 \url{https://docs.open-mpi.org/en/v5.0.7/man-openmpi/man1/mpirun.1.html}.
-\bibitem{openmp52}
-OpenMP Architecture Review Board, \emph{OpenMP API Specification}, version
-5.2, 2021. \url{https://www.openmp.org/wp-content/uploads/OpenMP-API-Specification-5-2.pdf}.
-\bibitem{nvidia-best-practices}
-NVIDIA, \emph{CUDA C++ Best Practices Guide}, section 10.1, ``Data Transfer
-Between Host and Device.''
-\url{https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/}.
+\bibitem{openmp}OpenMP Architecture Review Board. \emph{OpenMP API Specification
+5.2}, 2021. \url{https://www.openmp.org/specifications/}.
 \end{thebibliography}
+\endgroup
 
+\clearpage
+\appendix
+\section{Exact benchmark positions}
+\small
+FEN encodes piece placement, side to move, castling and en-passant information,
+followed by move counters. Each string below is an exact input, not a diagram.
+\begin{description}
+\item[Initial position (depth 8)]\mbox{}\\
+\texttt{rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}
+\item[Kiwipete (depth 6)]\mbox{}\\
+\texttt{r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R}\\
+\texttt{w KQkq - 0 1}
+\item[Rook/pawn (depth 9)]\mbox{}\\
+\texttt{8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1}
+\item[Tactical (depth 6)]\mbox{}\\
+\texttt{r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1}\\
+\texttt{w kq - 0 1}
+\item[Minor pieces (depth 9)]\mbox{}\\
+\texttt{8/5pk1/3b2p1/3Pp3/4P3/2N3P1/5PK1/8 w - - 0 1}
+\item[Ruy Lopez (depth 4)]\mbox{}\\
+\texttt{r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N1P/PP1P1PP1/RNBQR1K1}\\
+\texttt{b - - 0 9}
+\item[Queen's Gambit (depth 4)]\mbox{}\\
+\texttt{rn1q1rk1/pbp1bpp1/1p3n1p/3p4/3P3B/2NBPN2/PP3PPP/R2Q1RK1}\\
+\texttt{b - - 3 10}
+\end{description}
 \end{document}

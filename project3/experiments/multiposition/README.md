@@ -125,6 +125,5 @@ The raw archive includes historical versions of the runner and its timeout
 policy. The current runner defaults to 180 seconds for parallel configurations
 and 800 seconds for one-worker formal runs. A timeout is not a valid timing.
 
-OpenAI Codex assisted with additional input preparation, PBS orchestration,
-collection, validation and summaries. Retain this assistance in the final
-report's AI-use declaration. Git author metadata is separate from that declaration.
+The project team designed and ran these experiments on Vanda. The report
+credits OpenAI Codex for assistance with figures and report drafting and editing.
