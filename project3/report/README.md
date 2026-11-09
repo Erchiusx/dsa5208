@@ -1,6 +1,7 @@
 # Project 3 report
 
 The completed English report is `main.pdf`; editable LaTeX is `main.tex`.
+`README.pdf` is a paginated copy of the project root `README.md`.
 The named delivery copy is `../output/pdf/DSA5208_Project3_Report.pdf`.
 Both PDF copies contain the same 14-page document.
 
@@ -22,6 +23,7 @@ mkdir -p output/pdf
 tectonic --keep-logs --outdir output/pdf report/main.tex
 cp output/pdf/main.pdf output/pdf/DSA5208_Project3_Report.pdf
 cp output/pdf/main.pdf report/main.pdf
+python3 report/export_readme.py  # requires reportlab and DejaVu fonts
 ```
 
 The plotting script regenerates five vector figures and the embedded CPU
