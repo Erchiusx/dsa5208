@@ -194,13 +194,13 @@ the account's actual Vanda environment.
 ### Upload and first build on Vanda
 
 After the first upload, the project-local Git alias `git sync-hpc` runs
-`scripts/git-sync-hpc` from anywhere in this Git repository. Use
+`scripts/git-sync-hpc` from anywhere in this Git repository. Set
+`CHESS_HPC_DEST` to your own Vanda account and project directory, for example
+`NUSNETID@vanda.nus.edu.sg:~/dsa5208/project3/`. Use
 `git sync-hpc --dry-run` to preview changes, then `git sync-hpc` to transfer
 them. It excludes local Git metadata, `build/`, `logs/`, and `results/`, and
-does not delete remote files. The default destination is
-`e1538331@vanda.nus.edu.sg:~/dsa5208/project3/`; set `CHESS_HPC_DEST` to
-override it. Git aliases live in the local repository configuration and are
-not included in the source submission; on a fresh clone, register it with
+does not delete remote files. No account is selected by default. Git aliases
+live in the local repository configuration and are not included in the source submission; on a fresh clone, register it with
 `git config --local alias.sync-hpc '!project3/scripts/git-sync-hpc'`.
 
 From this project's directory on your own computer, package only source and

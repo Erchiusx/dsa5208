@@ -14,7 +14,11 @@ elif (( $# != 0 )); then
 fi
 
 project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-destination="${CHESS_HPC_DEST:-e1538331@vanda.nus.edu.sg:~/dsa5208/project3/}"
+if [[ -z "${CHESS_HPC_DEST:-}" ]]; then
+  echo 'Set CHESS_HPC_DEST to your own Vanda destination, for example NUSNETID@vanda.nus.edu.sg:~/dsa5208/project3/' >&2
+  exit 2
+fi
+destination="$CHESS_HPC_DEST"
 
 printf 'Syncing %s/ to %s\n' "$project_dir" "$destination"
 rsync -avz --itemize-changes "${rsync_options[@]}" \
