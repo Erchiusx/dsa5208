@@ -660,7 +660,10 @@ would prune, then measure launch and device utilization separately. None of
 these proposed mechanisms is claimed as implemented here.
 
 \subsection{Artifact map and rebuilding}
-Source and README are supplied under \code{project3/}. New CPU raw logs,
+The source code and run instructions are publicly available at
+\url{https://github.com/Erchiusx/dsa5208/tree/master/project3}.
+The \code{project3/README.md} file explains how to build and run each backend.
+New CPU raw logs,
 per-trial records and summary tables are under
 \code{experiments/multiposition/}; \code{strong\_scaling.csv} preserves both
 baseline definitions. Original CPU and GPU logs are in \code{experiments/raw/},
@@ -676,8 +679,8 @@ python3 project3/scripts/summarize\_multiposition.py
 From \code{project3/}, run \code{make cpu} or \code{make mpi}; the README documents
 GPU compiler flags and PBS resource requests. NumPy and Matplotlib regenerate
 report plots and tables using \code{report/build\_analysis.py}. Compile
-\code{report/main.tex} from that directory. The final PDF and editable source
-accompany this report. Queue waiting is excluded from all performance measurements.
+\code{report/main.tex} from that directory. The repository also contains the
+editable report source. Queue waiting is excluded from all performance measurements.
 
 \section{Conclusion and AI-use declaration}
 The experiments show that scaling a task graph and accelerating a search
