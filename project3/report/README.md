@@ -3,9 +3,11 @@
 The completed English report is `main.pdf`; editable LaTeX is `main.tex`.
 `README.pdf` is a paginated copy of the project root `README.md`.
 The named delivery copy is `../output/pdf/DSA5208_Project3_Report.pdf`.
-Both PDF copies contain the same 14-page document.
+Both PDF copies contain the same 16-page document.
 
-The argument distinguishes original-algorithm acceleration from fixed-task
+The report introduces game-tree search with a two-ply pruning example and
+shows all seven benchmark boards beside their exact FEN inputs. The argument
+distinguishes original-algorithm acceleration from fixed-task
 scaling, measures pruning inflation, compares split-depth and seeded-root
 strategies, and uses GPU phase profiling to evaluate a transfer-only explanation. The 9 November
 revision is documented in REVISION_AUDIT.md, including changed uncertainty
@@ -19,6 +21,7 @@ From `project3/`, with NumPy, Matplotlib and Tectonic installed:
 
 ```sh
 python3 report/build_analysis.py
+python3 report/build_boards.py
 mkdir -p output/pdf
 tectonic --keep-logs --outdir output/pdf report/main.tex
 cp output/pdf/main.pdf output/pdf/DSA5208_Project3_Report.pdf
@@ -26,8 +29,10 @@ cp output/pdf/main.pdf report/main.pdf
 python3 report/export_readme.py  # requires reportlab and DejaVu fonts
 ```
 
-The plotting script regenerates five vector figures and the embedded CPU
-result tables from the archived CSV and JSONL records. It edits only its
+The analysis script regenerates five vector figures and the embedded CPU
+result tables from the archived CSV and JSONL records. The board script
+regenerates two vector plates directly from the benchmark FEN definitions and
+checks them against the appendix. The analysis script edits only its
 marked generated-table regions in `main.tex`. Retain `assets/` alongside the
 LaTeX source. A normal LaTeX installation can alternatively compile with
 `pdflatex` twice from `project3/`.

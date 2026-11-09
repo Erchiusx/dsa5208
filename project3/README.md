@@ -71,8 +71,10 @@ availability must be verified on the allocated Vanda node.
 The complete report integrates the original CPU/GPU measurements and the
 six-position CPU archive. See [`report/main.pdf`](report/main.pdf) and
 [`report/README.md`](report/README.md) for its scope, evidence and rebuild steps.
-The five vector figures and CPU result tables are regenerated from the
-archived measurements with `report/build_analysis.py`.
+The five analysis figures and CPU result tables are regenerated from the
+archived measurements with `report/build_analysis.py`. Seven chessboards in
+the appendix are regenerated from the benchmark FENs with
+`report/build_boards.py`.
 
 ## NUS Vanda batch jobs
 

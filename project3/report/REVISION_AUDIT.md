@@ -47,6 +47,10 @@ recorded rank/thread layouts for each position and split depth.
     accounting, rather than a causal performance model.
 12. Preserved the limits of score agreement under a shared chess library: it is
     not independent rule validation or proof of the deep selected move's value.
+13. Expanded the algorithm introduction for readers unfamiliar with chess
+    engines. A two-ply example shows why alpha-beta can skip a competing move.
+    Added seven board diagrams in two vector plates; the board generator parses
+    the benchmark FEN definitions and checks every appendix FEN for agreement.
 
 ## What was not inferred
 
@@ -59,7 +63,8 @@ move-value validation.
 
 ## Build and visual review
 
-The revised document contains 14 pages, five vector figures and six tables.
+The revised document contains 16 pages, five analysis figures, two board
+plates and six tables.
 The plot script generates figures from archived CPU records and parses the
 actual depth-eight GPU profile for phase accounting. The final PDF is rendered
 with Poppler for visual inspection; LaTeX reports no overfull boxes or unresolved

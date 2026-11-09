@@ -74,6 +74,22 @@ small-workload failure cases. The positions are fixed benchmarks, including
 synthetic states, rather than a representative sample of human games.
 
 \section{Algorithm and sources of parallel dependence}
+\subsection{From a chess position to a search tree}
+The input is one board state, not a dataset of games. At the root, the side to
+move chooses a legal move. The opponent then chooses a reply, followed by our
+next choice, and so on. These alternating choices form a tree: a node is a
+position and an edge is one legal move. The number of children varies because
+different positions allow different moves; checkmate, stalemate and draws can
+stop a branch early. Appendix~A shows the seven exact input boards alongside
+their FEN encodings.
+
+At a fixed depth, the program does not play out every game to its final result.
+It scores the reached leaves using the stated material values and chooses a
+root move assuming that the opponent will choose the reply least favorable to
+us. Thus the first two levels are ``choose the best move, then face the worst
+reply''. More plies repeat the same rule. This is a deterministic benchmark of
+search and parallel scheduling, rather than an attempt to predict human play.
+
 \subsection{Negamax and alpha--beta pruning}
 For legal moves $M(s)$ and the state $s_m$ after move $m$, negamax writes minimax as
 \begin{equation}
@@ -89,12 +105,22 @@ shallow search-control reference.
 
 Alpha--beta carries bounds $(\alpha,\beta)$ and searches a child with
 $(-\beta,-\alpha)$. Once $\alpha\geq\beta$, further continuations cannot change
-the relevant decision and may be omitted \cite{knuth}. For example, suppose a
-root move already guarantees $+100$. In a competing root branch, one opponent
-reply that limits the root player to $0$ is sufficient to reject that branch;
-its remaining replies need not be explored. Searching both branches from scratch
-in parallel can lose this shortcut. Move order therefore changes how much work
-is necessary even though it does not change the exact fixed-depth minimax value.
+the relevant decision and may be omitted \cite{knuth}. The following small
+two-ply example gives the intuition; scores are from the root player's view:
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}\toprule
+Our candidate move & Opponent replies examined & What we know \\\midrule
+A & $+100$, $+200$ & Opponent chooses $+100$ \\
+B & $0$, then replies not yet examined & B can yield at most $0$ \\\bottomrule
+\end{tabular}
+\end{center}
+After completing A, the root has a move worth $+100$. The first reply to B
+already proves that a minimizing opponent can hold B to $0$ or less, so no
+remaining reply to B can make it the better root move. This is a \emph{cutoff}:
+the skipped branches have no effect on the best root decision. Searching A and
+B independently in parallel may inspect those branches before A's bound is
+known. Move order therefore changes work even though it does not change the
+exact fixed-depth minimax value.
 
 This dependency makes the algorithm a meaningful parallelization problem.
 Within a subtree, recursive choices and cutoffs remain dependent; across
@@ -724,7 +750,9 @@ revision\\
 \section{Exact benchmark positions}
 \small
 FEN encodes piece placement, side to move, castling and en-passant information,
-followed by move counters. Each string below is an exact input, not a diagram.
+followed by move counters. Each string below is an exact input. The corresponding
+diagrams on the following pages show piece placement with White at the bottom;
+the labels state which side moves first.
 \begin{description}
 \item[Initial position (depth 8)]\mbox{}\\
 \texttt{rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}
@@ -745,4 +773,20 @@ followed by move counters. Each string below is an exact input, not a diagram.
 \texttt{rn1q1rk1/pbp1bpp1/1p3n1p/3p4/3P3B/2NBPN2/PP3PPP/R2Q1RK1}\\
 \texttt{b - - 3 10}
 \end{description}
+\clearpage
+\subsection{Board diagrams}
+\noindent These diagrams visualize the seven benchmark inputs listed above.
+The search depth is measured in plies, or individual moves by one side.
+\begin{figure}[H]\centering
+\includegraphics[width=.91\linewidth]{\assetdir boards_1.pdf}
+\caption{Initial position, Kiwipete, rook/pawn endgame and tactical position.
+Every board uses White's perspective; the label gives the side to move.}
+\end{figure}
+\clearpage
+\subsection*{Board diagrams (continued)}
+\begin{figure}[H]\centering
+\includegraphics[width=.91\linewidth]{\assetdir boards_2.pdf}
+\caption{Minor-piece endgame, Ruy Lopez and Queen's Gambit positions. These are
+input positions, not moves recommended by the search.}
+\end{figure}
 \end{document}
